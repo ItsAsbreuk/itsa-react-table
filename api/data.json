@@ -1,0 +1,82 @@
+{
+    "project": {
+        "name": "itsa-react-xxxxx",
+        "description": "React-Component: xxxxx",
+        "logo": "https://avatars0.githubusercontent.com/u/8314644?v=3&s=84",
+        "version": "0.0.1"
+    },
+    "files": {
+        "lib/component.jsx": {
+            "name": "lib/component.jsx",
+            "modules": {
+                "component.jsx": 1
+            },
+            "classes": {
+                "Component": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        }
+    },
+    "modules": {
+        "component.jsx": {
+            "name": "component.jsx",
+            "submodules": {},
+            "elements": {},
+            "classes": {
+                "Component": 1
+            },
+            "fors": {},
+            "namespaces": {},
+            "tag": "module",
+            "file": "lib/component.jsx",
+            "line": 3,
+            "description": "Description here\n\n\n\n<i>Copyright (c) 2016 ItsAsbreuk - http://itsasbreuk.nl</i><br>\nNew BSD License - http://choosealicense.com/licenses/bsd-3-clause/",
+            "since": "2.0.0"
+        }
+    },
+    "classes": {
+        "Component": {
+            "name": "Component",
+            "shortname": "Component",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "component.jsx",
+            "namespace": "",
+            "file": "lib/component.jsx",
+            "line": 3,
+            "description": "Description here\n\n\n\n<i>Copyright (c) 2016 ItsAsbreuk - http://itsasbreuk.nl</i><br>\nNew BSD License - http://choosealicense.com/licenses/bsd-3-clause/"
+        }
+    },
+    "elements": {},
+    "classitems": [
+        {
+            "file": "lib/component.jsx",
+            "line": 28,
+            "description": "The Component its children",
+            "itemtype": "property",
+            "name": "children",
+            "type": "Object",
+            "since": "2.0.0",
+            "class": "Component",
+            "module": "component.jsx"
+        },
+        {
+            "file": "lib/component.jsx",
+            "line": 109,
+            "description": "React render-method --> renderes the Component.",
+            "itemtype": "method",
+            "name": "render",
+            "return": {
+                "description": "ReactComponent"
+            },
+            "since": "2.0.0",
+            "class": "Component",
+            "module": "component.jsx"
+        }
+    ],
+    "warnings": []
+}
