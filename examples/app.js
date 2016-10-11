@@ -53,16 +53,27 @@
 	    Component = __webpack_require__(170);
 
 	var data = [{ id: "ga-3475", name: "gadget", price: "$6.99", cost: "$5.99" }, { id: "sp-9980", name: "sprocket", price: "$3.75", cost: "$3.25" }, { id: "wi-0650", name: "widget", price: "$4.25", cost: "$3.75" }],
-	    columns = ["id", { key: "name", label: "part name" }, { key: "price", allowHTML: true, emptyCellValue: "<em>(not set)</em>" }, "cost"];
+	    columns = ["id", { key: "name", label: "part name" }, "price", "cost"];
+
+	var changeData = function changeData(newData) {
+	    props.data = newData;
+	    renderTable(props);
+	};
 
 	var props = {
+	    autoFocus: true,
 	    className: 'pure-table pure-table-striped',
 	    columns: columns,
 	    data: data,
-	    rowHeader: true
+	    editable: 'full',
+	    onChange: changeData
 	};
 
-	ReactDOM.render(React.createElement(Component, props), document.getElementById("component-container"));
+	var renderTable = function renderTable(props) {
+	    ReactDOM.render(React.createElement(Component, props), document.getElementById("component-container"));
+	};
+
+	renderTable(props);
 
 /***/ },
 /* 1 */
@@ -20534,7 +20545,7 @@
 
 
 	// module
-	exports.push([module.id, ".itsa-table td.itsa-table-rowheader {\n  background-color: #E0E0E0;\n  border-top: 1px solid #CBCBCB;\n  font-weight: bold; }\n\n.itsa-table th {\n  background-color: #E0E0E0;\n  border-left: 1px solid #CBCBCB;\n  font-weight: bold; }\n", ""]);
+	exports.push([module.id, ".itsa-table td.itsa-table-rowheader {\n  background-color: #E0E0E0;\n  border-top: 1px solid #CBCBCB;\n  font-weight: bold; }\n\n.itsa-table td.itsa-table-editable-cell {\n  padding: 0; }\n\n.itsa-table th {\n  background-color: #E0E0E0;\n  border-left: 1px solid #CBCBCB;\n  font-weight: bold; }\n\n.itsa-table textarea {\n  resize: none;\n  display: inline-block;\n  border: 1px solid #ccc;\n  box-shadow: inset 0 1px 3px #ddd;\n  vertical-align: middle;\n  -webkit-box-sizing: border-box;\n  -moz-box-sizing: border-box;\n  box-sizing: border-box; }\n", ""]);
 
 	// exports
 
@@ -20574,7 +20585,7 @@
 
 
 	// module
-	exports.push([module.id, ".itsa-table.pure-table.pure-table-striped tr:nth-child(2n-1) td.itsa-table-rowheader,\n.itsa-table.pure-table td.itsa-table-rowheader {\n  background-color: #E0E0E0;\n  border-top: 1px solid #CBCBCB;\n  font-weight: bold; }\n", ""]);
+	exports.push([module.id, ".itsa-table.pure-table.pure-table-striped tr:nth-child(2n-1) td.itsa-table-rowheader,\n.itsa-table.pure-table td.itsa-table-rowheader {\n  background-color: #E0E0E0;\n  border-top: 1px solid #CBCBCB;\n  font-weight: bold; }\n\n.itsa-table.pure-table td.itsa-table-editable-cell {\n  padding: 0; }\n\n.itsa-table.pure-table textarea {\n  padding: 0.5em 1em; }\n", ""]);
 
 	// exports
 
@@ -20583,7 +20594,7 @@
 /* 175 */
 /***/ function(module, exports, __webpack_require__) {
 
-	"use strict";
+	'use strict';
 
 	/**
 	 * Description here
@@ -20601,22 +20612,22 @@
 
 	__webpack_require__(176);
 
-	var _react = __webpack_require__(5);
-
-	var _react2 = _interopRequireDefault(_react);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	var MAIN_CLASS = 'itsa-table',
+	var React = __webpack_require__(5),
+	    ReactDom = __webpack_require__(36),
+	    PropTypes = React.PropTypes,
+	    async = __webpack_require__(184).async,
+	    MAIN_CLASS = 'itsa-table',
 	    ROW_CLASS = 'itsa-table-row',
-	    CELL_CLASS = 'itsa-table-cell itsa-table-col-';
+	    CELL_CLASS = 'itsa-table-cell itsa-table-col-',
+	    EDITABLE_CELL_CLASS_SPACED = ' itsa-table-editable-cell';
 
-	var Component = _react2.default.createClass({
-	    displayName: "Component",
+	var Component = React.createClass({
+	    displayName: 'Component',
 
 
 	    propTypes: {
-	        columns: _react.PropTypes.array,
+	        autoFocus: PropTypes.bool,
+	        columns: PropTypes.array,
 	        /**
 	         * The Component its children
 	         *
@@ -20624,14 +20635,69 @@
 	         * @type Object
 	         * @since 2.0.0
 	        */
-	        data: _react.PropTypes.array,
-	        rowHeader: _react.PropTypes.bool
+	        data: PropTypes.array,
+	        editable: PropTypes.oneOfType([PropTypes.bool, PropTypes.string]),
+	        editDirectionDown: PropTypes.bool,
+	        onChange: PropTypes.func,
+	        rowHeader: PropTypes.bool
 	    },
 
-	    getInitialProps: function getInitialProps() {
+	    componentDidMount: function componentDidMount() {
+	        this.props.autoFocus && this.focus();
+	    },
+	    changeCell: function changeCell(rowIndex, field, e) {
+	        var newData = void 0;
+	        var props = this.props,
+	            onChange = props.onChange;
+	        if (onChange) {
+	            newData = props.data.itsa_deepClone();
+	            newData[rowIndex][field] = e.target.value;
+	            onChange(newData);
+	        }
+	    },
+	    focus: function focus() {
+	        var instance = this,
+	            state = instance.state;
+	        if (state.editableRow === null || state.editableRow === null) {
+	            instance.setState({
+	                editableRow: 0,
+	                editableCol: instance.props.rowHeader ? 1 : 0
+	            });
+	        }
+	        instance._focusActiveCell();
+	    },
+	    _focusActiveCell: function _focusActiveCell() {
+	        var instance = this;
+	        async(function () {
+	            var textareaNode = void 0,
+	                length = void 0;
+	            var state = instance.state,
+	                textarea = instance.refs['textarea_' + state.editableRow + '_' + state.editableCol];
+	            if (textarea) {
+	                textareaNode = ReactDom.findDOMNode(textarea);
+	                if (textareaNode && document.activeElement !== textareaNode) {
+	                    textareaNode.focus();
+	                    if (textareaNode.setSelectionRange) {
+	                        length = textareaNode.value.length;
+	                        textareaNode.setSelectionRange(length, length);
+	                    }
+	                }
+	            }
+	        });
+	    },
+	    getDefaultProps: function getDefaultProps() {
 	        return {
+	            autoFocus: false,
 	            data: [],
+	            editable: false,
+	            editDirectionDown: true,
 	            rowHeader: false
+	        };
+	    },
+	    getInitialState: function getInitialState() {
+	        return {
+	            editableRow: null,
+	            editableCol: null
 	        };
 	    },
 	    generateHead: function generateHead() {
@@ -20640,11 +20706,11 @@
 	            colums = props.columns,
 	            rowHeader = props.rowHeader;
 	        if (colums && colums.length > 0) {
-	            return _react2.default.createElement(
-	                "thead",
+	            return React.createElement(
+	                'thead',
 	                null,
-	                _react2.default.createElement(
-	                    "tr",
+	                React.createElement(
+	                    'tr',
 	                    null,
 	                    colums.map(function (col, i) {
 	                        var colName = void 0,
@@ -20656,8 +20722,8 @@
 	                        } else {
 	                            classname += 'itsa-table-header-rowheader';
 	                        }
-	                        return _react2.default.createElement(
-	                            "th",
+	                        return React.createElement(
+	                            'th',
 	                            { className: classname, key: field },
 	                            colName
 	                        );
@@ -20669,48 +20735,165 @@
 	    generateRows: function generateRows() {
 	        var instance = this,
 	            props = instance.props,
+	            state = instance.state,
 	            data = props.data,
 	            colums = props.columns,
 	            rowHeader = props.rowHeader,
+	            editable = props.editable,
+	            fullEditable = editable === 'full',
 	            hasColums = colums && colums.length > 0;
 
 	        return data.map(function (rowdata, i) {
 	            var cells = void 0;
 	            if (hasColums) {
 	                // create based upon the columns
-	                cells = colums.map(function (col, i) {
-	                    var field = typeof col === 'string' ? col : col.key;
-	                    var classname = CELL_CLASS + field;
-	                    if (rowHeader && i === 0) {
+	                cells = colums.map(function (col, j) {
+	                    var field = typeof col === 'string' ? col : col.key,
+	                        value = rowdata[field];
+	                    var classname = CELL_CLASS + field,
+	                        cellContent = void 0;
+	                    if (rowHeader && j === 0) {
 	                        classname += ' itsa-table-rowheader';
+	                        cellContent = value;
+	                    } else if (fullEditable || editable === true && state.editableRow === i && state.editableCol === j) {
+	                        classname += EDITABLE_CELL_CLASS_SPACED;
+	                        cellContent = React.createElement('textarea', {
+	                            onChange: instance.changeCell.bind(instance, i, field),
+	                            ref: 'textarea_' + i + '_' + j,
+	                            rows: 1,
+	                            value: value });
+	                    } else {
+	                        cellContent = value;
 	                    }
-	                    return _react2.default.createElement(
-	                        "td",
-	                        { className: classname, key: field },
-	                        rowdata[field]
+	                    return React.createElement(
+	                        'td',
+	                        { className: classname, 'data-colid': j, key: field },
+	                        cellContent
 	                    );
 	                });
 	            } else {
 	                // all fields
 	                cells = [];
 	                rowdata.itsa_each(function (value, key) {
-	                    var classname = CELL_CLASS + key;
-	                    if (rowHeader && cells.length === 0) {
+	                    var classname = CELL_CLASS + key,
+	                        cellContent = void 0,
+	                        colCount = cells.length;
+	                    if (rowHeader && colCount === 0) {
 	                        classname += ' itsa-table-rowheader';
+	                        cellContent = value;
+	                    } else if (fullEditable || editable === true && state.editableRow === i && state.editableCol === colCount) {
+	                        classname += EDITABLE_CELL_CLASS_SPACED;
+	                        cellContent = React.createElement('textarea', {
+	                            onChange: instance.changeCell.bind(instance, i, key),
+	                            ref: 'textarea_' + i + '_' + colCount,
+	                            rows: 1,
+	                            value: value });
+	                    } else {
+	                        cellContent = value;
 	                    }
-	                    cells.push(_react2.default.createElement(
-	                        "td",
-	                        { className: classname, key: key },
-	                        value
+	                    cells.push(React.createElement(
+	                        'td',
+	                        { className: classname, 'data-colid': colCount, key: key },
+	                        cellContent
 	                    ));
 	                });
 	            }
-	            return _react2.default.createElement(
-	                "tr",
-	                { className: ROW_CLASS, "data-recordid": i, key: i },
+	            return React.createElement(
+	                'tr',
+	                { className: ROW_CLASS, 'data-rowid': i, 'data-recordid': i, key: i },
 	                cells
 	            );
 	        });
+	    },
+	    refocus: function refocus(e) {
+	        var focusRow = void 0,
+	            focusCol = void 0,
+	            match = void 0,
+	            maxRow = void 0,
+	            maxCol = void 0,
+	            firstItem = void 0,
+	            colChangedByRow = void 0;
+	        var instance = this,
+	            props = instance.props,
+	            state = instance.state,
+	            keyCode = e.keyCode,
+	            editDirectionDown = props.editDirectionDown,
+	            shiftKey = e.shiftKey,
+	            data = props.data,
+	            lowestColIndex = props.rowHeader ? 1 : 0,
+	            columns = props.columns;
+
+	        if (keyCode === 13) {
+	            if (shiftKey) {
+	                return;
+	            }
+	        }
+	        match = keyCode === 9 || keyCode === 13;
+	        if (match) {
+	            e.preventDefault();
+	            maxRow = data.length - 1;
+	            if (columns) {
+	                maxCol = columns.length - 1;
+	            } else {
+	                firstItem = data[0];
+	                maxCol = firstItem ? firstItem.itsa_size() - 1 : 0;
+	            }
+	            focusRow = state.editableRow;
+	            focusCol = state.editableCol;
+	            if (keyCode === 9 && shiftKey) {
+	                // backwards
+	                if (editDirectionDown) {
+	                    focusRow--;
+	                } else {
+	                    focusCol--;
+	                }
+	            } else {
+	                // forewards
+	                if (editDirectionDown) {
+	                    focusRow++;
+	                } else {
+	                    focusCol++;
+	                }
+	            }
+	            // now we might need to adjust the values when out of range
+	            if (focusRow < 0) {
+	                focusRow = maxRow;
+	                focusCol--;
+	                colChangedByRow = true;
+	            } else if (focusRow > maxRow) {
+	                focusRow = 0;
+	                focusCol++;
+	                colChangedByRow = true;
+	            }
+	            if (focusCol < lowestColIndex) {
+	                colChangedByRow || focusRow--;
+	                focusRow < 0 && (focusRow = maxRow);
+	                focusCol = maxCol;
+	            } else if (focusCol > maxCol) {
+	                colChangedByRow || focusRow++;
+	                focusCol = lowestColIndex;
+	                focusRow > maxRow && (focusRow = 0);
+	            }
+	            this.setState({
+	                editableRow: focusRow,
+	                editableCol: focusCol
+	            });
+	            instance._focusActiveCell();
+	        }
+	    },
+	    refocusByClick: function refocusByClick(e) {
+	        var node = e.target,
+	            colId = void 0,
+	            rowId = void 0;
+	        node.tagName === 'TD' || (node = node.parentNode);
+	        colId = parseInt(node.getAttribute('data-colid'), 10);
+	        node = node.parentNode;
+	        rowId = parseInt(node.getAttribute('data-rowid'), 10);
+	        this.setState({
+	            editableRow: rowId,
+	            editableCol: colId
+	        });
+	        this._focusActiveCell();
 	    },
 
 
@@ -20722,18 +20905,28 @@
 	     * @since 2.0.0
 	     */
 	    render: function render() {
-	        var classname = MAIN_CLASS;
+	        var classname = MAIN_CLASS,
+	            refocusByClick = void 0,
+	            refocus = void 0;
 	        var instance = this,
 	            props = instance.props,
+	            editable = props.editable,
 	            propsClassName = props.className;
+
 	        propsClassName && (classname += ' ' + propsClassName);
-	        return _react2.default.createElement(
-	            "table",
+	        if (editable === true || editable === 'full') {
+	            refocusByClick = instance.refocusByClick;
+	            refocus = instance.refocus;
+	        }
+	        return React.createElement(
+	            'table',
 	            { className: classname },
 	            instance.generateHead(),
-	            _react2.default.createElement(
-	                "tbody",
-	                null,
+	            React.createElement(
+	                'tbody',
+	                {
+	                    onClick: refocusByClick,
+	                    onKeyDown: refocus },
 	                instance.generateRows()
 	            )
 	        );
@@ -22673,6 +22866,507 @@
 	Math.itsa_ceilFromZero = function (value) {
 	  return value >= 0 ? Math.ceil(value) : Math.floor(value);
 	};
+
+/***/ },
+/* 184 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var timers = __webpack_require__(185);
+
+	module.exports = {
+	   idGenerator: __webpack_require__(188).idGenerator,
+	   later: timers.later,
+	   async: timers.async,
+	   isNode: __webpack_require__(189)
+	};
+
+/***/ },
+/* 185 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(setImmediate, process) {/**
+	 * Collection of various utility functions.
+	 *
+	 *
+	 * <i>Copyright (c) 2014 ITSA - https://github.com/itsa</i>
+	 * New BSD License - http://choosealicense.com/licenses/bsd-3-clause/
+	 *
+	 * @module utils
+	 * @class Utils
+	 * @static
+	*/
+
+	"use strict";
+
+	var _asynchronizer, _async;
+
+	/**
+	 * Forces a function to be run asynchronously, but as fast as possible. In Node.js
+	 * this is achieved using `setImmediate` or `process.nextTick`.
+	 *
+	 * @method _asynchronizer
+	 * @param callbackFn {Function} The function to call asynchronously
+	 * @static
+	 * @private
+	**/
+	_asynchronizer = typeof setImmediate !== "undefined" ? function (fn) {
+	  setImmediate(fn);
+	} : typeof process !== "undefined" && process.nextTick ? process.nextTick : function (fn) {
+	  setTimeout(fn, 0);
+	};
+
+	/**
+	 * Invokes the callbackFn once in the next turn of the JavaScript event loop. If the function
+	 * requires a specific execution context or arguments, wrap it with Function.bind.
+	 *
+	 * I.async returns an object with a cancel method.  If the cancel method is
+	 * called before the callback function, the callback function won"t be called.
+	 *
+	 * @method async
+	 * @param {Function} callbackFn
+	 * @param [invokeAfterFn=true] {boolean} set to false to prevent the _afterSyncFn to be invoked
+	 * @return {Object} An object with a cancel method.  If the cancel method is
+	 * called before the callback function, the callback function won"t be called.
+	**/
+	_async = function _async(callbackFn, invokeAfterFn) {
+	  var canceled;
+
+	  invokeAfterFn = typeof invokeAfterFn === "boolean" ? invokeAfterFn : true;
+	  typeof callbackFn === "function" && _asynchronizer(function () {
+	    if (!canceled) {
+	      callbackFn();
+	    }
+	  });
+
+	  return {
+	    cancel: function cancel() {
+	      canceled = true;
+	    }
+	  };
+	};
+
+	/**
+	 * Invokes the callbackFn once in the next turn of the JavaScript event loop. If the function
+	 * requires a specific execution context or arguments, wrap it with Function.bind.
+	 *
+	 * I.async returns an object with a cancel method.  If the cancel method is
+	 * called before the callback function, the callback function won"t be called.
+	 *
+	 * @method async
+	 * @param {Function} callbackFn
+	 * @param [invokeAfterFn=true] {boolean} set to false to prevent the _afterSyncFn to be invoked
+	 * @return {Object} An object with a cancel method.  If the cancel method is
+	 * called before the callback function, the callback function won"t be called.
+	**/
+	module.exports.async = _async;
+
+	/**
+	 * Invokes the callbackFn after a timeout (asynchronous). If the function
+	 * requires a specific execution context or arguments, wrap it with Function.bind.
+	 *
+	 * To invoke the callback function periodic, set "periodic" either "true", or specify a second timeout.
+	 * If number, then periodic is considered "true" but with a perdiod defined by "periodic",
+	 * which means: the first timer executes after "timeout" and next timers after "period".
+	 *
+	 * I.later returns an object with a cancel method.  If the cancel() method is
+	 * called before the callback function, the callback function won"t be called.
+	 *
+	 * @method later
+	 * @param callbackFn {Function} the function to execute.
+	 * @param [timeout] {Number} the number of milliseconds to wait until the callbackFn is executed.
+	 * when not set, the callback function is invoked once in the next turn of the JavaScript event loop.
+	 * @param [periodic] {boolean|Number} if true, executes continuously at supplied, if number, then periodic is considered "true" but with a perdiod
+	 * defined by "periodic", which means: the first timer executes after "timeout" and next timers after "period".
+	 * The interval executes until canceled.
+	 * @return {object} a timer object. Call the cancel() method on this object to stop the timer.
+	*/
+	module.exports.later = function (callbackFn, timeout, periodic) {
+	  var canceled = false;
+	  if (typeof timeout !== "number") {
+	    return _async(callbackFn);
+	  }
+	  var wrapper = function wrapper() {
+	    // nodejs may execute a callback, so in order to preserve
+	    // the cancel() === no more runny-run, we have to build in an extra conditional
+	    if (!canceled) {
+	      callbackFn();
+	      // we are NOT using setInterval, because that leads to problems when the callback
+	      // lasts longer than the interval. Instead, we use the interval as inbetween-phase
+	      // between the separate callbacks.
+	      id = periodic ? setTimeout(wrapper, typeof periodic === "number" ? periodic : timeout) : null;
+	    }
+	  },
+	      id;
+	  typeof callbackFn === "function" && (id = setTimeout(wrapper, timeout));
+
+	  return {
+	    cancel: function cancel() {
+	      canceled = true;
+	      id && clearTimeout(id);
+	      // break closure:
+	      id = null;
+	    }
+	  };
+	};
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(186).setImmediate, __webpack_require__(187)))
+
+/***/ },
+/* 186 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(setImmediate, clearImmediate) {"use strict";
+
+	var nextTick = __webpack_require__(187).nextTick;
+	var apply = Function.prototype.apply;
+	var slice = Array.prototype.slice;
+	var immediateIds = {};
+	var nextImmediateId = 0;
+
+	// DOM APIs, for completeness
+
+	exports.setTimeout = function () {
+	  return new Timeout(apply.call(setTimeout, window, arguments), clearTimeout);
+	};
+	exports.setInterval = function () {
+	  return new Timeout(apply.call(setInterval, window, arguments), clearInterval);
+	};
+	exports.clearTimeout = exports.clearInterval = function (timeout) {
+	  timeout.close();
+	};
+
+	function Timeout(id, clearFn) {
+	  this._id = id;
+	  this._clearFn = clearFn;
+	}
+	Timeout.prototype.unref = Timeout.prototype.ref = function () {};
+	Timeout.prototype.close = function () {
+	  this._clearFn.call(window, this._id);
+	};
+
+	// Does not start the time, just sets up the members needed.
+	exports.enroll = function (item, msecs) {
+	  clearTimeout(item._idleTimeoutId);
+	  item._idleTimeout = msecs;
+	};
+
+	exports.unenroll = function (item) {
+	  clearTimeout(item._idleTimeoutId);
+	  item._idleTimeout = -1;
+	};
+
+	exports._unrefActive = exports.active = function (item) {
+	  clearTimeout(item._idleTimeoutId);
+
+	  var msecs = item._idleTimeout;
+	  if (msecs >= 0) {
+	    item._idleTimeoutId = setTimeout(function onTimeout() {
+	      if (item._onTimeout) item._onTimeout();
+	    }, msecs);
+	  }
+	};
+
+	// That's not how node.js implements it but the exposed api is the same.
+	exports.setImmediate = typeof setImmediate === "function" ? setImmediate : function (fn) {
+	  var id = nextImmediateId++;
+	  var args = arguments.length < 2 ? false : slice.call(arguments, 1);
+
+	  immediateIds[id] = true;
+
+	  nextTick(function onNextTick() {
+	    if (immediateIds[id]) {
+	      // fn.call() is faster so we optimize for the common use-case
+	      // @see http://jsperf.com/call-apply-segu
+	      if (args) {
+	        fn.apply(null, args);
+	      } else {
+	        fn.call(null);
+	      }
+	      // Prevent ids from leaking
+	      exports.clearImmediate(id);
+	    }
+	  });
+
+	  return id;
+	};
+
+	exports.clearImmediate = typeof clearImmediate === "function" ? clearImmediate : function (id) {
+	  delete immediateIds[id];
+	};
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(186).setImmediate, __webpack_require__(186).clearImmediate))
+
+/***/ },
+/* 187 */
+/***/ function(module, exports) {
+
+	'use strict';
+
+	// shim for using process in browser
+	var process = module.exports = {};
+
+	// cached from whatever global is present so that test runners that stub it
+	// don't break things.  But we need to wrap it in a try catch in case it is
+	// wrapped in strict mode code which doesn't define any globals.  It's inside a
+	// function because try/catches deoptimize in certain engines.
+
+	var cachedSetTimeout;
+	var cachedClearTimeout;
+
+	function defaultSetTimout() {
+	    throw new Error('setTimeout has not been defined');
+	}
+	function defaultClearTimeout() {
+	    throw new Error('clearTimeout has not been defined');
+	}
+	(function () {
+	    try {
+	        if (typeof setTimeout === 'function') {
+	            cachedSetTimeout = setTimeout;
+	        } else {
+	            cachedSetTimeout = defaultSetTimout;
+	        }
+	    } catch (e) {
+	        cachedSetTimeout = defaultSetTimout;
+	    }
+	    try {
+	        if (typeof clearTimeout === 'function') {
+	            cachedClearTimeout = clearTimeout;
+	        } else {
+	            cachedClearTimeout = defaultClearTimeout;
+	        }
+	    } catch (e) {
+	        cachedClearTimeout = defaultClearTimeout;
+	    }
+	})();
+	function runTimeout(fun) {
+	    if (cachedSetTimeout === setTimeout) {
+	        //normal enviroments in sane situations
+	        return setTimeout(fun, 0);
+	    }
+	    // if setTimeout wasn't available but was latter defined
+	    if ((cachedSetTimeout === defaultSetTimout || !cachedSetTimeout) && setTimeout) {
+	        cachedSetTimeout = setTimeout;
+	        return setTimeout(fun, 0);
+	    }
+	    try {
+	        // when when somebody has screwed with setTimeout but no I.E. maddness
+	        return cachedSetTimeout(fun, 0);
+	    } catch (e) {
+	        try {
+	            // When we are in I.E. but the script has been evaled so I.E. doesn't trust the global object when called normally
+	            return cachedSetTimeout.call(null, fun, 0);
+	        } catch (e) {
+	            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error
+	            return cachedSetTimeout.call(this, fun, 0);
+	        }
+	    }
+	}
+	function runClearTimeout(marker) {
+	    if (cachedClearTimeout === clearTimeout) {
+	        //normal enviroments in sane situations
+	        return clearTimeout(marker);
+	    }
+	    // if clearTimeout wasn't available but was latter defined
+	    if ((cachedClearTimeout === defaultClearTimeout || !cachedClearTimeout) && clearTimeout) {
+	        cachedClearTimeout = clearTimeout;
+	        return clearTimeout(marker);
+	    }
+	    try {
+	        // when when somebody has screwed with setTimeout but no I.E. maddness
+	        return cachedClearTimeout(marker);
+	    } catch (e) {
+	        try {
+	            // When we are in I.E. but the script has been evaled so I.E. doesn't  trust the global object when called normally
+	            return cachedClearTimeout.call(null, marker);
+	        } catch (e) {
+	            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error.
+	            // Some versions of I.E. have different rules for clearTimeout vs setTimeout
+	            return cachedClearTimeout.call(this, marker);
+	        }
+	    }
+	}
+	var queue = [];
+	var draining = false;
+	var currentQueue;
+	var queueIndex = -1;
+
+	function cleanUpNextTick() {
+	    if (!draining || !currentQueue) {
+	        return;
+	    }
+	    draining = false;
+	    if (currentQueue.length) {
+	        queue = currentQueue.concat(queue);
+	    } else {
+	        queueIndex = -1;
+	    }
+	    if (queue.length) {
+	        drainQueue();
+	    }
+	}
+
+	function drainQueue() {
+	    if (draining) {
+	        return;
+	    }
+	    var timeout = runTimeout(cleanUpNextTick);
+	    draining = true;
+
+	    var len = queue.length;
+	    while (len) {
+	        currentQueue = queue;
+	        queue = [];
+	        while (++queueIndex < len) {
+	            if (currentQueue) {
+	                currentQueue[queueIndex].run();
+	            }
+	        }
+	        queueIndex = -1;
+	        len = queue.length;
+	    }
+	    currentQueue = null;
+	    draining = false;
+	    runClearTimeout(timeout);
+	}
+
+	process.nextTick = function (fun) {
+	    var args = new Array(arguments.length - 1);
+	    if (arguments.length > 1) {
+	        for (var i = 1; i < arguments.length; i++) {
+	            args[i - 1] = arguments[i];
+	        }
+	    }
+	    queue.push(new Item(fun, args));
+	    if (queue.length === 1 && !draining) {
+	        runTimeout(drainQueue);
+	    }
+	};
+
+	// v8 likes predictible objects
+	function Item(fun, array) {
+	    this.fun = fun;
+	    this.array = array;
+	}
+	Item.prototype.run = function () {
+	    this.fun.apply(null, this.array);
+	};
+	process.title = 'browser';
+	process.browser = true;
+	process.env = {};
+	process.argv = [];
+	process.version = ''; // empty string to avoid regexp issues
+	process.versions = {};
+
+	function noop() {}
+
+	process.on = noop;
+	process.addListener = noop;
+	process.once = noop;
+	process.off = noop;
+	process.removeListener = noop;
+	process.removeAllListeners = noop;
+	process.emit = noop;
+
+	process.binding = function (name) {
+	    throw new Error('process.binding is not supported');
+	};
+
+	process.cwd = function () {
+	    return '/';
+	};
+	process.chdir = function (dir) {
+	    throw new Error('process.chdir is not supported');
+	};
+	process.umask = function () {
+	    return 0;
+	};
+
+/***/ },
+/* 188 */
+/***/ function(module, exports) {
+
+	"use strict";
+
+	var UNDEFINED_NS = "__undefined__",
+	    namespaces = {};
+
+	/**
+	 * Collection of various utility functions.
+	 *
+	 *
+	 * <i>Copyright (c) 2014 ITSA - https://github.com/itsa</i>
+	 * New BSD License - http://choosealicense.com/licenses/bsd-3-clause/
+	 *
+	 * @module utils
+	 * @class Utils
+	 * @static
+	*/
+
+	/**
+	 * Generates an unique id with the signature: "namespace-follownr"
+	 *
+	 * @example
+	 *
+	 *     var generator = require("core-utils-idgenerator");
+	 *
+	 *     console.log(generator()); // --> 1
+	 *     console.log(generator()); // --> 2
+	 *     console.log(generator(1000)); // --> 1000
+	 *     console.log(generator()); // --> 1001
+	 *     console.log(generator("Parcel, 500")); // -->"Parcel-500"
+	 *     console.log(generator("Parcel")); // -->"Parcel-501"
+	 *
+	 *
+	 * @method idGenerator
+	 * @param [namespace] {String} namespace to prepend the generated id.
+	 *        When ignored, the generator just returns a number.
+	 * @param [start] {Number} startvalue for the next generated id. Any further generated id"s will preceed this id.
+	 *        If `start` is lower or equal than the last generated id, it will be ignored.
+	 * @return {Number|String} an unique id. Either a number, or a String (digit prepended with "namespace-")
+	 */
+	module.exports.idGenerator = function (namespace, start) {
+	  // in case `start` is set at first argument, transform into (null, start)
+	  typeof namespace === "number" && (start = namespace) && (namespace = null);
+	  namespace || (namespace = UNDEFINED_NS);
+
+	  if (!namespaces[namespace]) {
+	    namespaces[namespace] = start || 1;
+	  } else if (start && namespaces[namespace] < start) {
+	    namespaces[namespace] = start;
+	  }
+	  return namespace === UNDEFINED_NS ? namespaces[namespace]++ : namespace + "-" + namespaces[namespace]++;
+	};
+
+/***/ },
+/* 189 */
+/***/ function(module, exports) {
+
+	/* WEBPACK VAR INJECTION */(function(global) {/**
+	 * Collection of various utility functions.
+	 *
+	 *
+	 * <i>Copyright (c) 2014 ITSA - https://github.com/itsa</i>
+	 * New BSD License - http://choosealicense.com/licenses/bsd-3-clause/
+	 *
+	 * @module utils
+	 * @class Utils
+	 * @static
+	*/
+
+	/**
+	 * Checks whether the environment is Nodejs
+	 *
+	 * @method isnode
+	 * @return {Boolean} whether the environment is Nodejs
+	 */
+
+	'use strict';
+
+	var isNode = typeof global !== 'undefined' && {}.toString.call(global) === '[object global]' && (!global.document || {}.toString.call(global.document) !== '[object HTMLDocument]');
+
+	module.exports = isNode;
+	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
 /***/ }
 /******/ ]);

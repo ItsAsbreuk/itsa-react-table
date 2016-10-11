@@ -14,18 +14,29 @@ var data = [
     columns = [
         "id",
         { key: "name", label: "part name" },
-        { key: "price", allowHTML: true, emptyCellValue: "<em>(not set)</em>" },
+        "price",
         "cost"
     ];
 
-const props = {
+const changeData = newData => {
+    props.data = newData;
+    renderTable(props);
+};
+
+let props = {
+    autoFocus: true,
     className: 'pure-table pure-table-striped',
     columns,
     data,
-    rowHeader: true
+    editable: 'full',
+    onChange: changeData
 };
 
-ReactDOM.render(
-    <Component {...props} />,
-    document.getElementById("component-container")
-);
+const renderTable = props => {
+    ReactDOM.render(
+        <Component {...props} />,
+        document.getElementById("component-container")
+    );
+};
+
+renderTable(props);

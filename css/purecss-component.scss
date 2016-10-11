@@ -1,8 +1,17 @@
 .itsa-table {
-    &.pure-table.pure-table-striped tr:nth-child(2n-1) td.itsa-table-rowheader,
-    &.pure-table td.itsa-table-rowheader {
-        background-color: #E0E0E0;
-        border-top: 1px solid #CBCBCB;
-        font-weight: bold;
+    &.pure-table {
+        &.pure-table-striped tr:nth-child(2n-1) td.itsa-table-rowheader,
+        td.itsa-table-rowheader {
+            background-color: #E0E0E0;
+            border-top: 1px solid #CBCBCB;
+            font-weight: bold;
+        }
+
+        td.itsa-table-editable-cell {
+            padding: 0;
+        }
+        textarea {
+            padding: 0.5em 1em;
+        }
     }
 }

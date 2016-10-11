@@ -1,12 +1,27 @@
 .itsa-table {
-    td.itsa-table-rowheader {
-        background-color: #E0E0E0;
-        border-top: 1px solid #CBCBCB;
-        font-weight: bold;
+    td {
+        &.itsa-table-rowheader {
+            background-color: #E0E0E0;
+            border-top: 1px solid #CBCBCB;
+            font-weight: bold;
+        }
+        &.itsa-table-editable-cell {
+            padding: 0;
+        }
     }
     th {
         background-color: #E0E0E0;
         border-left: 1px solid #CBCBCB;
         font-weight: bold;
+    }
+    textarea {
+        resize: none;
+        display: inline-block;
+        border: 1px solid #ccc;
+        box-shadow: inset 0 1px 3px #ddd;
+        vertical-align: middle;
+        -webkit-box-sizing: border-box;
+        -moz-box-sizing: border-box;
+        box-sizing: border-box;
     }
 }
