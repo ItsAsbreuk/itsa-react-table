@@ -62,9 +62,12 @@
 
 	var props = {
 	    autoFocus: true,
-	    className: 'pure-table pure-table-striped',
+	    disabled: false,
+	    tableClass: 'pure-table pure-table-striped',
+	    extendableY: true,
 	    columns: columns,
 	    data: data,
+	    rowHeader: true,
 	    editable: 'full',
 	    onChange: changeData
 	};
@@ -20508,7 +20511,8 @@
 
 	__webpack_require__(171);
 	__webpack_require__(173);
-	module.exports = __webpack_require__(175);
+	__webpack_require__(175);
+	module.exports = __webpack_require__(177);
 
 /***/ },
 /* 171 */
@@ -20545,7 +20549,7 @@
 
 
 	// module
-	exports.push([module.id, ".itsa-table td.itsa-table-rowheader {\n  background-color: #E0E0E0;\n  border-top: 1px solid #CBCBCB;\n  font-weight: bold; }\n\n.itsa-table td.itsa-table-editable-cell {\n  padding: 0; }\n\n.itsa-table th {\n  background-color: #E0E0E0;\n  border-left: 1px solid #CBCBCB;\n  font-weight: bold; }\n\n.itsa-table textarea {\n  resize: none;\n  display: inline-block;\n  border: 1px solid #ccc;\n  box-shadow: inset 0 1px 3px #ddd;\n  vertical-align: middle;\n  -webkit-box-sizing: border-box;\n  -moz-box-sizing: border-box;\n  box-sizing: border-box; }\n", ""]);
+	exports.push([module.id, ".itsa-table .add-row {\n  clear: both;\n  display: block; }\n\n.itsa-table table {\n  box-sizing: border-box !important;\n  float: left !important; }\n\n.itsa-table td.itsa-table-rowheader {\n  background-color: #E0E0E0;\n  border-top: 1px solid #CBCBCB;\n  font-weight: bold; }\n\n.itsa-table td.itsa-table-editable-cell {\n  padding: 0; }\n\n.itsa-table th {\n  background-color: #E0E0E0;\n  border-left: 1px solid #CBCBCB;\n  font-weight: bold; }\n\n.itsa-table textarea {\n  resize: none;\n  display: inline-block;\n  border: 1px solid #ccc;\n  box-shadow: inset 0 1px 3px #ddd;\n  vertical-align: middle;\n  -webkit-box-sizing: border-box;\n  -moz-box-sizing: border-box;\n  box-sizing: border-box; }\n", ""]);
 
 	// exports
 
@@ -20585,13 +20589,53 @@
 
 
 	// module
-	exports.push([module.id, ".itsa-table.pure-table.pure-table-striped tr:nth-child(2n-1) td.itsa-table-rowheader,\n.itsa-table.pure-table td.itsa-table-rowheader {\n  background-color: #E0E0E0;\n  border-top: 1px solid #CBCBCB;\n  font-weight: bold; }\n\n.itsa-table.pure-table td.itsa-table-editable-cell {\n  padding: 0; }\n\n.itsa-table.pure-table textarea {\n  padding: 0.5em 1em; }\n", ""]);
+	exports.push([module.id, ".itsa-table .pure-table.pure-table-striped tr:nth-child(2n-1) td.itsa-table-rowheader,\n.itsa-table .pure-table td.itsa-table-rowheader {\n  background-color: #E0E0E0;\n  border-top: 1px solid #CBCBCB;\n  font-weight: bold; }\n\n.itsa-table .pure-table td.itsa-table-editable-cell {\n  padding: 0; }\n\n.itsa-table .pure-table textarea {\n  padding: 0.5em 1em; }\n  .itsa-table .pure-table textarea[disabled] {\n    cursor: not-allowed;\n    background-color: #eaeded;\n    color: #cad2d3; }\n", ""]);
 
 	// exports
 
 
 /***/ },
 /* 175 */
+/***/ function(module, exports, __webpack_require__) {
+
+	// style-loader: Adds some css to the DOM by adding a <style> tag
+
+	// load the styles
+	var content = __webpack_require__(176);
+	if(typeof content === 'string') content = [[module.id, content, '']];
+	// add the styles to the DOM
+	var update = __webpack_require__(4)(content, {});
+	if(content.locals) module.exports = content.locals;
+	// Hot Module Replacement
+	if(false) {
+		// When the styles change, update the <style> tags
+		if(!content.locals) {
+			module.hot.accept("!!./../../css-loader/index.js!./../../sass-loader/index.js!./component.scss", function() {
+				var newContent = require("!!./../../css-loader/index.js!./../../sass-loader/index.js!./component.scss");
+				if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+				update(newContent);
+			});
+		}
+		// When the module is disposed, remove the <style> tags
+		module.hot.dispose(function() { update(); });
+	}
+
+/***/ },
+/* 176 */
+/***/ function(module, exports, __webpack_require__) {
+
+	exports = module.exports = __webpack_require__(3)();
+	// imports
+
+
+	// module
+	exports.push([module.id, "button.itsa-button {\n  margin: 0;\n  padding: 0.5em 1em;\n  font: inherit;\n  /* 2 */\n  font-family: inherit;\n  font-size: 100%;\n  color: #444;\n  /* rgba not supported (IE 8) */\n  color: rgba(0, 0, 0, 0.8);\n  /* rgba supported */\n  border: 1px solid #999;\n  /*IE 6/7/8*/\n  border: none transparent;\n  /*IE9 + everything else*/\n  background-color: #E6E6E6;\n  text-decoration: none;\n  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.15) inset;\n  display: inline-block;\n  position: relative;\n  vertical-align: middle;\n  -webkit-box-sizing: border-box;\n  -moz-box-sizing: border-box;\n  box-sizing: border-box;\n  -webkit-touch-callout: none;\n  -webkit-user-select: none;\n  -khtml-user-select: none;\n  -moz-user-select: none;\n  -ms-user-select: none;\n  user-select: none;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  text-transform: none;\n  line-height: normal;\n  white-space: nowrap;\n  vertical-align: baseline;\n  text-align: center;\n  cursor: pointer; }\n\nbutton.itsa-button.readonly {\n  cursor: default; }\n\nbutton.itsa-button-primary {\n  background-color: #0078E7;\n  color: #FFF; }\n\nbutton.itsa-button-toggled {\n  background-color: #0078E7;\n  color: #FFF; }\n\nbutton.itsa-button:hover:not(.readonly), button.itsa-button.itsa-button-hover:not(.readonly), button.itsa-button:hover:focus:not(.readonly), button.itsa-button.itsa-button-hover:focus:not(.readonly) {\n  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#00000000', endColorstr='#1a000000',GradientType=0);\n  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(transparent), color-stop(40%, rgba(0, 0, 0, 0.05)), to(rgba(0, 0, 0, 0.15)));\n  background-image: -webkit-linear-gradient(transparent, rgba(0, 0, 0, 0.05) 40%, rgba(0, 0, 0, 0.15));\n  background-image: -moz-linear-gradient(top, rgba(0, 0, 0, 0.05) 40%, rgba(0, 0, 0, 0.15));\n  background-image: -o-linear-gradient(transparent, rgba(0, 0, 0, 0.05) 40%, rgba(0, 0, 0, 0.15));\n  background-image: linear-gradient(transparent, rgba(0, 0, 0, 0.05) 40%, rgba(0, 0, 0, 0.15));\n  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.8) inset; }\n\nbutton.itsa-button:focus {\n  outline: 0; }\n\nbutton.itsa-button:focus:not(.readonly) {\n  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#00000000', endColorstr='#1a000000',GradientType=0);\n  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(transparent), color-stop(40%, rgba(0, 0, 0, 0.05)), to(rgba(0, 0, 0, 0.1)));\n  background-image: -webkit-linear-gradient(transparent, rgba(0, 0, 0, 0.05) 40%, rgba(0, 0, 0, 0.1));\n  background-image: -moz-linear-gradient(top, rgba(0, 0, 0, 0.05) 40%, rgba(0, 0, 0, 0.1));\n  background-image: -o-linear-gradient(transparent, rgba(0, 0, 0, 0.05) 40%, rgba(0, 0, 0, 0.1));\n  background-image: linear-gradient(transparent, rgba(0, 0, 0, 0.05) 40%, rgba(0, 0, 0, 0.1));\n  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.6) inset; }\n\nbutton.itsa-button::-moz-focus-inner {\n  /* firefox focusring */\n  border: 0; }\n\nbutton.itsa-button-active:not(.readonly) {\n  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.8) inset, 0 0 10px rgba(0, 0, 0, 0.4) inset; }\n\nbutton.itsa-button:not(.itsa-button-togglebtn):not(.readonly):active:hover, button.itsa-button:not(.itsa-button-togglebtn):not(.readonly).itsa-button-hover:active, button.itsa-button:not(.itsa-button-togglebtn):not(.readonly):active:focus, button.itsa-button:not(.itsa-button-togglebtn):not(.readonly):active:hover:focus, button.itsa-button:not(.itsa-button-togglebtn):not(.readonly).itsa-button-hover:active:focus, button.itsa-button-active:not(.itsa-button-togglebtn):not(.readonly):hover, button.itsa-button-active:not(.itsa-button-togglebtn):not(.readonly).itsa-button-hover, button.itsa-button-active:not(.itsa-button-togglebtn):not(.readonly):focus, button.itsa-button-active:not(.itsa-button-togglebtn):not(.readonly):hover:focus, button.itsa-button-active:not(.itsa-button-togglebtn):not(.readonly).itsa-button-hover:focus {\n  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.8) inset, 0 0 10px black inset; }\n\nbutton.itsa-button[disabled], button.itsa-button[disabled]:focus, button.itsa-button[disabled]:hover, button.itsa-button[disabled].itsa-button-hover, button.itsa-button[disabled]:active, button.itsa-button[disabled].itsa-button-active, button.itsa-button[disabled]:active:hover, button.itsa-button[disabled].itsa-button-hover:active, button.itsa-button[disabled].itsa-button-active:hover, button.itsa-button[disabled].itsa-button-active.itsa-button-hover, button.itsa-button[disabled]:active:focus, button.itsa-button[disabled].itsa-button-active:focus, button.itsa-button[disabled]:active:focus:hover, button.itsa-button[disabled].itsa-button-hover:active:focus, button.itsa-button[disabled].itsa-button-active:focus:hover, button.itsa-button[disabled].itsa-button-hover.itsa-button-active:focus {\n  border: none;\n  background-image: none !important;\n  filter: progid:DXImageTransform.Microsoft.gradient(enabled = false);\n  filter: alpha(opacity=60);\n  -khtml-opacity: 0.6;\n  -moz-opacity: 0.6;\n  opacity: 0.6;\n  cursor: not-allowed;\n  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.15) inset !important;\n  cursor: default; }\n\nbutton.itsa-button-smoothrounded {\n  border-radius: 2px; }\n\nbutton.itsa-button-rounded {\n  border-radius: 0.3em; }\n\nbutton.itsa-button-heavyrounded {\n  border-radius: 0.5em; }\n\nbutton.itsa-button-oval {\n  border-radius: 50%; }\n\nbutton.itsa-button-halfoval {\n  border-radius: 25%; }\n", ""]);
+
+	// exports
+
+
+/***/ },
+/* 177 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -20610,12 +20654,13 @@
 	 * @since 2.0.0
 	*/
 
-	__webpack_require__(176);
+	__webpack_require__(178);
 
 	var React = __webpack_require__(5),
 	    ReactDom = __webpack_require__(36),
 	    PropTypes = React.PropTypes,
-	    async = __webpack_require__(184).async,
+	    async = __webpack_require__(186).async,
+	    Button = __webpack_require__(192),
 	    MAIN_CLASS = 'itsa-table',
 	    ROW_CLASS = 'itsa-table-row',
 	    CELL_CLASS = 'itsa-table-cell itsa-table-col-',
@@ -20636,10 +20681,14 @@
 	         * @since 2.0.0
 	        */
 	        data: PropTypes.array,
+	        disabled: PropTypes.bool,
 	        editable: PropTypes.oneOfType([PropTypes.bool, PropTypes.string]),
 	        editDirectionDown: PropTypes.bool,
+	        extendableX: PropTypes.bool,
+	        extendableY: PropTypes.bool,
 	        onChange: PropTypes.func,
-	        rowHeader: PropTypes.bool
+	        rowHeader: PropTypes.bool,
+	        tableClass: PropTypes.string
 	    },
 
 	    componentDidMount: function componentDidMount() {
@@ -20691,6 +20740,8 @@
 	            data: [],
 	            editable: false,
 	            editDirectionDown: true,
+	            extendableX: false,
+	            extendableY: false,
 	            rowHeader: false
 	        };
 	    },
@@ -20737,6 +20788,7 @@
 	            props = instance.props,
 	            state = instance.state,
 	            data = props.data,
+	            disabled = props.disabled,
 	            colums = props.columns,
 	            rowHeader = props.rowHeader,
 	            editable = props.editable,
@@ -20748,16 +20800,19 @@
 	            if (hasColums) {
 	                // create based upon the columns
 	                cells = colums.map(function (col, j) {
-	                    var field = typeof col === 'string' ? col : col.key,
-	                        value = rowdata[field];
+	                    var field = typeof col === 'string' ? col : col.key;
 	                    var classname = CELL_CLASS + field,
+	                        value = rowdata[field],
 	                        cellContent = void 0;
 	                    if (rowHeader && j === 0) {
 	                        classname += ' itsa-table-rowheader';
 	                        cellContent = value;
 	                    } else if (fullEditable || editable === true && state.editableRow === i && state.editableCol === j) {
 	                        classname += EDITABLE_CELL_CLASS_SPACED;
+	                        typeof value === 'number' || value || (value = '');
+	                        value = String(value);
 	                        cellContent = React.createElement('textarea', {
+	                            disabled: disabled,
 	                            onChange: instance.changeCell.bind(instance, i, field),
 	                            ref: 'textarea_' + i + '_' + j,
 	                            rows: 1,
@@ -20783,7 +20838,10 @@
 	                        cellContent = value;
 	                    } else if (fullEditable || editable === true && state.editableRow === i && state.editableCol === colCount) {
 	                        classname += EDITABLE_CELL_CLASS_SPACED;
+	                        typeof value === 'number' || value || (value = '');
+	                        value = String(value);
 	                        cellContent = React.createElement('textarea', {
+	                            disabled: disabled,
 	                            onChange: instance.changeCell.bind(instance, i, key),
 	                            ref: 'textarea_' + i + '_' + colCount,
 	                            rows: 1,
@@ -20895,6 +20953,44 @@
 	        });
 	        this._focusActiveCell();
 	    },
+	    addRow: function addRow() {
+	        var newData = void 0,
+	            len = void 0;
+	        var props = this.props,
+	            onChange = props.onChange;
+	        if (onChange) {
+	            newData = props.data.itsa_deepClone();
+	            len = newData.length;
+	            if (len == 0) {
+	                newData = [{ '_row0': null }];
+	            } else {
+	                newData[len] = newData[0].itsa_map(function () {
+	                    return null;
+	                });
+	            }
+	            onChange(newData);
+	        }
+	    },
+	    addCol: function addCol() {
+	        var newData = void 0,
+	            len = void 0,
+	            size = void 0;
+	        var props = this.props,
+	            onChange = props.onChange;
+	        if (onChange) {
+	            newData = props.data.itsa_deepClone();
+	            len = newData.length;
+	            if (len == 0) {
+	                size = 0;
+	            } else {
+	                size = newData[0].itsa_size();
+	            }
+	            newData.forEach(function (record) {
+	                record['_col' + size] = null;
+	            });
+	            onChange(newData);
+	        }
+	    },
 
 
 	    /**
@@ -20907,28 +21003,43 @@
 	    render: function render() {
 	        var classname = MAIN_CLASS,
 	            refocusByClick = void 0,
-	            refocus = void 0;
+	            refocus = void 0,
+	            addRowBtn = void 0,
+	            addColBtn = void 0;
 	        var instance = this,
 	            props = instance.props,
 	            editable = props.editable,
+	            disabled = props.disabled,
 	            propsClassName = props.className;
 
 	        propsClassName && (classname += ' ' + propsClassName);
+	        if (props.extendableY) {
+	            addRowBtn = React.createElement(Button, { buttonText: '+', className: 'add-row', disabled: disabled, onClick: instance.addRow });
+	        }
+	        if (props.extendableX && !props.columns) {
+	            addColBtn = React.createElement(Button, { buttonText: '+', disabled: disabled, onClick: instance.addCol });
+	        }
 	        if (editable === true || editable === 'full') {
 	            refocusByClick = instance.refocusByClick;
 	            refocus = instance.refocus;
 	        }
 	        return React.createElement(
-	            'table',
+	            'div',
 	            { className: classname },
-	            instance.generateHead(),
 	            React.createElement(
-	                'tbody',
-	                {
-	                    onClick: refocusByClick,
-	                    onKeyDown: refocus },
-	                instance.generateRows()
-	            )
+	                'table',
+	                { className: props.tableClass },
+	                instance.generateHead(),
+	                React.createElement(
+	                    'tbody',
+	                    {
+	                        onClick: refocusByClick,
+	                        onKeyDown: refocus },
+	                    instance.generateRows()
+	                )
+	            ),
+	            addColBtn,
+	            addRowBtn
 	        );
 	    }
 	});
@@ -20936,21 +21047,21 @@
 	module.exports = Component;
 
 /***/ },
-/* 176 */
+/* 178 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
 
-	__webpack_require__(177);
-	__webpack_require__(178);
 	__webpack_require__(179);
 	__webpack_require__(180);
 	__webpack_require__(181);
 	__webpack_require__(182);
 	__webpack_require__(183);
+	__webpack_require__(184);
+	__webpack_require__(185);
 
 /***/ },
-/* 177 */
+/* 179 */
 /***/ function(module, exports) {
 
 	/**
@@ -21003,7 +21114,7 @@
 	})(Function.prototype);
 
 /***/ },
-/* 178 */
+/* 180 */
 /***/ function(module, exports) {
 
 	/**
@@ -21570,7 +21681,7 @@
 	};
 
 /***/ },
-/* 179 */
+/* 181 */
 /***/ function(module, exports) {
 
 	/**
@@ -21855,7 +21966,7 @@
 	})(String.prototype);
 
 /***/ },
-/* 180 */
+/* 182 */
 /***/ function(module, exports) {
 
 	/**
@@ -22190,7 +22301,7 @@
 	})(Array.prototype);
 
 /***/ },
-/* 181 */
+/* 183 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -22210,9 +22321,9 @@
 
 	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
-	__webpack_require__(178);
 	__webpack_require__(180);
-	__webpack_require__(179);
+	__webpack_require__(182);
+	__webpack_require__(181);
 
 	var STRING = "string";
 
@@ -22444,7 +22555,7 @@
 	};
 
 /***/ },
-/* 182 */
+/* 184 */
 /***/ function(module, exports) {
 
 	/* global Promise:true */
@@ -22807,7 +22918,7 @@
 	}
 
 /***/ },
-/* 183 */
+/* 185 */
 /***/ function(module, exports) {
 
 	/**
@@ -22868,22 +22979,22 @@
 	};
 
 /***/ },
-/* 184 */
+/* 186 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var timers = __webpack_require__(185);
+	var timers = __webpack_require__(187);
 
 	module.exports = {
-	   idGenerator: __webpack_require__(188).idGenerator,
+	   idGenerator: __webpack_require__(190).idGenerator,
 	   later: timers.later,
 	   async: timers.async,
-	   isNode: __webpack_require__(189)
+	   isNode: __webpack_require__(191)
 	};
 
 /***/ },
-/* 185 */
+/* 187 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(setImmediate, process) {/**
@@ -23010,15 +23121,15 @@
 	    }
 	  };
 	};
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(186).setImmediate, __webpack_require__(187)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(188).setImmediate, __webpack_require__(189)))
 
 /***/ },
-/* 186 */
+/* 188 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(setImmediate, clearImmediate) {"use strict";
 
-	var nextTick = __webpack_require__(187).nextTick;
+	var nextTick = __webpack_require__(189).nextTick;
 	var apply = Function.prototype.apply;
 	var slice = Array.prototype.slice;
 	var immediateIds = {};
@@ -23094,10 +23205,10 @@
 	exports.clearImmediate = typeof clearImmediate === "function" ? clearImmediate : function (id) {
 	  delete immediateIds[id];
 	};
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(186).setImmediate, __webpack_require__(186).clearImmediate))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(188).setImmediate, __webpack_require__(188).clearImmediate))
 
 /***/ },
-/* 187 */
+/* 189 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -23283,7 +23394,7 @@
 	};
 
 /***/ },
-/* 188 */
+/* 190 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -23339,7 +23450,7 @@
 	};
 
 /***/ },
-/* 189 */
+/* 191 */
 /***/ function(module, exports) {
 
 	/* WEBPACK VAR INJECTION */(function(global) {/**
@@ -23367,6 +23478,2159 @@
 
 	module.exports = isNode;
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
+
+/***/ },
+/* 192 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+
+	/**
+	 * React-Component: refined Button.
+	 *
+	 *
+	 *
+	 * <i>Copyright (c) 2016 ItsAsbreuk - http://itsasbreuk.nl</i><br>
+	 * New BSD License - http://choosealicense.com/licenses/bsd-3-clause/
+	 *
+	 *
+	 * @module itsa-react-button
+	 * @class Button
+	 * @since 0.0.1
+	*/
+
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
+	__webpack_require__(193);
+
+	var React = __webpack_require__(5),
+	    PropTypes = React.PropTypes,
+	    ReactDom = __webpack_require__(36),
+	    utils = __webpack_require__(186),
+	    later = utils.later,
+	    async = utils.async,
+	    MAIN_CLASS = "itsa-button",
+	    FORM_ELEMENT_CLASS_SPACES = " itsa-formelement",
+	    MAIN_CLASS_PREFIX = MAIN_CLASS + "-",
+	    WHITE_SPACE = "&#160;",
+	    // white-space
+	BOOLEAN = "boolean",
+	    DEF_BUTTON_PRESS_TIME = 300;
+
+	var Button = React.createClass({
+	    displayName: "Button",
+
+
+	    propTypes: {
+	        /**
+	         * Array with the keys that can press the button when focussed.
+	         * Default: [13, 32]
+	         *
+	         * @property activatedBy
+	         * @type Array
+	         * @since 0.0.1
+	        */
+	        activatedBy: PropTypes.array,
+
+	        /**
+	         * The aria-label. When not set, it will equal the buttonText
+	         *
+	         * @property aria-label
+	         * @type String
+	         * @since 0.0.1
+	        */
+	        "aria-label": PropTypes.string,
+
+	        /**
+	         * Whether to autofocus the Component.
+	         *
+	         * @property autoFocus
+	         * @type Boolean
+	         * @since 0.0.1
+	        */
+	        autoFocus: PropTypes.bool,
+
+	        /**
+	         * The Button-text. Will be escaped. If you need HTML, then use `buttonHTML` instead.
+	         *
+	         * @property buttonText
+	         * @type String
+	         * @since 0.0.1
+	        */
+	        buttonText: PropTypes.string,
+
+	        /**
+	         * The Button-text, retaining html-code. If you don't need HTML,
+	         * then `buttonText` is preferred.
+	         *
+	         * @property buttonHTML
+	         * @type String
+	         * @since 0.0.1
+	        */
+	        buttonHTML: PropTypes.string,
+
+	        /**
+	         * The time that the button retains in its `pressed-state` when activated by a key-press.
+	         *
+	         * Default: 300ms
+	         *
+	         * @property buttonPressTime
+	         * @type Number
+	         * @since 0.0.1
+	        */
+	        buttonPressTime: PropTypes.number,
+
+	        /**
+	         * The class that should be set on the element
+	         *
+	         * @property className
+	         * @type String
+	         * @since 0.0.1
+	        */
+	        className: PropTypes.string,
+
+	        /**
+	         * Whether the button resonses rapidly (keydown and mousedown).
+	         * Note: native HTMLButtonElements don't resonse rapidly --> the onClick event happens on mouseUp.
+	         *
+	         * Default: true
+	         *
+	         * @property directResponse
+	         * @type Boolean
+	         * @since 0.0.1
+	        */
+	        directResponse: PropTypes.bool,
+
+	        /**
+	         * Whether the button is disabled
+	         *
+	         * @property disabled
+	         * @type Boolean
+	         * @since 0.0.1
+	        */
+	        disabled: PropTypes.bool,
+
+	        /**
+	         * The name-attribute of the button
+	         *
+	         * @property name
+	         * @type String
+	         * @since 0.0.1
+	        */
+	        name: PropTypes.string,
+
+	        /**
+	         * Callback whenever the button gets clicked by the left mousebutton.
+	         *
+	         * @property onClick
+	         * @type Function
+	         * @since 0.0.1
+	        */
+	        onClick: PropTypes.func,
+
+	        /**
+	         * Callback wheneveer the button gets clicked by the middle mousebuttin.
+	         *
+	         * @property onMiddleClick
+	         * @type Function
+	         * @since 0.0.1
+	        */
+	        onMiddleClick: PropTypes.func,
+
+	        /**
+	         * Callback wheneveer the button gets clicked by the right mouse-button.
+	         *
+	         * @property onRightClick
+	         * @type Function
+	         * @since 0.0.1
+	        */
+	        onRightClick: PropTypes.func,
+
+	        /**
+	         * Whether the checkbox is readonly
+	         *
+	         * @property readOnly
+	         * @type Boolean
+	         * @default false
+	         * @since 15.2.0
+	        */
+	        readOnly: PropTypes.bool,
+
+	        /**
+	         * Whether keypress should show active status. (should be set `false` for file-uploadbuttons)
+	         * Default: true
+	         *
+	         * @property showActivated
+	         * @type Boolean
+	         * @since 0.0.5
+	        */
+	        showActivated: PropTypes.bool,
+
+	        /**
+	         * Inline style
+	         *
+	         * @property style
+	         * @type object
+	         * @since 0.0.1
+	        */
+	        style: PropTypes.object,
+
+	        /**
+	         * The tabIndex
+	         *
+	         * @property tabIndex
+	         * @type Number
+	         * @since 0.0.1
+	        */
+	        tabIndex: PropTypes.number,
+
+	        /**
+	         * Whether the button is in a toggle-state.
+	         * You don;t need to use this directly: use the module ToggleButton instead.
+	         *
+	         * @property toggled
+	         * @type Boolean
+	         * @since 0.0.1
+	        */
+	        toggled: PropTypes.bool,
+
+	        /**
+	         * The type of the button
+	         * Default: "button"
+	         *
+	         * @property children
+	         * @type String
+	         * @since 0.0.1
+	        */
+	        type: PropTypes.string
+	    },
+
+	    /**
+	     * Blurs the Component.
+	     *
+	     * @method blur
+	     * @chainable
+	     * @since 0.0.1
+	     */
+	    blur: function blur() {
+	        var instance = this;
+	        instance._buttonNode.blur();
+	        return instance;
+	    },
+
+
+	    /**
+	     * componentDidMount does some initialization.
+	     *
+	     * @method componentDidMount
+	     * @since 0.0.1
+	     */
+	    componentDidMount: function componentDidMount() {
+	        var instance = this;
+	        instance._buttonNode = ReactDom.findDOMNode(instance);
+	        instance._mounted = true;
+	        instance._knownMobile = "ontouchstart" in window || navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0;
+	        if (instance.props.autoFocus) {
+	            instance._focusLater = later(function () {
+	                return instance.focus();
+	            }, 50);
+	        }
+	    },
+
+
+	    /**
+	     * componentWilUnmount does some cleanup.
+	     *
+	     * @method componentWillUnmount
+	     * @since 0.0.1
+	     */
+	    componentWillUnmount: function componentWillUnmount() {
+	        this._mounted = false;
+	        this._focusLater && this._focusLater.cancel();
+	    },
+
+
+	    /**
+	     * Sets the focus on the Component.
+	     *
+	     * @method focus
+	     * @param [transitionTime] {Number} transition-time to focus the element into the view
+	     * @chainable
+	     * @since 0.0.1
+	     */
+	    focus: function focus(transitionTime) {
+	        var instance = this;
+	        instance._buttonNode.itsa_focus && instance._buttonNode.itsa_focus(null, null, transitionTime);
+	        return instance;
+	    },
+
+
+	    /**
+	     * Returns the default props.
+	     *
+	     * @method getDefaultProps
+	     * @return object
+	     * @since 0.0.1
+	     */
+	    getDefaultProps: function getDefaultProps() {
+	        return {
+	            activatedBy: [13, 32],
+	            autoFocus: false,
+	            buttonPressTime: DEF_BUTTON_PRESS_TIME,
+	            directResponse: true,
+	            disabled: false,
+	            readOnly: false,
+	            showActivated: true,
+	            type: "button"
+	        };
+	    },
+
+
+	    /**
+	     * Returns the initial state.
+	     *
+	     * @method getInitialState
+	     * @return object
+	     * @since 0.0.1
+	     */
+	    getInitialState: function getInitialState() {
+	        return {
+	            active: false,
+	            mouseDown: false
+	        };
+	    },
+	    handleBlur: function handleBlur() {
+	        this._keyDown = false;
+	    },
+
+
+	    /**
+	     * Callback-fn for the onClick-event.
+	     * Will invoke `this.props.onChange`
+	     *
+	     * @method handleClick
+	     * @since 0.0.1
+	     */
+	    handleClick: function handleClick(e) {
+	        var button = void 0,
+	            leftClick = void 0,
+	            middleClick = void 0,
+	            rightClick = void 0;
+	        var instance = this,
+	            props = instance.props,
+	            onMiddleClick = props.onMiddleClick,
+	            onRightClick = props.onRightClick,
+	            onClick = props.onClick;
+	        if (!props.disabled && !props.readOnly && !instance._keyDown && !this.state.mouseDown) {
+	            // don't double execute
+	            if (onClick || onMiddleClick || onRightClick) {
+	                button = e.nativeEvent.button || 1;
+	                leftClick = button <= 1;
+	                middleClick = button === 2;
+	                rightClick = button === 3;
+	                if (onClick && leftClick || onMiddleClick && middleClick || onRightClick && rightClick) {
+	                    e.preventDefault();
+	                    // NOT element.focus or node.itsa_focus ! --> would have side-effects, besides, the node is in the view if it got clicked
+	                    instance._buttonNode.focus();
+	                }
+	                if (onClick && leftClick) {
+	                    onClick();
+	                }
+	                if (middleClick && onMiddleClick) {
+	                    onMiddleClick();
+	                }
+	                if (rightClick && onRightClick) {
+	                    onRightClick();
+	                }
+	            }
+	        }
+	    },
+
+
+	    /**
+	     * Callback-fn for the onKeyDown-event.
+	     *
+	     * @method handleKeyDown
+	     * @since 0.0.1
+	     */
+	    handleKeyDown: function handleKeyDown(e, directResponse, force) {
+	        var instance = this,
+	            props = instance.props,
+	            onClick = props.onClick,
+	            activatedBy = props.activatedBy,
+	            forced = force === true,
+	            // IMPORTANT --> on a keyEvent this is an object in which we are not interested
+	        pressTimer = instance.pressTimer,
+	            keyCode = e.keyCode,
+	            isDirectResponse = (typeof directResponse === "undefined" ? "undefined" : _typeof(directResponse)) === BOOLEAN ? directResponse : props.directResponse;
+
+	        if (!props.disabled && !props.readOnly && instance._mounted) {
+	            if (keyCode === 27) {
+	                // escape keyDown in case it was set
+	                instance._keyDown = false;
+	                pressTimer && pressTimer.cancel();
+	                if (instance.state.active) {
+	                    instance.setState({
+	                        active: false
+	                    });
+	                }
+	            } else {
+	                if (forced || activatedBy.indexOf(keyCode) !== -1) {
+	                    instance._keyDown = true;
+	                    if (_typeof(props.toggled) === BOOLEAN) {
+	                        onClick && onClick();
+	                    } else {
+	                        if (!instance.state.active) {
+	                            instance.setState({
+	                                active: true
+	                            });
+	                            pressTimer && pressTimer.cancel();
+	                            instance.pressTimer = later(instance._processKeyUp.bind(instance, null, isDirectResponse, forced), props.buttonPressTime);
+	                            if (isDirectResponse && onClick) {
+	                                later(function () {
+	                                    onClick();
+	                                }, 100); // we MUST delay, because an `onClick` that rerenders, would prevent `onKeyUp` from happening!
+	                            }
+	                        }
+	                    }
+	                }
+	            }
+	        }
+	    },
+
+
+	    /**
+	     * Callback-fn for the onKeyUp-event.
+	     *
+	     * @method handleKeyUp
+	     * @since 0.0.1
+	     */
+	    handleKeyUp: function handleKeyUp() {
+	        var _this = this;
+
+	        // we must go async --> instance._keyDown cannot be set 'false' right away,
+	        // because the handleClick method needs to be processed first
+	        // if we don;t do this, props.onClick() would be executed twice when the spacebutton is pressed
+	        async(function () {
+	            var instance = _this;
+	            instance._keyDown = false;
+	            if (_typeof(instance.props.toggled) !== BOOLEAN && instance.state.active) {
+	                instance._processKeyUp(true);
+	            }
+	        });
+	    },
+
+
+	    /**
+	     * Callback-fn for the onMouseDown-event.
+	     *
+	     * @method handleMouseDown
+	     * @since 0.0.1
+	     */
+	    handleMouseDown: function handleMouseDown(e) {
+	        var instance = this,
+	            props = instance.props;
+	        if (!props.disabled && !props.readOnly && instance._mounted) {
+	            instance.handleClick(e);
+	            async(function () {
+	                // check if still mounted
+	                if (instance._mounted) {
+	                    instance._mouseDown = true;
+	                    instance.setState({
+	                        active: true,
+	                        mouseDown: true
+	                    });
+	                    if (instance._knownMobile) {
+	                        async(function () {
+	                            return instance.handleMouseUp();
+	                        });
+	                    } else {
+	                        // for those mobile devices that were not feature-detected, we need a fallback to simulate mouseUp,
+	                        // to prevent the button from being blocked:
+	                        instance._mouseUpEvt = later(instance.handleMouseUp, 2000);
+	                    }
+	                }
+	            });
+	        }
+	    },
+	    handleMouseOut: function handleMouseOut() {
+	        this.handleMouseUp();
+	    },
+
+
+	    /**
+	     * Callback-fn for the onMouseUp-event.
+	     *
+	     * @method handleMouseUp
+	     * @since 0.0.1
+	     */
+	    handleMouseUp: function handleMouseUp() {
+	        var instance = this;
+	        // only if `_mouseDown` still is false --> it could be set `true` by `onMouseOut`
+	        if (instance._mouseDown && instance._mounted) {
+	            instance._mouseDown = false;
+	            instance._mouseUpEvt && instance._mouseUpEvt.cancel();
+	            instance.setState({
+	                active: false,
+	                mouseDown: false
+	            });
+	        }
+	    },
+
+
+	    /**
+	     * Callback-fn for the onClick-event.
+	     * Will invoke `this.props.onChange`
+	     *
+	     * @method press
+	     * @param boolean [directResponse] whether directly call onClick, or wait until the button raises up.
+	     * @since 0.0.1
+	     */
+	    press: function press(directResponse) {
+	        this.handleKeyDown({}, directResponse, true);
+	    },
+
+
+	    /**
+	     * React render-method --> renderes the Component.
+	     *
+	     * @method render
+	     * @return ReactComponent
+	     * @since 0.0.1
+	     */
+	    render: function render() {
+	        var classname = MAIN_CLASS + FORM_ELEMENT_CLASS_SPACES,
+	            buttonHTML = this.props.buttonHTML,
+	            dangerouslySetInnerHTML = void 0,
+	            buttonText = void 0,
+	            handleClick = void 0,
+	            handleKeyDown = void 0,
+	            handleKeyUp = void 0,
+	            handleMouseDown = void 0,
+	            handleMouseUp = void 0;
+
+	        var instance = this,
+	            props = instance.props,
+	            state = instance.state,
+	            disabled = props.disabled,
+	            directResponse = props.directResponse,
+	            saveButtonText = instance._saveHTML(props.buttonText),
+	            isToggleButton = _typeof(props.toggled) === BOOLEAN,
+	            ariaLabel = props["aria-label"] || saveButtonText || instance._saveHTML(buttonHTML);
+
+	        if (state.active || props.toggled) {
+	            if (props.showActivated || state.mouseDown) {
+	                classname += " " + MAIN_CLASS_PREFIX + "active";
+	            }
+	            props.toggled && (classname += " " + MAIN_CLASS_PREFIX + "toggled");
+	        }
+	        isToggleButton && (classname += " " + MAIN_CLASS_PREFIX + "togglebtn");
+	        props.className && (classname += " " + props.className);
+	        props.readOnly && (classname += " readonly");
+
+	        if (!buttonHTML && !props.buttonText) {
+	            buttonHTML = WHITE_SPACE;
+	        }
+	        if (buttonHTML) {
+	            dangerouslySetInnerHTML = { __html: buttonHTML };
+	        } else {
+	            buttonText = saveButtonText;
+	        }
+
+	        if (!disabled) {
+	            if (directResponse || isToggleButton) {
+	                handleMouseDown = instance.handleMouseDown;
+	                handleMouseUp = instance.handleMouseUp;
+	            } else {
+	                handleClick = instance.handleClick;
+	            }
+	            handleKeyDown = instance.handleKeyDown;
+	            handleKeyUp = instance.handleKeyUp;
+	        }
+
+	        return React.createElement(
+	            "button",
+	            _extends({}, instance._getDataAttrs(), {
+	                accessKey: props.accessKey,
+	                "aria-label": ariaLabel,
+	                "aria-pressed": props.toggled,
+	                className: classname,
+	                dangerouslySetInnerHTML: dangerouslySetInnerHTML,
+	                disabled: disabled,
+	                name: props.name,
+	                onBlur: instance.handleBlur,
+	                onClick: handleClick,
+	                onKeyDown: handleKeyDown,
+	                onKeyUp: handleKeyUp,
+	                onMouseDown: handleMouseDown,
+	                onMouseOut: instance.handleMouseOut,
+	                onMouseUp: handleMouseUp,
+	                role: "button",
+	                style: props.style,
+	                tabIndex: props.tabIndex,
+	                type: props.type }),
+	            buttonText
+	        );
+	    },
+
+
+	    /**
+	     * Extracts the `data-*` attributes from props.
+	     *
+	     * @method _getDataAttrs
+	     * @private
+	     * @return object all the data-* attributes
+	     * @since 0.0.3
+	     */
+	    _getDataAttrs: function _getDataAttrs() {
+	        var dataAttrs = {};
+	        var props = this.props,
+	            keys = Object.keys(props);
+
+	        keys.forEach(function (key) {
+	            key.substr(0, 5).toLowerCase() === "data-" && (dataAttrs[key] = props[key]);
+	        });
+	        return dataAttrs;
+	    },
+
+
+	    /**
+	     * React render-method --> renderes the Component.
+	     *
+	     * @method _processKeyUp
+	     * @param Boolean manual whether this routine gets called manually (keypress), or from a click-event
+	     * @param Boolean directResponse Whether to direct response or wait for the button to raise up
+	     * @param Boolean force whether to force (initiated by the method `press`)
+	     * @private
+	     * @since 0.0.1
+	     */
+	    _processKeyUp: function _processKeyUp(manual, directResponse, force) {
+	        var instance = this,
+	            props = instance.props,
+	            onClick = props.onClick,
+	            pressTimer = instance.pressTimer,
+	            manualDeactivation = manual && !pressTimer,
+	            timerDeactivation = !manual && pressTimer;
+	        if (this._mounted) {
+	            // we don't want unMounted Buttons to trigger the state and onClick-prop
+	            if (timerDeactivation) {
+	                pressTimer.cancel();
+	                delete instance.pressTimer;
+	            }
+	            force && (instance._keyDown = false); // because we didn;t came from `handleKeyUp`
+	            if ((!instance._keyDown || force) && (manualDeactivation || timerDeactivation)) {
+	                if (instance.state.active) {
+	                    instance.setState({
+	                        active: false
+	                    });
+	                    if ((typeof directResponse === "undefined" ? "undefined" : _typeof(directResponse)) === BOOLEAN ? !directResponse : !props.directResponse) {
+	                        onClick && onClick();
+	                    }
+	                }
+	            }
+	        }
+	    },
+
+
+	    /**
+	     * Returns a save string
+	     *
+	     * @method _saveHTML
+	     * @private
+	     * @param String html the text that should be removed from any html-entities
+	     * @return String
+	     * @since 0.0.1
+	     */
+	    _saveHTML: function _saveHTML(html) {
+	        return html && html.replace(/<[^>]*>/g, "");
+	    }
+	});
+
+	module.exports = Button;
+
+/***/ },
+/* 193 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(global) {"use strict";
+
+	var isNode = __webpack_require__(186).isNode,
+	    win = isNode ? global.window : window;
+
+	if (win) {
+	    __webpack_require__(194)(win);
+	    __webpack_require__(195)(win);
+	    __webpack_require__(201)(win);
+	    __webpack_require__(202)(win);
+	    __webpack_require__(203)(win);
+	}
+	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
+
+/***/ },
+/* 194 */
+/***/ function(module, exports) {
+
+	/**
+	 * A few basic polyfills for window and Element
+	 *
+	 *
+	 * <i>Copyright (c) 2016 ITSA - https://github.com/itsa</i>
+	 * New BSD License - http://choosealicense.com/licenses/bsd-3-clause/
+	 *
+	 *
+	 * @module itsa-dom
+	 * @class polyfill
+	 * @since 0.0.1
+	*/
+
+	"use strict";
+
+	var CONSOLE = {
+	    log: function log() {/* NOOP */},
+	    info: function info() {/* NOOP */},
+	    warn: function warn() {/* NOOP */},
+	    error: function error() {/* NOOP */}
+	};
+
+	module.exports = function (WINDOW) {
+	    WINDOW.console || function (GlobalPrototype) {
+	        GlobalPrototype && (GlobalPrototype.console = CONSOLE);
+	    }(WINDOW.prototype);
+
+	    WINDOW.Element && WINDOW.Element.prototype && function (ElementPrototype) {
+
+	        ElementPrototype.matchesSelector || (ElementPrototype.matchesSelector = ElementPrototype.mozMatchesSelector || ElementPrototype.msMatchesSelector || ElementPrototype.oMatchesSelector || ElementPrototype.webkitMatchesSelector || function (selector) {
+	            var node = this,
+	                nodes = (node.parentNode || WINDOW.document).querySelectorAll(selector),
+	                i = -1;
+	            while (nodes[++i] && nodes[i] !== node) {}
+	            return !!nodes[i];
+	        });
+
+	        if (Object.defineProperty && Object.getOwnPropertyDescriptor && Object.getOwnPropertyDescriptor(ElementPrototype, "textContent") && !Object.getOwnPropertyDescriptor(ElementPrototype, "textContent").get) {
+	            (function () {
+	                var innerText = Object.getOwnPropertyDescriptor(Element.prototype, "innerText");
+	                Object.defineProperty(Element.prototype, "textContent", {
+	                    get: function get() {
+	                        return innerText.get.call(this);
+	                    },
+	                    set: function set(s) {
+	                        return innerText.set.call(this, s);
+	                    }
+	                });
+	            })();
+	        }
+	    }(WINDOW.Element.prototype);
+	};
+
+/***/ },
+/* 195 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * Adding sugar utilities to the window-object
+	 *
+	 *
+	 * <i>Copyright (c) 2016 ITSA - https://github.com/itsa</i>
+	 * New BSD License - http://choosealicense.com/licenses/bsd-3-clause/
+	 *
+	 *
+	 * @module itsa-dom
+	 * @class window
+	 * @since 0.0.1
+	*/
+
+	"use strict";
+
+	module.exports = function (WINDOW) {
+
+	    var scrollTo = __webpack_require__(196)(WINDOW);
+
+	    var getScrollOffsets = function getScrollOffsets() {
+	        var doc = WINDOW.document;
+	        // this works for all browsers in non quircks-mode and only for IE9+:
+	        if (WINDOW.pageXOffset !== undefined) {
+	            // do not "just" check for `window.pageXOffset` --> it could be `0`
+	            return {
+	                x: WINDOW.pageXOffset,
+	                y: WINDOW.pageYOffset
+	            };
+	        }
+	        // for IE (or any other browser) in standards mode
+	        if (doc && doc.compatMode === "CSS1Compat") {
+	            return {
+	                x: doc.documentElement && doc.documentElement.scrollLeft,
+	                y: doc.documentElement && doc.documentElement.scrollTop
+	            };
+	        }
+	        // for browsers in quircks mode:
+	        return {
+	            x: doc && doc.body && doc.body.scrollLeft,
+	            y: doc && doc.body && doc.body.scrollTop
+	        };
+	    },
+	        getViewportSize = function getViewportSize() {
+	        var doc = WINDOW.document;
+	        // this works for all browsers in non quircks-mode and only for IE9+:
+	        if (WINDOW.innerWidth !== undefined) {
+	            // do not "just" check for `window.innerWidth` --> it could be `0`
+	            return {
+	                w: WINDOW.innerWidth,
+	                h: WINDOW.innerHeight
+	            };
+	        }
+	        // for IE (or any other browser) in standards mode
+	        if (doc && doc.compatMode === "CSS1Compat") {
+	            return {
+	                w: doc.documentElement && doc.documentElement.clientWidth,
+	                h: doc.documentElement && doc.documentElement.clientHeight
+	            };
+	        }
+	        // for browsers in quircks mode:
+	        return {
+	            w: doc && doc.body && doc.body.clientWidth,
+	            h: doc && doc.body && doc.body.clientHeight
+	        };
+	    };
+
+	    /**
+	     * Gets the left-scroll offset of the WINDOW.
+	     *
+	     * @method getScrollLeft
+	     * @return {Number} left-offset in pixels
+	     * @since 0.0.1
+	    */
+	    WINDOW.itsa_getScrollLeft = function () {
+	        return getScrollOffsets().x;
+	    };
+	    /**
+	     * Gets the top-scroll offset of the WINDOW.
+	     *
+	     * @method getScrollTop
+	     * @return {Number} top-offset in pixels
+	     * @since 0.0.1
+	    */
+	    WINDOW.itsa_getScrollTop = function () {
+	        return getScrollOffsets().y;
+	    };
+	    /**
+	     * Gets the width of the WINDOW.
+	     *
+	     * @method getWidth
+	     * @return {Number} width in pixels
+	     * @since 0.0.1
+	     */
+	    WINDOW.itsa_getWidth = function () {
+	        return getViewportSize().w;
+	    };
+	    /**
+	     * Gets the height of the WINDOW.
+	     *
+	     * @method getHeight
+	     * @return {Number} width in pixels
+	     * @since 0.0.1
+	     */
+	    WINDOW.itsa_getHeight = function () {
+	        return getViewportSize().h;
+	    };
+
+	    WINDOW.itsa_scrollTo = function (left, top, transitionTime) {
+	        if (!transitionTime) {
+	            WINDOW.scrollTo(left, top);
+	        } else {
+	            scrollTo(WINDOW, WINDOW.itsa_getScrollLeft(), WINDOW.itsa_getScrollTop(), left, top, transitionTime);
+	        }
+	    };
+	};
+
+/***/ },
+/* 196 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+
+	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
+	module.exports = function (WINDOW) {
+
+	    var STRING = "string",
+	        DOCUMENT = WINDOW.document,
+	        TRANSITION = "transition",
+	        PX = "px",
+	        STYLE = "style",
+	        _IMPORTANT = " !important",
+	        _LEFT = "-left",
+	        _TOP = "-top",
+	        MARGIN = "margin",
+	        MARGIN_LEFT = MARGIN + _LEFT,
+	        MARGIN_TOP = MARGIN + _TOP,
+	        SCROLL_TIMER = 20,
+	        utils = __webpack_require__(186),
+	        async = utils.async,
+	        later = utils.later,
+	        css3Transition = DOCUMENT.body.style && _typeof(DOCUMENT.body.style.transitionProperty) === STRING,
+	        IE8_Events = !DOCUMENT.documentElement.addEventListener,
+	        calcSupport,
+	        vendorTransition,
+	        evTransitionEnd,
+	        objToStyle,
+	        styleToObj;
+
+	    objToStyle = function objToStyle(obj) {
+	        var styles = "";
+	        obj.itsa_each(function (value, key) {
+	            styles += key + ":" + value + ";";
+	        });
+	        return styles;
+	    };
+
+	    styleToObj = function styleToObj(styles) {
+	        var styleArray,
+	            obj = {};
+	        if (!styles) {
+	            return obj;
+	        }
+	        styleArray = styles.split(";");
+	        styleArray.forEach(function (style) {
+	            var styleDetails = style.split(":"),
+	                key = styleDetails[0] && styleDetails[0].toLowerCase().itsa_trim(),
+	                value = styleDetails[1] && styleDetails[1].toLowerCase().itsa_trim();
+	            if (key !== undefined && value !== undefined) {
+	                obj[key] = value;
+	            }
+	        });
+	        return obj;
+	    };
+
+	    return function (container, currentLeft, currentTop, newLeft, newTop, transitionTime) {
+	        var incrementX = 1,
+	            incrementY = 1,
+	            downX = true,
+	            downY = true,
+	            top = currentTop,
+	            left = currentLeft,
+	            windowContainer = container === WINDOW,
+	            laterFn,
+	            _afterTrans,
+	            currentMarginTop,
+	            currentMarginLeft,
+	            marginTop,
+	            marginLeft,
+	            timeOut,
+	            prevStyle,
+	            prevStyleObj,
+	            inlinestyleNoTrans,
+	            maxTop,
+	            maxLeft,
+	            timer;
+	        newLeft === undefined && (newLeft = container === WINDOW ? container.itsa_getScrollLeft() : container.scrollLeft);
+	        newTop === undefined && (newTop = container === WINDOW ? container.itsa_getScrollTop() : container.scrollTop);
+
+	        if (currentLeft !== newLeft || currentTop !== newTop) {
+	            windowContainer && (container = WINDOW.document.documentElement);
+	            if (transitionTime) {
+	                if (windowContainer && calcSupport === undefined) {
+	                    calcSupport = __webpack_require__(197)(WINDOW);
+	                }
+	                // on the full-screen, we can use CSS3 transition :)
+	                if (windowContainer && css3Transition && calcSupport) {
+	                    _afterTrans = function afterTrans(e) {
+	                        var node = e.target,
+	                            newLeft,
+	                            newTop,
+	                            inlinestyleNoTrans,
+	                            prevStyle;
+	                        if (node === e.currentTarget) {
+	                            if (IE8_Events) {
+	                                node.detachEvent("on" + evTransitionEnd, _afterTrans);
+	                            } else {
+	                                node.removeEventListener(evTransitionEnd, _afterTrans, true);
+	                            }
+	                            timer = node.itsa_getData("itsa_scrollTimer");
+	                            if (timer) {
+	                                // only the first end-transition we will take (in case of simultanious mulitple events)
+	                                timer.cancel();
+	                                inlinestyleNoTrans = container.itsa_getData("itsa_scrollToInlinestyleNoTrans");
+	                                prevStyle = container.itsa_getData("itsa_scrollToPrevStyle");
+	                                node.setAttribute(STYLE, inlinestyleNoTrans); // without transitions
+	                                newLeft = container.itsa_getData("itsa_scrollToNewLeft");
+	                                newTop = container.itsa_getData("itsa_scrollToNewTop");
+	                                // we might need a correction, when the original `html` had a margint-top/left set!
+	                                newLeft += parseInt(container.itsa_getStyle("marginLeft"), 10);
+	                                newTop += parseInt(container.itsa_getStyle("marginTop"), 10);
+	                                WINDOW.scrollTo(newLeft, newTop);
+	                                // cleaning up
+	                                if (prevStyle) {
+	                                    node.setAttribute(STYLE, prevStyle); // with possible transition (when defined before)
+	                                } else {
+	                                    node.removeAttribute(STYLE);
+	                                }
+	                                node.itsa_removeData("itsa_scrollToInlinestyleNoTrans");
+	                                node.itsa_removeData("itsa_scrollToPrevStyle");
+	                                node.itsa_removeData("itsa_scrollTimer");
+	                                node.itsa_removeData("itsa_scrollToNewLeft");
+	                                node.itsa_removeData("itsa_scrollToNewTop");
+	                            }
+	                        }
+	                    };
+
+	                    // cautious: newLeft and newTop cannot just get any value you want: it migh be limited by the scrolloffset
+	                    // if window-scroll, then we set the css to HTML
+	                    timer = container.itsa_getData("itsa_scrollTimer");
+	                    timer && timer.cancel();
+
+	                    prevStyle = container.getAttribute(STYLE);
+	                    prevStyleObj = styleToObj(prevStyle);
+
+	                    // first: define the inlyne-style when there was no transition:
+	                    // use the right transition-css - vendor-specific:
+	                    vendorTransition || (vendorTransition = __webpack_require__(198)(WINDOW).generator(TRANSITION));
+	                    prevStyleObj[vendorTransition] = "none" + _IMPORTANT;
+	                    inlinestyleNoTrans = objToStyle(prevStyleObj);
+
+	                    // to be able to use `scrollWidth` right in IE, we NEED to disable possible scrollbars:
+	                    prevStyleObj.overflow = "hidden" + (windowContainer ? "" : _IMPORTANT);
+	                    // set the original style, but only if not yet set
+	                    if (!timer) {
+	                        container.itsa_setData("itsa_scrollToInlinestyleNoTrans", inlinestyleNoTrans);
+	                        container.itsa_setData("itsa_scrollToPrevStyle", prevStyle);
+	                        container.setAttribute(STYLE, objToStyle(prevStyleObj)); // with possible transition (when defined before)
+	                    }
+
+	                    maxTop = container.scrollHeight - WINDOW.itsa_getHeight();
+	                    maxLeft = container.scrollWidth - WINDOW.itsa_getWidth();
+	                    maxTop < newTop && (newTop = maxTop);
+	                    maxLeft < newLeft && (newLeft = maxLeft);
+
+	                    currentMarginTop = parseInt(container.itsa_getStyle(MARGIN_TOP), 10);
+	                    currentMarginLeft = parseInt(container.itsa_getStyle(MARGIN_LEFT), 10);
+
+	                    newTop -= parseInt(currentMarginTop, 10);
+	                    newLeft -= parseInt(currentMarginLeft, 10);
+
+	                    container.itsa_setData("itsa_scrollToNewLeft", newLeft); // -parseInt(currentMarginLeft, 10));
+	                    container.itsa_setData("itsa_scrollToNewTop", newTop); //-parseInt(currentMarginTop, 10));
+
+	                    marginTop = currentTop - newTop;
+	                    marginLeft = currentLeft - newLeft;
+
+	                    // now, set the new inline styles:
+	                    marginTop && (prevStyleObj[MARGIN_TOP] = marginTop + PX + _IMPORTANT);
+	                    marginLeft && (prevStyleObj[MARGIN_LEFT] = marginLeft + PX + _IMPORTANT);
+
+	                    // now set inlinestyle with transition:
+	                    prevStyleObj[vendorTransition] = transitionTime + "ms ease-in-out" + _IMPORTANT;
+
+	                    // set eventlistener: revert when transition is ready:
+	                    evTransitionEnd || (evTransitionEnd = __webpack_require__(199)("./vendor-" + TRANSITION + "-end")(WINDOW));
+	                    if (IE8_Events) {
+	                        container.attachEvent("on" + evTransitionEnd, _afterTrans);
+	                    } else {
+	                        container.addEventListener(evTransitionEnd, _afterTrans, true);
+	                    }
+	                    // also, in case when the transistion-end event does not occur for some reason:
+	                    // we always need to have a backup that resets the scrollbehaviour of the container:
+	                    timeOut = transitionTime + 50;
+	                    timer = later(_afterTrans.bind(null, { target: container, currentTarget: container }), timeOut);
+	                    container.itsa_setData("itsa_scrollTimer", timer);
+
+	                    // force transition:
+	                    container.setAttribute(STYLE, objToStyle(prevStyleObj));
+	                } else {
+	                    // animate
+	                    incrementX = (newLeft - left) * (SCROLL_TIMER / transitionTime);
+	                    incrementY = (newTop - top) * (SCROLL_TIMER / transitionTime);
+	                    downX = newLeft > left;
+	                    downY = newTop > top;
+	                    laterFn = container.itsa_getData("itsa_scrollTimer");
+	                    laterFn && laterFn.cancel();
+	                    laterFn = later(function () {
+	                        left += incrementX;
+	                        top += incrementY;
+	                        if (downX) {
+	                            left <= newLeft || (left = newLeft);
+	                        } else {
+	                            left >= newLeft || (left = newLeft);
+	                        }
+	                        if (downY) {
+	                            top <= newTop || (top = newTop);
+	                        } else {
+	                            top >= newTop || (top = newTop);
+	                        }
+	                        if (windowContainer) {
+	                            container.scrollTo(Math.round(left), Math.round(top));
+	                        } else {
+	                            container.itsa_scrollTo(Math.round(left), Math.round(top));
+	                        }
+	                        if (top === newTop) {
+	                            container.itsa_removeData("itsa_scrollTimer");
+	                            laterFn.cancel();
+	                        }
+	                    }, 0, SCROLL_TIMER);
+	                    container.itsa_setData("itsa_scrollTimer", laterFn);
+	                }
+	            } else {
+	                async(function () {
+	                    if (windowContainer) {
+	                        WINDOW.scrollTo(newLeft, newTop);
+	                    } else {
+	                        container.itsa_scrollTo(newLeft, newTop);
+	                    }
+	                });
+	            }
+	        }
+	    };
+	};
+
+/***/ },
+/* 197 */
+/***/ function(module, exports) {
+
+	"use strict";
+
+	module.exports = function (window) {
+	    var document = window.document,
+	        body = document.body,
+	        node,
+	        supportsCalc,
+	        childNode;
+	    childNode = document.createElement("div");
+	    childNode.setAttribute("style", "width: calc(10px - 2px); opacity:0; position: absolute; z-index: -1; left:-9999px; top:-9999px;");
+	    node = body.appendChild(childNode);
+	    supportsCalc = node.offsetWidth === 8;
+	    body.removeChild(node);
+	    return supportsCalc;
+	};
+
+/***/ },
+/* 198 */
+/***/ function(module, exports) {
+
+	/* WEBPACK VAR INJECTION */(function(global) {"use strict";
+
+	/*
+	 * Returns the vendor-specific transform-property for the current environment.
+	 *
+	 * `transform`, `-webkit-transform`, `-moz-transform`, `-ms-transform`, `-o-transform` or `undefined` when not supported
+	 */
+
+	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
+	var toCamelCase = function toCamelCase(input) {
+	    return input.replace(/-(.)/g, function (match, group) {
+	        return group.toUpperCase();
+	    });
+	},
+	    isNode = typeof global !== "undefined" && {}.toString.call(global) === "[object global]" && (!global.document || {}.toString.call(global.document) !== "[object HTMLDocument]"),
+	    UNDEFINED = "undefined",
+	    VendorCSS;
+
+	module.exports = function (window) {
+
+	    if (VendorCSS) {
+	        return VendorCSS; // VendorCSS was already created
+	    }
+
+	    var DOCUMENT_STYLE = window.document.documentElement.style,
+	        VENDORS = ["-webkit-", "-moz-", "-ms-", "-o-"];
+
+	    VendorCSS = {
+	        generator: function generator(cssProperty) {
+	            var vendorProperty;
+	            if (cssProperty === "") {
+	                return "";
+	            }
+	            if (!isNode && !VendorCSS.cssProps[cssProperty]) {
+	                if (_typeof(DOCUMENT_STYLE[cssProperty]) !== UNDEFINED) {
+	                    vendorProperty = cssProperty;
+	                } else {
+	                    VENDORS.some(function (val) {
+	                        // then vendor specific
+	                        var property = val + cssProperty,
+	                            propertyCamelCase = toCamelCase(property);
+	                        if (_typeof(DOCUMENT_STYLE[property]) !== UNDEFINED || _typeof(DOCUMENT_STYLE[propertyCamelCase]) !== UNDEFINED) {
+	                            vendorProperty = property;
+	                        }
+	                        return vendorProperty;
+	                    });
+	                }
+	                VendorCSS.cssProps[vendorProperty] = true;
+	            }
+	            return vendorProperty || cssProperty;
+	        },
+
+	        cssProps: {}
+	    };
+
+	    return VendorCSS;
+	};
+	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
+
+/***/ },
+/* 199 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var map = {
+		"./vendor-transition-end": 200
+	};
+	function webpackContext(req) {
+		return __webpack_require__(webpackContextResolve(req));
+	};
+	function webpackContextResolve(req) {
+		return map[req] || (function() { throw new Error("Cannot find module '" + req + "'.") }());
+	};
+	webpackContext.keys = function webpackContextKeys() {
+		return Object.keys(map);
+	};
+	webpackContext.resolve = webpackContextResolve;
+	module.exports = webpackContext;
+	webpackContext.id = 199;
+
+
+/***/ },
+/* 200 */
+/***/ function(module, exports) {
+
+	"use strict";
+
+	var TransitionEnd;
+
+	module.exports = function (window) {
+
+	    if (TransitionEnd) {
+	        return TransitionEnd; // TransitionEnd was already determined
+	    }
+
+	    var DOCUMENT_STYLE = window.document.documentElement.style,
+	        transitions = {},
+	        ransition = "ransition",
+	        transition = "t" + ransition,
+	        end = "end",
+	        transitionEnd,
+	        t;
+
+	    transitions[transition] = transition + end;
+	    transitions["WebkitT" + ransition] = "webkitT" + ransition + "End";
+	    transitions["MozT" + ransition] = transition + end;
+	    transitions["OT" + ransition] = "o" + transition + end;
+
+	    for (t in transitions) {
+	        if (typeof DOCUMENT_STYLE[t] !== "undefined") {
+	            transitionEnd = transitions[t];
+	            break;
+	        }
+	    }
+
+	    TransitionEnd = transitionEnd;
+
+	    return transitionEnd;
+	};
+
+/***/ },
+/* 201 */
+/***/ function(module, exports) {
+
+	"use strict";
+
+	/**
+	 * Adding sugar utilities to the document-object
+	 *
+	 *
+	 * <i>Copyright (c) 2016 ITSA - https://github.com/itsa</i>
+	 * New BSD License - http://choosealicense.com/licenses/bsd-3-clause/
+	 *
+	 *
+	 * @module itsa-dom
+	 * @class document
+	 * @since 0.0.1
+	*/
+
+	module.exports = function (WINDOW) {
+
+	    var DOCUMENT = WINDOW.document;
+
+	    if (DOCUMENT) {
+	        /**
+	         * Gets an ElementArray of Elements, specified by the css-selector.
+	         *
+	         * @method itsa_getAll
+	         * @param cssSelector {String} css-selector to match
+	         * @return {ElementArray} ElementArray of Elements that match the css-selector
+	         * @since 0.0.1
+	         */
+	        DOCUMENT.itsa_getAll = function (cssSelector) {
+	            return this.querySelectorAll(cssSelector);
+	        };
+
+	        /**
+	         * Gets one Element, specified by the css-selector. To retrieve a single element by id,
+	         * you need to prepend the id-name with a `#`. When multiple Element's match, the first is returned.
+	         *
+	         * @method itsa_getElement
+	         * @param cssSelector {String} css-selector to match
+	         * @return {Element|null} the Element that was search for
+	         * @since 0.0.1
+	         */
+	        DOCUMENT.itsa_getElement = function (cssSelector) {
+	            return cssSelector[0] === "#" && cssSelector.indexOf(" ") === -1 ? this.getElementById(cssSelector.substr(1)) : this.querySelector(cssSelector);
+	        };
+
+	        /**
+	         * Tests if an Element would be selected by the specified cssSelector.
+	         * Alias for `matchesSelector()`
+	         *
+	         * @method itsa_test
+	         * @param element {Element} The Element to test
+	         * @param cssSelector {String} the css-selector to test against
+	         * @return {Boolean} whether or not the node matches the selector
+	         * @since 0.0.1
+	         */
+	        DOCUMENT.itsa_test = function (element, cssSelector) {
+	            return element.matchesSelector(cssSelector);
+	        };
+	    }
+	};
+
+/***/ },
+/* 202 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+
+	/**
+	 * Adding sugar utilities to Element
+	 *
+	 *
+	 * <i>Copyright (c) 2016 ITSA - https://github.com/itsa</i>
+	 * New BSD License - http://choosealicense.com/licenses/bsd-3-clause/
+	 *
+	 *
+	 * @module itsa-dom
+	 * @class Element
+	 * @since 0.0.1
+	*/
+
+	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
+	__webpack_require__(180);
+	__webpack_require__(181);
+	__webpack_require__(179);
+
+	var toCamelCase = function toCamelCase(input) {
+	    input || (input = "");
+	    return input.replace(/-(.)/g, function (match, group) {
+	        return group.toUpperCase();
+	    });
+	},
+	    fromCamelCase = function fromCamelCase(input) {
+	    input || (input = "");
+	    return input.replace(/[a-z]([A-Z])/g, function (match, group) {
+	        return match[0] + "-" + group.toLowerCase();
+	    });
+	},
+	    STRING = "string",
+	    OVERFLOW = "overflow",
+	    SCROLL = "scroll",
+	    BORDER = "border",
+	    WIDTH = "width",
+	    STYLE = "style",
+	    _LEFT = "-left",
+	    _TOP = "-top",
+	    BORDER_LEFT_WIDTH = BORDER + _LEFT + "-" + WIDTH,
+	    BORDER_RIGHT_WIDTH = BORDER + "-right-" + WIDTH,
+	    BORDER_TOP_WIDTH = BORDER + _TOP + "-" + WIDTH,
+	    BORDER_BOTTOM_WIDTH = BORDER + "-bottom-" + WIDTH;
+
+	module.exports = function (WINDOW) {
+	    __webpack_require__(195)(WINDOW);
+
+	    var DOCUMENT = WINDOW.document,
+	        scrollTo = __webpack_require__(196)(WINDOW);
+
+	    if (WINDOW.Element && WINDOW.Element.prototype) {
+	        (function (ElementPrototype) {
+
+	            /**
+	             * Reference to the first of sibbling HTMLElements.
+	             *
+	             * @method itsa_first
+	             * @param [cssSelector] {String} to return the first Element that matches the css-selector
+	             * @param [container] {HTMLElement} the container-element to search within --> this lead into searching out of the same level
+	             * @return {HTMLElement}
+	             * @since 0.0.1
+	             */
+	            ElementPrototype.itsa_first = function (cssSelector, container) {
+	                var containerNode = container || this.parentNode;
+	                return cssSelector ? containerNode.querySelector(cssSelector) : containerNode.children[0];
+	            };
+
+	            /**
+	             * Reference to the first child-HTMLElement.
+	             *
+	             * @method itsa_firstChild
+	             * @param [cssSelector] {String} to return the first Element that matches the css-selector or `undefined` when not found
+	             * @return {HTMLElement}
+	             * @since 0.0.1
+	             */
+	            ElementPrototype.itsa_firstChild = function (cssSelector) {
+	                var children = this.children,
+	                    node;
+	                if (!cssSelector) {
+	                    return children[0];
+	                }
+	                Array.prototype.some.call(children, function (childNode) {
+	                    childNode.matchesSelector(cssSelector) && (node = childNode);
+	                    return node;
+	                });
+	                return node;
+	            };
+
+	            /**
+	             * Forces the Element to be inside an ancestor-Element that has the `overfow="scroll" set.
+	             *
+	             * @method forceIntoNodeView
+	             * @param [ancestor] {Element} the Element where it should be forced into its view.
+	             *        Only use this when you know the ancestor and this ancestor has an `overflow="scroll"` property
+	             *        when not set, this method will seek through the doc-tree upwards for the first Element that does match this criteria.
+	             * @chainable
+	             * @since 0.0.1
+	             */
+	            ElementPrototype.itsa_forceIntoNodeView = function (ancestor, transitionTime) {
+	                var node = this,
+	                    parentOverflowNode = node.parentNode,
+	                    left,
+	                    width,
+	                    right,
+	                    height,
+	                    top,
+	                    bottom,
+	                    scrollLeft,
+	                    scrollTop,
+	                    parentOverflowNodeX,
+	                    parentOverflowNodeY,
+	                    parentOverflowNodeStartTop,
+	                    parentOverflowNodeStartLeft,
+	                    parentOverflowNodeStopRight,
+	                    parentOverflowNodeStopBottom,
+	                    newX,
+	                    newY;
+	                if (parentOverflowNode) {
+	                    if (ancestor) {
+	                        parentOverflowNode = ancestor;
+	                    } else {
+	                        while (parentOverflowNode && parentOverflowNode !== DOCUMENT && !(parentOverflowNode.itsa_getStyle(OVERFLOW) === SCROLL || parentOverflowNode.itsa_getStyle(OVERFLOW + "-y") === SCROLL)) {
+	                            parentOverflowNode = parentOverflowNode.parentNode;
+	                        }
+	                    }
+	                    if (parentOverflowNode && parentOverflowNode !== DOCUMENT) {
+	                        left = node.itsa_left;
+	                        width = node.offsetWidth;
+	                        right = left + width;
+	                        height = node.offsetHeight;
+	                        top = node.itsa_top;
+	                        bottom = top + height;
+	                        scrollLeft = parentOverflowNode === WINDOW ? parentOverflowNode.itsa_getScrollLeft() : parentOverflowNode.scrollLeft;
+	                        scrollTop = parentOverflowNode === WINDOW ? parentOverflowNode.itsa_getScrollTop() : parentOverflowNode.scrollTop;
+	                        parentOverflowNodeX = parentOverflowNode.itsa_left;
+	                        parentOverflowNodeY = parentOverflowNode.itsa_top;
+	                        parentOverflowNodeStartTop = parentOverflowNodeY + parseInt(parentOverflowNode.itsa_getStyle(BORDER_TOP_WIDTH), 10);
+	                        parentOverflowNodeStartLeft = parentOverflowNodeX + parseInt(parentOverflowNode.itsa_getStyle(BORDER_LEFT_WIDTH), 10);
+	                        parentOverflowNodeStopRight = parentOverflowNodeX + parentOverflowNode.offsetWidth - parseInt(parentOverflowNode.itsa_getStyle(BORDER_RIGHT_WIDTH), 10);
+	                        parentOverflowNodeStopBottom = parentOverflowNodeY + parentOverflowNode.offsetHeight - parseInt(parentOverflowNode.itsa_getStyle(BORDER_BOTTOM_WIDTH), 10);
+
+	                        if (left < parentOverflowNodeStartLeft) {
+	                            newX = Math.max(0, scrollLeft + left - parentOverflowNodeStartLeft);
+	                        } else if (right > parentOverflowNodeStopRight) {
+	                            newX = scrollLeft + right - parentOverflowNodeStopRight;
+	                        }
+	                        if (top < parentOverflowNodeStartTop) {
+	                            newY = Math.max(0, scrollTop + top - parentOverflowNodeStartTop);
+	                        } else if (bottom > parentOverflowNodeStopBottom) {
+	                            newY = scrollTop + bottom - parentOverflowNodeStopBottom;
+	                        }
+	                        scrollTo(parentOverflowNode, scrollLeft, scrollTop, newX, newY, transitionTime);
+	                    }
+	                }
+	                return node;
+	            };
+
+	            /**
+	             * Focusses the node (if focussable), and forces the Element to be inside the visible window.
+	             *
+	             * @method itsa_focus
+	             * @param [atTop] {Element} the Element where it should be forced into its view.
+	             * @param [atLeft] {Element} the Element where it should be forced into its view.
+	             * @param [transitionTime] {Element} the Element where it should be forced into its view.
+	             * @chainable
+	             * @since 0.0.1
+	             */
+	            ElementPrototype.itsa_focus = function (atTop, atLeft, transitionTime) {
+	                // var instance = this;
+	                var currentY = WINDOW.itsa_getScrollTop(),
+	                    currentX = WINDOW.itsa_getScrollLeft();
+	                // focussing will bring the element into view directly, we don;t want that.
+	                // We want to scroll it into the view: therefore reset the scroll-position
+	                this.focus();
+	                WINDOW.scrollTo(currentX, currentY);
+	                this.itsa_scrollIntoView(atTop, atLeft, transitionTime);
+	            };
+
+	            /**
+	             * Gets an ElementArray of Elements that lie within this Element and match the css-selector.
+	             *
+	             * @method itsa_getAll
+	             * @param cssSelector {String} css-selector to match
+	             * @param [inspectProtectedNodes=false] {Boolean} no deepsearch in protected Nodes or iTags --> by default, these elements should be hidden
+	             * @return {ElementArray} ElementArray of Elements that match the css-selector
+	             * @since 0.0.1
+	             */
+	            ElementPrototype.itsa_getAll = function (cssSelector) {
+	                return this.querySelectorAll(cssSelector);
+	            };
+
+	            /**
+	             * Returns data set specified by `key`. If not set, `undefined` will be returned.
+	             * The data is efficiently stored on the vnode.
+	             *
+	             * @method itsa_getData
+	             * @param key {string} name of the key
+	             * @return {Any|undefined} data set specified by `key`
+	             * @since 0.0.1
+	             */
+	            ElementPrototype.itsa_getData = function (key) {
+	                return this._data && this._data[key];
+	            };
+
+	            /**
+	             * Gets one Element, specified by the css-selector. To retrieve a single element by id,
+	             * you need to prepend the id-name with a `#`. When multiple Element's match, the first is returned.
+	             *
+	             * @method itsa_getElement
+	             * @param cssSelector {String} css-selector to match
+	             * @return {Element|null} the Element that was search for
+	             * @since 0.0.1
+	             */
+	            ElementPrototype.itsa_getElement = function (cssSelector) {
+	                return this.querySelector(cssSelector);
+	            };
+
+	            /**
+	             * Returns inline style of the specified property. `Inline` means: what is set directly on the Element,
+	             * this doesn't mean necesairy how it is looked like: when no css is set inline, the Element might still have
+	             * an appearance because of other CSS-rules.
+	             *
+	             * In most cases, you would be interesting in using `getStyle()` instead.
+	             *
+	             * Note: no need to camelCase cssProperty: both `margin-left` as well as `marginLeft` are fine
+	             *
+	             * @method itsa_getInlineStyle
+	             * @param cssProperty {String} the css-property to look for
+	             * @param [pseudo] {String} to look inside a pseudo-style
+	             * @return {String|undefined} css-style
+	             * @since 0.0.1
+	             */
+	            ElementPrototype.itsa_getInlineStyle = function (cssProperty) {
+	                var styles = this.getAttribute(STYLE) || "",
+	                    styleArray = styles.split(";"),
+	                    value;
+	                cssProperty = fromCamelCase(cssProperty);
+	                styleArray.some(function (style) {
+	                    var styleDetails = style.split(":"),
+	                        key = styleDetails[0].toLowerCase().itsa_trim();
+	                    if (key === cssProperty) {
+	                        value = styleDetails[1] ? styleDetails[1].toLowerCase().itsa_trim() : "";
+	                    }
+	                    return value !== undefined;
+	                });
+	                return value;
+	            };
+
+	            /**
+	             * Returns cascaded style of the specified property. `Cascaded` means: the actual present style,
+	             * the way it is visible (calculated through the DOM-tree).
+	             *
+	             * <ul>
+	             *     <li>Note1: values are absolute: percentages and points are converted to absolute values, sizes are in pixels, colors in rgb/rgba-format.</li>
+	             *     <li>Note2: you cannot query shotcut-properties: use `margin-left` instead of `margin`.</li>
+	             *     <li>Note3: no need to camelCase cssProperty: both `margin-left` as well as `marginLeft` are fine.</li>
+	             *     <li>Note4: you can query `transition`, `transform`, `perspective` and `transform-origin` instead of their vendor-specific properties.</li>
+	             *     <li>Note5: `transition` or `transform` return an Object instead of a String.</li>
+	             * </ul>
+	             *
+	             * @method itsa_getStyle
+	             * @param cssProperty {String} property that is queried
+	             * @param [pseudo] {String} to query pseudo-element, fe: `:before` or `:first-line`
+	             * @return {String|Object} value for the css-property: this is an Object for the properties `transition` or `transform`
+	             * @since 0.0.1
+	             */
+	            ElementPrototype.itsa_getStyle = function (cssProperty, pseudo) {
+	                // Cautious: when reading the property `transform`, getComputedStyle should
+	                // read the calculated value, but some browsers (webkit) only calculate the style on the current element
+	                // In those cases, we need a patch and look up the tree ourselves
+	                //  Also: we will return separate value, NOT matrices
+	                return WINDOW.getComputedStyle(this, pseudo)[toCamelCase(cssProperty)];
+	            };
+
+	            /**
+	             * Whether the Element has a specific class.
+	             *
+	             * @method itsa_hasClass
+	             * @param classname {String} the class to check for
+	             * @return {Boolean}
+	             * @since 0.0.1
+	             */
+	            ElementPrototype.itsa_hasClass = function (classname) {
+	                var classes = this.className || "";
+	                return classes.itsa_contains(classname);
+	            };
+
+	            /**
+	             * If the Element has data set specified by `key`. The data could be set with `itsa_setData()`.
+	             *
+	             * @method itsa_hasData
+	             * @param key {string} name of the key
+	             * @return {Boolean}
+	             * @since 0.0.1
+	             */
+	            ElementPrototype.itsa_hasData = function (key) {
+	                return !!(this._data && this._data[key] !== undefined);
+	            };
+
+	            /**
+	             * Indicates whether Element currently has the focus.
+	             *
+	             * @method itsa_hasFocus
+	             * @param [inside=false] {Boolean} whether focus may also lie on a descendent Element
+	             * @return {Boolean}
+	             * @since 0.0.1
+	             */
+	            ElementPrototype.itsa_hasFocus = function (inside) {
+	                return DOCUMENT.activeElement === this || (inside ? this.itsa_hasFocusInside() : false);
+	            };
+
+	            /**
+	             * Indicates whether the current focussed Element lies inside this Element (on a descendant Element).
+	             *
+	             * @method itsa_hasFocusInside
+	             * @return {Boolean}
+	             * @since 0.0.1
+	             */
+	            ElementPrototype.itsa_hasFocusInside = function () {
+	                var activeElement = DOCUMENT.activeElement;
+	                return this !== activeElement && this.contains(activeElement);
+	            };
+
+	            /**
+	             * Returns whether the inline style of the specified property is present. `Inline` means: what is set directly on the Element.
+	             *
+	             * Note: no need to camelCase cssProperty: both `margin-left` as well as `marginLeft` are fine
+	             *
+	             * @method itsa_hasInlineStyle
+	             * @param cssProperty {String} the css-property to look for
+	             * @return {Boolean} whether the inlinestyle was present
+	             * @since 0.0.1
+	             */
+	            ElementPrototype.itsa_hasInlineStyle = function (cssProperty) {
+	                return !!this.itsa_getInlineStyle(cssProperty);
+	            };
+
+	            /**
+	              * Checks whether the Element lies within the specified selector (which can be a CSS-selector or a Element)
+	              *
+	              * @example
+	              * var divnode = childnode.itsa_inside('div.red');
+	              *
+	              * @example
+	              * var divnode = childnode.itsa_inside(containerNode);
+	              *
+	              * @method itsa_inside
+	              * @param selector {Element|String} the selector, specified by a Element or a css-selector
+	              * @return {Element|false} the nearest Element that matches the selector, or `false` when not found
+	              * @since 0.0.1
+	              */
+	            ElementPrototype.itsa_inside = function (selector) {
+	                var instance = this,
+	                    parentNode;
+	                if ((typeof selector === "undefined" ? "undefined" : _typeof(selector)) === STRING) {
+	                    parentNode = instance.parentNode;
+	                    while (parentNode && parentNode.matchesSelector && !parentNode.matchesSelector(selector)) {
+	                        parentNode = parentNode.parentNode;
+	                    }
+	                    return parentNode.matchesSelector ? parentNode : false;
+	                } else {
+	                    // selector should be an Element
+	                    return selector !== instance && selector.contains(instance) ? selector : false;
+	                }
+	            };
+
+	            /**
+	              * Checks whether a point specified with x,y is within the Element's region.
+	              *
+	              * @method itsa_insidePos
+	              * @param x {Number} x-value for new position (coordinates are page-based)
+	              * @param y {Number} y-value for new position (coordinates are page-based)
+	              * @return {Boolean} whether there is a match
+	              * @since 0.0.1
+	              */
+	            ElementPrototype.itsa_insidePos = function (x, y) {
+	                var instance = this,
+	                    left = instance.itsa_left,
+	                    top = instance.itsa_top,
+	                    right = left + instance.offsetWidth,
+	                    bottom = top + instance.offsetHeight;
+	                return x >= left && x <= right && y >= top && y <= bottom;
+	            };
+
+	            /**
+	             * Whether the element is an Itag-element
+	             *
+	             * @method itsa_isEmpty
+	             * @return {Boolean}
+	             * @since 0.0.1
+	             */
+	            ElementPrototype.itsa_isEmpty = function () {
+	                return this.childNodes.length === 0;
+	            };
+
+	            /**
+	             * Reference to the last of sibbling node's, where the related dom-node is an Element(nodeType===1).
+	             *
+	             * @method itsa_last
+	             * @param [cssSelector] {String} to return the last Element that matches the css-selector
+	             * @param [container] {HTMLElement} the container-element to search within --> this lead into searching out of the same level
+	             * @return {Element}
+	             * @since 0.0.1
+	             */
+	            ElementPrototype.itsa_last = function (cssSelector, container) {
+	                var containerNode = container || this.parentNode,
+	                    allNodes = cssSelector ? containerNode.querySelectorAll(cssSelector) : containerNode.children,
+	                    len = allNodes.length;
+	                return allNodes[len - 1];
+	            };
+
+	            /**
+	             * Reference to the last child-HTMLElement.
+	             *
+	             * @method itsa_lastChild
+	             * @param [cssSelector] {String} to return the last Element that matches the css-selector or `undefined` when not found
+	             * @return {HTMLElement}
+	             * @since 0.0.1
+	             */
+	            ElementPrototype.itsa_lastChild = function (cssSelector) {
+	                var children = this.children,
+	                    lastIndex = children.length - 1,
+	                    i = lastIndex,
+	                    node,
+	                    childNode;
+	                if (!cssSelector) {
+	                    return children[lastIndex];
+	                }
+	                while (i >= 0 && !node) {
+	                    childNode = children[i];
+	                    childNode.matchesSelector(cssSelector) && (node = childNode);
+	                    i--;
+	                }
+	                return node;
+	            };
+
+	            /**
+	              * Checks whether the Element has its rectangle inside the outbound-Element.
+	              * This is no check of the DOM-tree, but purely based upon coordinates.
+	              *
+	              * @method itsa_rectangleInside
+	              * @param outboundElement {Element} the Element where this element should lie inside
+	              * @return {Boolean} whether the Element lies inside the outboundElement
+	              * @since 0.0.1
+	              */
+	            ElementPrototype.itsa_rectangleInside = function (outboundElement) {
+	                var instance = this,
+	                    outerRect = outboundElement.getBoundingClientRect(),
+	                    innerRect = instance.getBoundingClientRect();
+	                return outerRect.left <= innerRect.left && outerRect.top <= innerRect.top && outerRect.left + outboundElement.offsetWidth >= innerRect.left + instance.offsetWidth && outerRect.top + outboundElement.offsetHeight >= innerRect.top + instance.offsetHeight;
+	            };
+
+	            /**
+	             * Removes data specified by `key` that was set by using `itsa_setData()`.
+	             * When no arguments are passed, all node-data (key-value pairs) will be removed.
+	             *
+	             * @method itsa_removeData
+	             * @param [key] {string} name of the key, when not set, all data is removed
+	             * @param [deep] {Boolean} whether to set the data to all descendants recursively
+	             * @chainable
+	             * @since 0.0.1
+	             */
+	            ElementPrototype.itsa_removeData = function (key, deep) {
+	                var instance = this;
+	                if (instance._data) {
+	                    if (key) {
+	                        delete instance._data[key];
+	                    } else {
+	                        // we cannot just redefine _data, for it is set as readonly
+	                        instance.itsa_emptyObject();
+	                        if (deep) {
+	                            instance.children.forEach(function (element) {
+	                                element.itsa_removeData(key, true);
+	                            });
+	                        }
+	                    }
+	                }
+	                return instance;
+	            };
+
+	            /**
+	             * Forces the Element to be inside the visible window.
+	             *
+	             * @method itsa_scrollIntoView
+	             * @param [atTop] {Element} the Element where it should be forced into its view.
+	             * @param [atLeft] {Element} the Element where it should be forced into its view.
+	             * @param [transitionTime] {Element} the Element where it should be forced into its view.
+	             * @param [marginTop] {Element} additional top-margin
+	             * @param [marginLeft] {Element} additional left-margin
+	             * @chainable
+	             * @since 0.0.1
+	             */
+	            ElementPrototype.itsa_scrollIntoView = function (atTop, atLeft, transitionTime, marginTop, marginLeft) {
+	                var node = this,
+	                    newTop,
+	                    newLeft,
+	                    windowTop,
+	                    windowLeft,
+	                    windowBottom,
+	                    windowRight;
+	                windowTop = WINDOW.itsa_getScrollTop();
+	                marginTop || (marginTop = 0);
+	                marginLeft || (marginLeft = 0);
+	                if (atTop || node.itsa_top - marginTop < windowTop) {
+	                    // position top of node on top of window
+	                    newTop = node.itsa_top;
+	                }
+	                if (!atTop) {
+	                    windowBottom = windowTop + WINDOW.itsa_getHeight();
+	                    if (node.itsa_bottom > windowBottom) {
+	                        // correct based on the bottom of the node, but never more than difference between top-node and top-window:
+	                        newTop = Math.round(Math.min(node.itsa_bottom - windowBottom, node.itsa_top - windowTop) + windowTop);
+	                    }
+	                }
+	                windowLeft = WINDOW.itsa_getScrollLeft();
+	                if (atLeft || node.itsa_left - marginLeft < windowLeft) {
+	                    // position left of node on left of window
+	                    newLeft = node.itsa_left;
+	                }
+	                if (!atLeft) {
+	                    windowRight = windowLeft + WINDOW.itsa_getWidth();
+	                    if (node.itsa_right > windowRight) {
+	                        // correct based on the right of the node, but never more than difference between left-node and left-window:
+	                        newLeft = Math.round(Math.min(node.itsa_right - windowRight, node.itsa_left - windowLeft) + windowLeft);
+	                    }
+	                }
+	                newLeft !== undefined && (newLeft -= marginLeft);
+	                newTop !== undefined && (newTop -= marginTop);
+	                scrollTo(WINDOW, windowLeft, windowTop, newLeft, newTop, transitionTime);
+	            };
+
+	            /**
+	             * Scrolls the content of the Element into the specified scrollposition.
+	             * Only available when the Element has overflow.
+	             *
+	             * @method itsa_scrollTo
+	             * @param x {Number} left-offset in pixels
+	             * @param y {Number} top-offset in pixels
+	             * @chainable
+	             * @since 0.0.1
+	            */
+	            ElementPrototype.itsa_scrollTo = function (x, y) {
+	                var instance = this;
+	                instance.scrollLeft = x;
+	                instance.scrollTop = y;
+	                return instance;
+	            };
+
+	            /**
+	             * Stores arbitary `data` at the Element (actually at vnode). This has nothing to do with node-attributes whatsoever,
+	             * it is just a way to bind any data to the specific Element so it can be retrieved later on with `itsa_getData()`.
+	             *
+	             * @method itsa_setData
+	             * @param key {string} name of the key
+	             * @param value {Any} the value that belongs to `key`
+	             * @param [deep] {Boolean} whether to set the data to all descendants recursively
+	             * @chainable
+	             * @since 0.0.1
+	            */
+	            ElementPrototype.itsa_setData = function (key, value, deep) {
+	                var instance = this;
+	                if (value !== undefined) {
+	                    instance._data || Object.itsa_protectedProp(instance, "_data", {});
+	                    instance._data[key] = value;
+	                    if (deep) {
+	                        instance.children.forEach(function (element) {
+	                            element.itsa_setData(key, value, true);
+	                        });
+	                    }
+	                }
+	                return instance;
+	            };
+
+	            if (Object.defineProperty && Object.getOwnPropertyDescriptor && (!Object.getOwnPropertyDescriptor(ElementPrototype, "itsa_bottom") || !Object.getOwnPropertyDescriptor(ElementPrototype, "itsa_bottom").get)) {
+	                Object.defineProperties(ElementPrototype, {
+
+	                    /**
+	                     * Gets the bottom y-position (in the DOCUMENT) of the element in pixels.
+	                     * DOCUMENT-related: regardless of the WINDOW's scroll-position.
+	                     *
+	                     * @property itsa_bottom
+	                     * @since 0.0.1
+	                     */
+	                    itsa_bottom: {
+	                        get: function get() {
+	                            return this.itsa_top + this.offsetHeight;
+	                        }
+	                    },
+
+	                    /**
+	                     * Returns the Elments `id`
+	                     *
+	                     * @method itsa_id
+	                     * @return {String|undefined} Elements `id`
+	                     * @since 0.0.1
+	                     */
+	                    itsa_id: {
+	                        get: function get() {
+	                            return this.getAttribute("id");
+	                        }
+	                    },
+
+	                    /**
+	                     * Gets or set the innerHeight of the element in pixels. Excluded the borders.
+	                     * Included are padding.
+	                     *
+	                     * The getter is calculating through `offsetHeight`, the setter will set inline css-style for the height.
+	                     *
+	                     * Values are numbers without unity.
+	                     *
+	                     * @property itsa_innerHeight
+	                     * @type {Number}
+	                     * @since 0.0.1
+	                     */
+	                    itsa_innerHeight: {
+	                        get: function get() {
+	                            var instance = this,
+	                                borderTop = parseInt(instance.itsa_getStyle("border-top-width"), 10) || 0,
+	                                borderBottom = parseInt(instance.itsa_getStyle("border-bottom-width"), 10) || 0;
+	                            return instance.offsetHeight - borderTop - borderBottom;
+	                        }
+	                    },
+
+	                    /**
+	                     * Gets or set the innerHeight of the element in pixels. Excluded the borders.
+	                     * Included are padding.
+	                     *
+	                     * The getter is calculating through `offsetHeight`, the setter will set inline css-style for the height.
+	                     *
+	                     * Values are numbers without unity.
+	                     *
+	                     * @property itsa_innerWidth
+	                     * @type {Number}
+	                     * @since 0.0.1
+	                     */
+	                    itsa_innerWidth: {
+	                        get: function get() {
+	                            var instance = this,
+	                                borderLeft = parseInt(instance.itsa_getStyle("border-left-width"), 10) || 0,
+	                                borderRight = parseInt(instance.itsa_getStyle("border-right-width"), 10) || 0;
+	                            return instance.offsetWidth - borderLeft - borderRight;
+	                        }
+	                    },
+
+	                    /**
+	                     * Gets the x-position (in the DOCUMENT) of the element in pixels.
+	                     * DOCUMENT-related: regardless of the WINDOW's scroll-position.
+	                     *
+	                     * @property itsa_left
+	                     * @since 0.0.1
+	                     */
+	                    itsa_left: {
+	                        get: function get() {
+	                            return Math.round(this.getBoundingClientRect().left + WINDOW.itsa_getScrollLeft());
+	                        }
+	                    },
+
+	                    /**
+	                     * Gets the right-position (in the DOCUMENT) of the element in pixels.
+	                     * DOCUMENT-related: regardless of the WINDOW's scroll-position.
+	                     *
+	                     * @property itsa_right
+	                     * @since 0.0.1
+	                     */
+	                    itsa_right: {
+	                        get: function get() {
+	                            return this.itsa_left + this.offsetWidth;
+	                        }
+	                    },
+
+	                    /**
+	                     * Gets the y-position (in the DOCUMENT) of the element in pixels.
+	                     * DOCUMENT-related: regardless of the WINDOW's scroll-position.
+	                     *
+	                     * @property itsa_top
+	                     * @since 0.0.1
+	                     */
+	                    itsa_top: {
+	                        get: function get() {
+	                            return Math.round(this.getBoundingClientRect().top + WINDOW.itsa_getScrollTop());
+	                        }
+	                    }
+
+	                });
+	            }
+	        })(WINDOW.Element.prototype);
+	    }
+	};
+
+/***/ },
+/* 203 */
+/***/ function(module, exports) {
+
+	"use strict";
+
+	/**
+	 * Adding easy to use cookie-methods to the document-object
+	 *
+	 *
+	 * <i>Copyright (c) 2016 ITSA - https://github.com/itsa</i>
+	 * New BSD License - http://choosealicense.com/licenses/bsd-3-clause/
+	 *
+	 *
+	 * @module itsa-dom
+	 * @class document
+	 * @since 0.0.1
+	*/
+
+	var TMP_COOKIE_NAME = "itsa_tmp_cookie_check";
+
+	module.exports = function (WINDOW) {
+
+	    var DOCUMENT = WINDOW.document,
+	        COOKIE_SUPPORT = false;
+
+	    if (DOCUMENT) {
+	        /**
+	         * Gets all cookie-keys
+	         *
+	         * @method itsa_cookieKeys
+	         * @param cssSelector {String} css-selector to match
+	         * @return {Array} All the cookie-keys
+	         * @since 0.0.1
+	         */
+	        DOCUMENT.itsa_cookieKeys = function () {
+	            var aKeys = DOCUMENT.cookie.replace(/((?:^|\s*;)[^\=]+)(?=;|$)|^\s*|\s*(?:\=[^;]*)?(?:\1|$)/g, "").split(/\s*(?:\=[^;]*)?;\s*/),
+	                nLen = aKeys.length,
+	                nIdx;
+	            for (nIdx = 0; nIdx < nLen; nIdx++) {
+	                aKeys[nIdx] = decodeURIComponent(aKeys[nIdx]);
+	            }
+	            return aKeys;
+	        };
+
+	        /**
+	         * Tells whether the browser has cookies enabled
+	         *
+	         * @method itsa_cookieSupport
+	         * @return {Boolean} Whether the browser has cookies enabled
+	         * @since 0.0.1
+	         */
+	        DOCUMENT.itsa_cookieSupport = function () {
+	            return COOKIE_SUPPORT;
+	        };
+
+	        /**
+	         * Gets a cookie from the document
+	         *
+	         * @method itsa_getCookie
+	         * @param name {String} cookie-name
+	         * @return {String} The cookie-value
+	         * @since 0.0.1
+	         */
+	        DOCUMENT.itsa_getCookie = function (name) {
+	            return decodeURIComponent(document.cookie.replace(new RegExp("(?:(?:^|.*;)\\s*" + encodeURIComponent(name).replace(/[\-\.\+\*]/g, "\\$&") + "\\s*\\=\\s*([^;]*).*$)|^.*$"), "$1")) || null;
+	        };
+
+	        /**
+	         * Check if a cookie exists
+	         *
+	         * @method itsa_hasCookie
+	         * @param name {String} The name of the cookie to test
+	         * @return {Boolean} Whether the cookie exists
+	         * @since 0.0.1
+	         */
+	        DOCUMENT.itsa_hasCookie = function (name) {
+	            if (!name) {
+	                return false;
+	            }
+	            return new RegExp("(?:^|;\\s*)" + encodeURIComponent(name).replace(/[\-\.\+\*]/g, "\\$&") + "\\s*\\=").test(DOCUMENT.cookie);
+	        };
+
+	        /**
+	         * Removes a cookie from the document.
+	         *
+	         * @method itsa_removeCookie
+	         * @param name {String} The name of the cookie to remove
+	         * @param [path] {String} E.g., "/", "/mydir"; if not specified, defaults to the current path of the current document location (string or null).
+	         *                        The path must be absolute (see RFC 2965).
+	         * @param [domain] {String} E.g., "example.com",  or "subdomain.example.com"; if not specified, defaults to the host portion of the current document location (string or null),
+	         *                          but not including subdomains. Contrary to earlier specifications, leading dots in domain names are ignored. If a domain is specified,
+	         *                          subdomains are always included.
+	         * @return {Boolean} If removal was succesfull (returns `false` when coockie does not exist)
+	         * @since 0.0.1
+	         */
+	        DOCUMENT.itsa_removeCookie = function (name, path, domain) {
+	            if (!DOCUMENT.itsa_hasCookie(name)) {
+	                return false;
+	            }
+	            DOCUMENT.cookie = encodeURIComponent(name) + "=; expires=Thu, 01 Jan 1970 00:00:00 GMT" + (domain ? "; domain=" + domain : "") + (path ? "; path=" + path : "");
+	            return true;
+	        };
+
+	        /**
+	         * Sets a cookie to the document.
+	         *
+	         * @method itsa_setCookie
+	         * @param name {String} The name of the cookie to create/overwrite
+	         * @param value {String} The value of the cookie
+	         * @param [end] {Number|String|Date} The max-age in seconds (e.g. 31536e3 for a year, Infinity for a never-expires cookie),
+	         *                                   or the expires date in GMTString format or as Date object; if not, the specified
+	         *                                   the cookie will expire at the end of the session (number – finite or Infinity – string, Date object or null).
+	         * @param [path] {String} The path from where the cookie will be readable. E.g., "/", "/mydir"; if not specified, defaults to the current path
+	         *                        of the current document location (string or null). The path must be absolute (see RFC 2965). For more information on
+	         *                        how to use relative paths in this argument, see this paragraph.
+	         * @param [domain] {String} The domain from where the cookie will be readable. E.g., "example.com", ".example.com" (includes all subdomains) or
+	         *                          "subdomain.example.com"; if not specified, defaults to the host portion of the current document location (string or null).
+	         * @param [secure] {Boolean} The cookie will be transmitted only over secure protocol as https (boolean or null).
+	         * @return {Boolean} Whether the cookie was created succesfully
+	         * @since 0.0.1
+	         */
+	        DOCUMENT.itsa_setCookie = function (name, value, end, path, domain, secure) {
+	            var sExpires = "";
+	            if (/^(?:expires|max\-age|path|domain|secure)$/i.test(name)) {
+	                return false;
+	            }
+	            if (typeof end === "number") {
+	                sExpires = end === Infinity ? "; expires=Fri, 31 Dec 9999 23:59:59 GMT" : "; max-age=" + end;
+	            } else if (typeof end === "string") {
+	                sExpires = "; expires=" + end;
+	            } else if (end && {}.toString.call(end) === "[object Date]") {
+	                sExpires = "; expires=" + end.toUTCString();
+	            }
+	            DOCUMENT.cookie = encodeURIComponent(name) + "=" + encodeURIComponent(value) + sExpires + (domain ? "; domain=" + domain : "") + (path ? "; path=" + path : "") + (secure ? "; secure" : "");
+	            return true;
+	        };
+
+	        // now try to set a cookie and check if it is indeed set and bind it to COOKIE_SUPPORT:
+	        DOCUMENT.itsa_setCookie(TMP_COOKIE_NAME, "true");
+	        (COOKIE_SUPPORT = DOCUMENT.itsa_getCookie(TMP_COOKIE_NAME) === "true") && DOCUMENT.itsa_removeCookie(TMP_COOKIE_NAME);
+	    }
+	};
 
 /***/ }
 /******/ ]);

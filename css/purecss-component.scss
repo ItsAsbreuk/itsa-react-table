@@ -1,5 +1,5 @@
 .itsa-table {
-    &.pure-table {
+    .pure-table {
         &.pure-table-striped tr:nth-child(2n-1) td.itsa-table-rowheader,
         td.itsa-table-rowheader {
             background-color: #E0E0E0;
@@ -12,6 +12,12 @@
         }
         textarea {
             padding: 0.5em 1em;
+
+            &[disabled] {
+                cursor: not-allowed;
+                background-color: #eaeded;
+                color: #cad2d3;
+            }
         }
     }
 }

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>lib/component.jsx - itsa-react-xxxxx</title>
+    <title>lib/component.jsx - itsa-react-table</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -14,7 +14,7 @@
 <div id="doc">
     <div id="hd" class="yui3-g header">
         <div class="yui3-u-3-4">
-                <h1><img src="https://avatars0.githubusercontent.com/u/8314644?v=3&amp;s=84" title="itsa-react-xxxxx"></h1>
+                <h1><img src="https://avatars0.githubusercontent.com/u/8314644?v=3&amp;s=84" title="itsa-react-table"></h1>
         </div>
         <div class="yui3-u-1-4 version">
             <em>API Docs for: 0.0.1</em>
@@ -103,6 +103,7 @@ const React = require(&#x27;react&#x27;),
     ReactDom = require(&#x27;react-dom&#x27;),
     PropTypes = React.PropTypes,
     async = require(&#x27;itsa-utils&#x27;).async,
+    Button = require(&#x27;itsa-react-button&#x27;),
     MAIN_CLASS = &#x27;itsa-table&#x27;,
     ROW_CLASS = &#x27;itsa-table-row&#x27;,
     CELL_CLASS = &#x27;itsa-table-cell itsa-table-col-&#x27;,
@@ -121,10 +122,14 @@ const Component = React.createClass({
          * @since 2.0.0
         */
         data: PropTypes.array,
+        disabled: PropTypes.bool,
         editable: PropTypes.oneOfType([PropTypes.bool, PropTypes.string]),
         editDirectionDown: PropTypes.bool,
+        extendableX: PropTypes.bool,
+        extendableY: PropTypes.bool,
         onChange: PropTypes.func,
-        rowHeader: PropTypes.bool
+        rowHeader: PropTypes.bool,
+        tableClass: PropTypes.string
     },
 
     componentDidMount() {
@@ -179,6 +184,8 @@ const Component = React.createClass({
             data: [],
             editable: false,
             editDirectionDown: true,
+            extendableX: false,
+            extendableY: false,
             rowHeader: false
         };
     },
@@ -222,6 +229,7 @@ const Component = React.createClass({
             props = instance.props,
             state = instance.state,
             data = props.data,
+            disabled = props.disabled,
             colums = props.columns,
             rowHeader = props.rowHeader,
             editable = props.editable,
@@ -233,9 +241,9 @@ const Component = React.createClass({
             if (hasColums) {
                 // create based upon the columns
                 cells = colums.map((col, j) =&gt; {
-                    const field = (typeof col===&#x27;string&#x27;) ? col : col.key,
-                        value = rowdata[field];
+                    const field = (typeof col===&#x27;string&#x27;) ? col : col.key;
                     let classname = CELL_CLASS+field,
+                        value = rowdata[field],
                         cellContent;
                     if (rowHeader &amp;&amp; (j===0)) {
                         classname += &#x27; itsa-table-rowheader&#x27;;
@@ -243,8 +251,11 @@ const Component = React.createClass({
                     }
                     else if (fullEditable || ((editable===true) &amp;&amp; (state.editableRow===i) &amp;&amp; (state.editableCol===j))) {
                         classname += EDITABLE_CELL_CLASS_SPACED;
+                        (typeof value===&#x27;number&#x27;) || value || (value=&#x27;&#x27;);
+                        value = String(value);
                         cellContent = (
                             &lt;textarea
+                                disabled={disabled}
                                 onChange={instance.changeCell.bind(instance, i, field)}
                                 ref={&#x27;textarea_&#x27;+i+&#x27;_&#x27;+j}
                                 rows={1}
@@ -270,8 +281,11 @@ const Component = React.createClass({
                     }
                     else if (fullEditable || ((editable===true) &amp;&amp; (state.editableRow===i) &amp;&amp; (state.editableCol===colCount))) {
                         classname += EDITABLE_CELL_CLASS_SPACED;
+                        (typeof value===&#x27;number&#x27;) || value || (value=&#x27;&#x27;);
+                        value = String(value);
                         cellContent = (
                             &lt;textarea
+                                disabled={disabled}
                                 onChange={instance.changeCell.bind(instance, i, key)}
                                 ref={&#x27;textarea_&#x27;+i+&#x27;_&#x27;+colCount}
                                 rows={1}
@@ -379,6 +393,43 @@ const Component = React.createClass({
         this._focusActiveCell();
     },
 
+    addRow() {
+        let newData, len;
+        const props = this.props,
+            onChange = props.onChange;
+        if (onChange) {
+            newData = props.data.itsa_deepClone();
+            len = newData.length;
+            if (len==0) {
+                newData = [{&#x27;_row0&#x27;: null}];
+            }
+            else {
+                newData[len] = newData[0].itsa_map(() =&gt; null);
+            }
+            onChange(newData);
+        }
+    },
+
+    addCol() {
+        let newData, len, size;
+        const props = this.props,
+            onChange = props.onChange;
+        if (onChange) {
+            newData = props.data.itsa_deepClone();
+            len = newData.length;
+            if (len==0) {
+                size = 0;
+            }
+            else {
+                size = newData[0].itsa_size();
+            }
+            newData.forEach(record =&gt; {
+                record[&#x27;_col&#x27;+size] = null;
+            });
+            onChange(newData);
+        }
+    },
+
     /**
      * React render-method --&gt; renderes the Component.
      *
@@ -388,26 +439,37 @@ const Component = React.createClass({
      */
     render() {
         let classname = MAIN_CLASS,
-            refocusByClick, refocus;
+            refocusByClick, refocus, addRowBtn, addColBtn;
         const instance = this,
             props = instance.props,
             editable = props.editable,
+            disabled = props.disabled,
             propsClassName = props.className;
 
         propsClassName &amp;&amp; (classname+=&#x27; &#x27;+propsClassName);
+        if (props.extendableY) {
+            addRowBtn = (&lt;Button buttonText=&quot;+&quot; className=&quot;add-row&quot; disabled={disabled} onClick={instance.addRow} /&gt;);
+        }
+        if (props.extendableX &amp;&amp; !props.columns) {
+            addColBtn = (&lt;Button buttonText=&quot;+&quot; disabled={disabled} onClick={instance.addCol} /&gt;);
+        }
         if ((editable===true) || (editable===&#x27;full&#x27;)) {
             refocusByClick = instance.refocusByClick;
             refocus = instance.refocus;
         }
         return (
-            &lt;table className={classname}&gt;
-                {instance.generateHead()}
-                &lt;tbody
-                    onClick={refocusByClick}
-                    onKeyDown={refocus}&gt;
-                    {instance.generateRows()}
-                &lt;/tbody&gt;
-            &lt;/table&gt;
+            &lt;div className={classname}&gt;
+                &lt;table className={props.tableClass}&gt;
+                    {instance.generateHead()}
+                    &lt;tbody
+                        onClick={refocusByClick}
+                        onKeyDown={refocus}&gt;
+                        {instance.generateRows()}
+                    &lt;/tbody&gt;
+                &lt;/table&gt;
+                {addColBtn}
+                {addRowBtn}
+            &lt;/div&gt;
         );
     }
 

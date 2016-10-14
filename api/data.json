@@ -1,7 +1,7 @@
 {
     "project": {
-        "name": "itsa-react-xxxxx",
-        "description": "React-Component: xxxxx",
+        "name": "itsa-react-table",
+        "description": "React-Component: Table",
         "logo": "https://avatars0.githubusercontent.com/u/8314644?v=3&s=84",
         "version": "0.0.1"
     },
@@ -55,7 +55,7 @@
     "classitems": [
         {
             "file": "lib/component.jsx",
-            "line": 33,
+            "line": 34,
             "description": "The Component its children",
             "itemtype": "property",
             "name": "children",
@@ -66,7 +66,7 @@
         },
         {
             "file": "lib/component.jsx",
-            "line": 299,
+            "line": 350,
             "description": "React render-method --> renderes the Component.",
             "itemtype": "method",
             "name": "render",

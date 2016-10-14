@@ -20,6 +20,7 @@ const React = require('react'),
     ReactDom = require('react-dom'),
     PropTypes = React.PropTypes,
     async = require('itsa-utils').async,
+    Button = require('itsa-react-button'),
     MAIN_CLASS = 'itsa-table',
     ROW_CLASS = 'itsa-table-row',
     CELL_CLASS = 'itsa-table-cell itsa-table-col-',
@@ -38,10 +39,14 @@ const Component = React.createClass({
          * @since 2.0.0
         */
         data: PropTypes.array,
+        disabled: PropTypes.bool,
         editable: PropTypes.oneOfType([PropTypes.bool, PropTypes.string]),
         editDirectionDown: PropTypes.bool,
+        extendableX: PropTypes.bool,
+        extendableY: PropTypes.bool,
         onChange: PropTypes.func,
-        rowHeader: PropTypes.bool
+        rowHeader: PropTypes.bool,
+        tableClass: PropTypes.string
     },
 
     componentDidMount() {
@@ -96,6 +101,8 @@ const Component = React.createClass({
             data: [],
             editable: false,
             editDirectionDown: true,
+            extendableX: false,
+            extendableY: false,
             rowHeader: false
         };
     },
@@ -139,6 +146,7 @@ const Component = React.createClass({
             props = instance.props,
             state = instance.state,
             data = props.data,
+            disabled = props.disabled,
             colums = props.columns,
             rowHeader = props.rowHeader,
             editable = props.editable,
@@ -150,9 +158,9 @@ const Component = React.createClass({
             if (hasColums) {
                 // create based upon the columns
                 cells = colums.map((col, j) => {
-                    const field = (typeof col==='string') ? col : col.key,
-                        value = rowdata[field];
+                    const field = (typeof col==='string') ? col : col.key;
                     let classname = CELL_CLASS+field,
+                        value = rowdata[field],
                         cellContent;
                     if (rowHeader && (j===0)) {
                         classname += ' itsa-table-rowheader';
@@ -160,8 +168,11 @@ const Component = React.createClass({
                     }
                     else if (fullEditable || ((editable===true) && (state.editableRow===i) && (state.editableCol===j))) {
                         classname += EDITABLE_CELL_CLASS_SPACED;
+                        (typeof value==='number') || value || (value='');
+                        value = String(value);
                         cellContent = (
                             <textarea
+                                disabled={disabled}
                                 onChange={instance.changeCell.bind(instance, i, field)}
                                 ref={'textarea_'+i+'_'+j}
                                 rows={1}
@@ -187,8 +198,11 @@ const Component = React.createClass({
                     }
                     else if (fullEditable || ((editable===true) && (state.editableRow===i) && (state.editableCol===colCount))) {
                         classname += EDITABLE_CELL_CLASS_SPACED;
+                        (typeof value==='number') || value || (value='');
+                        value = String(value);
                         cellContent = (
                             <textarea
+                                disabled={disabled}
                                 onChange={instance.changeCell.bind(instance, i, key)}
                                 ref={'textarea_'+i+'_'+colCount}
                                 rows={1}
@@ -296,6 +310,43 @@ const Component = React.createClass({
         this._focusActiveCell();
     },
 
+    addRow() {
+        let newData, len;
+        const props = this.props,
+            onChange = props.onChange;
+        if (onChange) {
+            newData = props.data.itsa_deepClone();
+            len = newData.length;
+            if (len==0) {
+                newData = [{'_row0': null}];
+            }
+            else {
+                newData[len] = newData[0].itsa_map(() => null);
+            }
+            onChange(newData);
+        }
+    },
+
+    addCol() {
+        let newData, len, size;
+        const props = this.props,
+            onChange = props.onChange;
+        if (onChange) {
+            newData = props.data.itsa_deepClone();
+            len = newData.length;
+            if (len==0) {
+                size = 0;
+            }
+            else {
+                size = newData[0].itsa_size();
+            }
+            newData.forEach(record => {
+                record['_col'+size] = null;
+            });
+            onChange(newData);
+        }
+    },
+
     /**
      * React render-method --> renderes the Component.
      *
@@ -305,26 +356,37 @@ const Component = React.createClass({
      */
     render() {
         let classname = MAIN_CLASS,
-            refocusByClick, refocus;
+            refocusByClick, refocus, addRowBtn, addColBtn;
         const instance = this,
             props = instance.props,
             editable = props.editable,
+            disabled = props.disabled,
             propsClassName = props.className;
 
         propsClassName && (classname+=' '+propsClassName);
+        if (props.extendableY) {
+            addRowBtn = (<Button buttonText="+" className="add-row" disabled={disabled} onClick={instance.addRow} />);
+        }
+        if (props.extendableX && !props.columns) {
+            addColBtn = (<Button buttonText="+" disabled={disabled} onClick={instance.addCol} />);
+        }
         if ((editable===true) || (editable==='full')) {
             refocusByClick = instance.refocusByClick;
             refocus = instance.refocus;
         }
         return (
-            <table className={classname}>
-                {instance.generateHead()}
-                <tbody
-                    onClick={refocusByClick}
-                    onKeyDown={refocus}>
-                    {instance.generateRows()}
-                </tbody>
-            </table>
+            <div className={classname}>
+                <table className={props.tableClass}>
+                    {instance.generateHead()}
+                    <tbody
+                        onClick={refocusByClick}
+                        onKeyDown={refocus}>
+                        {instance.generateRows()}
+                    </tbody>
+                </table>
+                {addColBtn}
+                {addRowBtn}
+            </div>
         );
     }
 

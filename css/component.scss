@@ -1,4 +1,12 @@
 .itsa-table {
+    .add-row {
+        clear: both;
+        display: block;
+    }
+    table {
+        box-sizing: border-box !important;
+        float: left !important;
+    }
     td {
         &.itsa-table-rowheader {
             background-color: #E0E0E0;

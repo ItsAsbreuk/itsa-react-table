@@ -4,6 +4,12 @@ Editable React.js table.
 
 This is the very first setup (0.0.1). It is working well, but there will probably be many updates.
 
+Key features:
+* editable
+* focusable
+* extendable
+
+
 ## How to use:
 
 ```js
@@ -32,9 +38,12 @@ const changeData = newData => {
 
 let props = {
     autoFocus: true,
-    className: 'pure-table pure-table-striped',
+    disabled: false,
+    tableClass: 'pure-table pure-table-striped',
+    extendableY: true,
     columns,
     data,
+    rowHeader: true,
     editable: 'full',
     onChange: changeData
 };
@@ -46,7 +55,8 @@ const renderTable = props => {
     );
 };
 
-renderTable(props);```
+renderTable(props);
+```
 
 ## About the css
 

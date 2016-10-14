@@ -25,9 +25,12 @@ const changeData = newData => {
 
 let props = {
     autoFocus: true,
-    className: 'pure-table pure-table-striped',
+    disabled: false,
+    tableClass: 'pure-table pure-table-striped',
+    extendableY: true,
     columns,
     data,
+    rowHeader: true,
     editable: 'full',
     onChange: changeData
 };
