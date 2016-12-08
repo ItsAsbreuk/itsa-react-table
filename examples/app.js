@@ -20590,7 +20590,7 @@
 
 
 	// module
-	exports.push([module.id, ".itsa-table .pure-table.pure-table-striped tr:nth-child(2n-1) td.itsa-table-rowheader,\n.itsa-table .pure-table td.itsa-table-rowheader {\n  background-color: #E0E0E0;\n  border-top: 1px solid #CBCBCB;\n  font-weight: bold; }\n\n.itsa-table .pure-table td.itsa-table-editable-cell {\n  padding: 0; }\n\n.itsa-table .pure-table textarea {\n  padding: 0.5em 1em; }\n  .itsa-table .pure-table textarea[disabled] {\n    cursor: not-allowed;\n    background-color: #eaeded;\n    color: #cad2d3; }\n\n.itsa-table .pure-table textarea:focus {\n  outline: thin solid #129FEA;\n  outline: 1px auto #129FEA; }\n", ""]);
+	exports.push([module.id, ".itsa-table .pure-table.pure-table-striped tr:nth-child(2n-1) td.itsa-table-rowheader,\n.itsa-table .pure-table td.itsa-table-rowheader {\n  background-color: #E0E0E0;\n  border-top: 1px solid #CBCBCB;\n  font-weight: bold; }\n\n.itsa-table .pure-table td.itsa-table-editable-cell {\n  padding: 0; }\n\n.itsa-table .pure-table textarea {\n  padding: 0.5em 1em;\n  padding-top: calc(0.5em - 2px);\n  padding-left: calc(1em - 1px); }\n  .itsa-table .pure-table textarea[disabled] {\n    cursor: not-allowed;\n    background-color: #eaeded;\n    color: #cad2d3; }\n\n.itsa-table .pure-table textarea:focus {\n  outline: thin solid #129FEA;\n  outline: 1px auto #129FEA; }\n", ""]);
 
 	// exports
 
