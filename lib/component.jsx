@@ -27,7 +27,7 @@ const React = require('react'),
     ROW_CLASS = 'itsa-table-row',
     CELL_CLASS = 'itsa-table-cell itsa-table-col-',
     EDITABLE_CELL_CLASS_SPACED = ' itsa-table-editable-cell',
-    ROW_REMOVE_ID = '__row-remove';
+    ROW_REMOVE_CLASS = '__row-remove';
 
 const Table = React.createClass({
 
@@ -165,7 +165,7 @@ const Table = React.createClass({
                 }
                 return (<th className={classname} key={field}>{colName}</th>);
             });
-            removeableY && cols.unshift((<th key={ROW_REMOVE_ID}></th>));
+            removeableY && cols.unshift((<th className={ROW_REMOVE_CLASS} key={ROW_REMOVE_CLASS}></th>));
             return (
                 <thead>
                     <tr>
@@ -253,7 +253,7 @@ const Table = React.createClass({
             }
             if (removeableY) {
                 cells.unshift((
-                    <td className={CELL_CLASS+ROW_REMOVE_ID} key={ROW_REMOVE_ID}>
+                    <td className={CELL_CLASS+ROW_REMOVE_CLASS} key={ROW_REMOVE_CLASS}>
                         <Button buttonText="-" className="remove-row controll-btn" disabled={disabled} onClick={instance.deleteRow.bind(instance, i)} />
                     </td>
                 ));

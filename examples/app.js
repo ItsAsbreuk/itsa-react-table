@@ -20550,7 +20550,7 @@
 
 
 	// module
-	exports.push([module.id, ".itsa-table .add-row {\n  clear: both;\n  display: block;\n  margin-left: 1px; }\n\n.itsa-table .controll-btn {\n  width: 2.5em; }\n\n.itsa-table button.itsa-button.controll-btn {\n  background-color: #CCC; }\n\n.itsa-table table {\n  box-sizing: border-box !important;\n  float: left !important; }\n\n.itsa-table td {\n  height: 1em; }\n  .itsa-table td.itsa-table-rowheader {\n    background-color: #E0E0E0;\n    border-top: 1px solid #CBCBCB;\n    font-weight: bold; }\n  .itsa-table td.itsa-table-editable-cell, .itsa-table td.itsa-table-col-__row-remove {\n    padding: 0; }\n  .itsa-table td textarea {\n    width: 100%;\n    box-sizing: border-box;\n    height: 2em; }\n\n.itsa-table th {\n  background-color: #E0E0E0;\n  border-left: 1px solid #CBCBCB;\n  font-weight: bold; }\n\n.itsa-table textarea {\n  resize: none;\n  display: inline-block;\n  border: 1px solid #ccc;\n  box-shadow: inset 0 1px 3px #ddd;\n  vertical-align: middle;\n  -webkit-box-sizing: border-box;\n  -moz-box-sizing: border-box;\n  box-sizing: border-box; }\n", ""]);
+	exports.push([module.id, ".itsa-table .add-row {\n  clear: both;\n  display: block;\n  margin-left: 1px; }\n\n.itsa-table .controll-btn {\n  width: 2.5em; }\n\n.itsa-table .itsa-table-col-__row-remove {\n  width: 1px; }\n\n.itsa-table button.itsa-button.controll-btn {\n  background-color: #CCC; }\n\n.itsa-table table {\n  box-sizing: border-box !important;\n  float: left !important; }\n\n.itsa-table td {\n  height: 1em; }\n  .itsa-table td.itsa-table-rowheader {\n    background-color: #E0E0E0;\n    border-top: 1px solid #CBCBCB;\n    font-weight: bold; }\n  .itsa-table td.itsa-table-editable-cell, .itsa-table td.itsa-table-col-__row-remove {\n    padding: 0; }\n  .itsa-table td textarea {\n    width: 100%;\n    box-sizing: border-box;\n    height: 2em; }\n\n.itsa-table th {\n  background-color: #E0E0E0;\n  border-left: 1px solid #CBCBCB;\n  font-weight: bold; }\n\n.itsa-table textarea {\n  resize: none;\n  display: inline-block;\n  border: 1px solid #ccc;\n  box-shadow: inset 0 1px 3px #ddd;\n  vertical-align: middle;\n  -webkit-box-sizing: border-box;\n  -moz-box-sizing: border-box;\n  box-sizing: border-box; }\n", ""]);
 
 	// exports
 
@@ -20668,7 +20668,7 @@
 	    ROW_CLASS = 'itsa-table-row',
 	    CELL_CLASS = 'itsa-table-cell itsa-table-col-',
 	    EDITABLE_CELL_CLASS_SPACED = ' itsa-table-editable-cell',
-	    ROW_REMOVE_ID = '__row-remove';
+	    ROW_REMOVE_CLASS = '__row-remove';
 
 	var Table = React.createClass({
 	    displayName: 'Table',
@@ -20806,7 +20806,7 @@
 	                    colName
 	                );
 	            });
-	            removeableY && cols.unshift(React.createElement('th', { key: ROW_REMOVE_ID }));
+	            removeableY && cols.unshift(React.createElement('th', { className: ROW_REMOVE_CLASS, key: ROW_REMOVE_CLASS }));
 	            return React.createElement(
 	                'thead',
 	                null,
@@ -20895,7 +20895,7 @@
 	            if (removeableY) {
 	                cells.unshift(React.createElement(
 	                    'td',
-	                    { className: CELL_CLASS + ROW_REMOVE_ID, key: ROW_REMOVE_ID },
+	                    { className: CELL_CLASS + ROW_REMOVE_CLASS, key: ROW_REMOVE_CLASS },
 	                    React.createElement(Button, { buttonText: '-', className: 'remove-row controll-btn', disabled: disabled, onClick: instance.deleteRow.bind(instance, i) })
 	                ));
 	            }
