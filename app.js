@@ -28,10 +28,11 @@ let props = {
     disabled: false,
     tableClass: 'pure-table pure-table-striped',
     extendableY: true,
+    removeableY: true,
     columns,
     data,
     rowHeader: true,
-    editable: 'full',
+    editable: true,
     onChange: changeData
 };
 

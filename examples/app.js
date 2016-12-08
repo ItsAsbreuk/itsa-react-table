@@ -65,10 +65,11 @@
 	    disabled: false,
 	    tableClass: 'pure-table pure-table-striped',
 	    extendableY: true,
+	    removeableY: true,
 	    columns: columns,
 	    data: data,
 	    rowHeader: true,
-	    editable: 'full',
+	    editable: true,
 	    onChange: changeData
 	};
 
@@ -20549,7 +20550,7 @@
 
 
 	// module
-	exports.push([module.id, ".itsa-table .add-row {\n  clear: both;\n  display: block; }\n\n.itsa-table table {\n  box-sizing: border-box !important;\n  float: left !important; }\n\n.itsa-table td.itsa-table-rowheader {\n  background-color: #E0E0E0;\n  border-top: 1px solid #CBCBCB;\n  font-weight: bold; }\n\n.itsa-table td.itsa-table-editable-cell {\n  padding: 0; }\n\n.itsa-table th {\n  background-color: #E0E0E0;\n  border-left: 1px solid #CBCBCB;\n  font-weight: bold; }\n\n.itsa-table textarea {\n  resize: none;\n  display: inline-block;\n  border: 1px solid #ccc;\n  box-shadow: inset 0 1px 3px #ddd;\n  vertical-align: middle;\n  -webkit-box-sizing: border-box;\n  -moz-box-sizing: border-box;\n  box-sizing: border-box; }\n", ""]);
+	exports.push([module.id, ".itsa-table .add-row {\n  clear: both;\n  display: block;\n  margin-left: 1px; }\n\n.itsa-table .controll-btn {\n  width: 2.5em; }\n\n.itsa-table button.itsa-button.controll-btn {\n  background-color: #CCC; }\n\n.itsa-table table {\n  box-sizing: border-box !important;\n  float: left !important; }\n\n.itsa-table td {\n  height: 1em; }\n  .itsa-table td.itsa-table-rowheader {\n    background-color: #E0E0E0;\n    border-top: 1px solid #CBCBCB;\n    font-weight: bold; }\n  .itsa-table td.itsa-table-editable-cell, .itsa-table td.itsa-table-col-__row-remove {\n    padding: 0; }\n  .itsa-table td textarea {\n    width: 100%;\n    box-sizing: border-box;\n    height: 2em; }\n\n.itsa-table th {\n  background-color: #E0E0E0;\n  border-left: 1px solid #CBCBCB;\n  font-weight: bold; }\n\n.itsa-table textarea {\n  resize: none;\n  display: inline-block;\n  border: 1px solid #ccc;\n  box-shadow: inset 0 1px 3px #ddd;\n  vertical-align: middle;\n  -webkit-box-sizing: border-box;\n  -moz-box-sizing: border-box;\n  box-sizing: border-box; }\n", ""]);
 
 	// exports
 
@@ -20589,7 +20590,7 @@
 
 
 	// module
-	exports.push([module.id, ".itsa-table .pure-table.pure-table-striped tr:nth-child(2n-1) td.itsa-table-rowheader,\n.itsa-table .pure-table td.itsa-table-rowheader {\n  background-color: #E0E0E0;\n  border-top: 1px solid #CBCBCB;\n  font-weight: bold; }\n\n.itsa-table .pure-table td.itsa-table-editable-cell {\n  padding: 0; }\n\n.itsa-table .pure-table textarea {\n  padding: 0.5em 1em; }\n  .itsa-table .pure-table textarea[disabled] {\n    cursor: not-allowed;\n    background-color: #eaeded;\n    color: #cad2d3; }\n", ""]);
+	exports.push([module.id, ".itsa-table .pure-table.pure-table-striped tr:nth-child(2n-1) td.itsa-table-rowheader,\n.itsa-table .pure-table td.itsa-table-rowheader {\n  background-color: #E0E0E0;\n  border-top: 1px solid #CBCBCB;\n  font-weight: bold; }\n\n.itsa-table .pure-table td.itsa-table-editable-cell {\n  padding: 0; }\n\n.itsa-table .pure-table textarea {\n  padding: 0.5em 1em; }\n  .itsa-table .pure-table textarea[disabled] {\n    cursor: not-allowed;\n    background-color: #eaeded;\n    color: #cad2d3; }\n\n.itsa-table .pure-table textarea:focus {\n  outline: thin solid #129FEA;\n  outline: 1px auto #129FEA; }\n", ""]);
 
 	// exports
 
@@ -20655,19 +20656,22 @@
 	*/
 
 	__webpack_require__(178);
+	__webpack_require__(186);
 
 	var React = __webpack_require__(5),
 	    ReactDom = __webpack_require__(36),
 	    PropTypes = React.PropTypes,
-	    async = __webpack_require__(186).async,
-	    Button = __webpack_require__(192),
+	    async = __webpack_require__(187).async,
+	    Button = __webpack_require__(203),
+	    CLICK = 'click',
 	    MAIN_CLASS = 'itsa-table',
 	    ROW_CLASS = 'itsa-table-row',
 	    CELL_CLASS = 'itsa-table-cell itsa-table-col-',
-	    EDITABLE_CELL_CLASS_SPACED = ' itsa-table-editable-cell';
+	    EDITABLE_CELL_CLASS_SPACED = ' itsa-table-editable-cell',
+	    ROW_REMOVE_ID = '__row-remove';
 
-	var Component = React.createClass({
-	    displayName: 'Component',
+	var Table = React.createClass({
+	    displayName: 'Table',
 
 
 	    propTypes: {
@@ -20684,6 +20688,7 @@
 	        disabled: PropTypes.bool,
 	        editable: PropTypes.oneOfType([PropTypes.bool, PropTypes.string]),
 	        editDirectionDown: PropTypes.bool,
+	        removeableY: PropTypes.bool,
 	        extendableX: PropTypes.bool,
 	        extendableY: PropTypes.bool,
 	        onChange: PropTypes.func,
@@ -20692,7 +20697,32 @@
 	    },
 
 	    componentDidMount: function componentDidMount() {
-	        this.props.autoFocus && this.focus();
+	        var instance = this;
+	        instance._componentNode = ReactDom.findDOMNode(instance);
+	        // set outside clickHandler which watches for outside clicks that will collapse the component:
+	        instance.IE8_EVENTS = !instance._componentNode.addEventListener;
+	        if (instance.IE8_EVENTS) {
+	            document.attachEvent("on" + CLICK, instance._handleDocumentClick);
+	        } else {
+	            document.addEventListener(CLICK, instance._handleDocumentClick, true);
+	        }
+	        instance.props.autoFocus && instance.focus();
+	    },
+
+
+	    /**
+	     * componentWilUnmount does some cleanup.
+	     *
+	     * @method componentWillUnmount
+	     * @since 0.0.1
+	     */
+	    componentWillUnmount: function componentWillUnmount() {
+	        var instance = this;
+	        if (instance.IE8_EVENTS) {
+	            document.detachEvent("on" + CLICK, instance._handleDocumentClick);
+	        } else {
+	            document.removeEventListener(CLICK, instance._handleDocumentClick, true);
+	        }
 	    },
 	    changeCell: function changeCell(rowIndex, field, e) {
 	        var newData = void 0;
@@ -20742,6 +20772,7 @@
 	            editDirectionDown: true,
 	            extendableX: false,
 	            extendableY: false,
+	            removeableY: false,
 	            rowHeader: false
 	        };
 	    },
@@ -20752,33 +20783,37 @@
 	        };
 	    },
 	    generateHead: function generateHead() {
+	        var cols = [];
 	        var instance = this,
 	            props = instance.props,
+	            removeableY = props.removeableY,
 	            colums = props.columns,
 	            rowHeader = props.rowHeader;
 	        if (colums && colums.length > 0) {
+	            cols = colums.map(function (col, i) {
+	                var colName = void 0,
+	                    classname = void 0;
+	                var field = typeof col === 'string' ? col : col.key;
+	                classname = 'itsa-table-header itsa-table-col-' + field;
+	                if (i > 0 || !rowHeader) {
+	                    colName = typeof col === 'string' ? col : col.label || col.key;
+	                } else {
+	                    classname += 'itsa-table-header-rowheader';
+	                }
+	                return React.createElement(
+	                    'th',
+	                    { className: classname, key: field },
+	                    colName
+	                );
+	            });
+	            removeableY && cols.unshift(React.createElement('th', { key: ROW_REMOVE_ID }));
 	            return React.createElement(
 	                'thead',
 	                null,
 	                React.createElement(
 	                    'tr',
 	                    null,
-	                    colums.map(function (col, i) {
-	                        var colName = void 0,
-	                            classname = void 0;
-	                        var field = typeof col === 'string' ? col : col.key;
-	                        classname = 'itsa-table-header itsa-table-col-' + field;
-	                        if (i > 0 || !rowHeader) {
-	                            colName = typeof col === 'string' ? col : col.label || col.key;
-	                        } else {
-	                            classname += 'itsa-table-header-rowheader';
-	                        }
-	                        return React.createElement(
-	                            'th',
-	                            { className: classname, key: field },
-	                            colName
-	                        );
-	                    })
+	                    cols
 	                )
 	            );
 	        }
@@ -20792,6 +20827,7 @@
 	            colums = props.columns,
 	            rowHeader = props.rowHeader,
 	            editable = props.editable,
+	            removeableY = props.removeableY,
 	            fullEditable = editable === 'full',
 	            hasColums = colums && colums.length > 0;
 
@@ -20855,6 +20891,13 @@
 	                        cellContent
 	                    ));
 	                });
+	            }
+	            if (removeableY) {
+	                cells.unshift(React.createElement(
+	                    'td',
+	                    { className: CELL_CLASS + ROW_REMOVE_ID, key: ROW_REMOVE_ID },
+	                    React.createElement(Button, { buttonText: '-', className: 'remove-row controll-btn', disabled: disabled, onClick: instance.deleteRow.bind(instance, i) })
+	                ));
 	            }
 	            return React.createElement(
 	                'tr',
@@ -20991,6 +21034,16 @@
 	            onChange(newData);
 	        }
 	    },
+	    deleteRow: function deleteRow(index) {
+	        var newData = void 0;
+	        var props = this.props,
+	            onChange = props.onChange;
+	        if (onChange) {
+	            newData = props.data.itsa_deepClone();
+	            newData.splice(index, 1);
+	            onChange(newData);
+	        }
+	    },
 
 
 	    /**
@@ -21014,10 +21067,10 @@
 
 	        propsClassName && (classname += ' ' + propsClassName);
 	        if (props.extendableY) {
-	            addRowBtn = React.createElement(Button, { buttonText: '+', className: 'add-row', disabled: disabled, onClick: instance.addRow });
+	            addRowBtn = React.createElement(Button, { buttonText: '+', className: 'add-row controll-btn', disabled: disabled, onClick: instance.addRow });
 	        }
 	        if (props.extendableX && !props.columns) {
-	            addColBtn = React.createElement(Button, { buttonText: '+', disabled: disabled, onClick: instance.addCol });
+	            addColBtn = React.createElement(Button, { buttonText: '+', className: 'controll-btn', disabled: disabled, onClick: instance.addCol });
 	        }
 	        if (editable === true || editable === 'full') {
 	            refocusByClick = instance.refocusByClick;
@@ -21041,10 +21094,30 @@
 	            addColBtn,
 	            addRowBtn
 	        );
+	    },
+
+
+	    /**
+	     * Callback for a click on the document. Is needed to close the Component when clicked outside.
+	     *
+	     * @method _handleDocumentClick
+	     * @private
+	     * @param Object e
+	     * @since 0.0.1
+	     */
+	    _handleDocumentClick: function _handleDocumentClick(e) {
+	        var instance = this,
+	            targetNode = e.target;
+	        if (instance.props.editable === true && (!instance._componentNode.contains(targetNode) || targetNode.tagName !== 'TEXTAREA')) {
+	            instance.setState({
+	                editableRow: null,
+	                editableCol: null
+	            });
+	        }
 	    }
 	});
 
-	module.exports = Component;
+	module.exports = Table;
 
 /***/ },
 /* 178 */
@@ -22982,19 +23055,37 @@
 /* 186 */
 /***/ function(module, exports, __webpack_require__) {
 
-	'use strict';
+	/* WEBPACK VAR INJECTION */(function(global) {"use strict";
 
-	var timers = __webpack_require__(187);
+	var isNode = __webpack_require__(187).isNode,
+	    win = isNode ? global.window : window;
 
-	module.exports = {
-	   idGenerator: __webpack_require__(190).idGenerator,
-	   later: timers.later,
-	   async: timers.async,
-	   isNode: __webpack_require__(191)
-	};
+	if (win) {
+	    __webpack_require__(193)(win);
+	    __webpack_require__(194)(win);
+	    __webpack_require__(200)(win);
+	    __webpack_require__(201)(win);
+	    __webpack_require__(202)(win);
+	}
+	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
 /***/ },
 /* 187 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var timers = __webpack_require__(188);
+
+	module.exports = {
+	   idGenerator: __webpack_require__(191).idGenerator,
+	   later: timers.later,
+	   async: timers.async,
+	   isNode: __webpack_require__(192)
+	};
+
+/***/ },
+/* 188 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(setImmediate, process) {/**
@@ -23121,15 +23212,15 @@
 	    }
 	  };
 	};
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(188).setImmediate, __webpack_require__(189)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(189).setImmediate, __webpack_require__(190)))
 
 /***/ },
-/* 188 */
+/* 189 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(setImmediate, clearImmediate) {"use strict";
 
-	var nextTick = __webpack_require__(189).nextTick;
+	var nextTick = __webpack_require__(190).nextTick;
 	var apply = Function.prototype.apply;
 	var slice = Array.prototype.slice;
 	var immediateIds = {};
@@ -23205,10 +23296,10 @@
 	exports.clearImmediate = typeof clearImmediate === "function" ? clearImmediate : function (id) {
 	  delete immediateIds[id];
 	};
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(188).setImmediate, __webpack_require__(188).clearImmediate))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(189).setImmediate, __webpack_require__(189).clearImmediate))
 
 /***/ },
-/* 189 */
+/* 190 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -23394,7 +23485,7 @@
 	};
 
 /***/ },
-/* 190 */
+/* 191 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -23450,7 +23541,7 @@
 	};
 
 /***/ },
-/* 191 */
+/* 192 */
 /***/ function(module, exports) {
 
 	/* WEBPACK VAR INJECTION */(function(global) {/**
@@ -23480,696 +23571,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
 /***/ },
-/* 192 */
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
-
-	/**
-	 * React-Component: refined Button.
-	 *
-	 *
-	 *
-	 * <i>Copyright (c) 2016 ItsAsbreuk - http://itsasbreuk.nl</i><br>
-	 * New BSD License - http://choosealicense.com/licenses/bsd-3-clause/
-	 *
-	 *
-	 * @module itsa-react-button
-	 * @class Button
-	 * @since 0.0.1
-	*/
-
-	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
-
-	__webpack_require__(193);
-
-	var React = __webpack_require__(5),
-	    PropTypes = React.PropTypes,
-	    ReactDom = __webpack_require__(36),
-	    utils = __webpack_require__(186),
-	    later = utils.later,
-	    async = utils.async,
-	    MAIN_CLASS = "itsa-button",
-	    FORM_ELEMENT_CLASS_SPACES = " itsa-formelement",
-	    MAIN_CLASS_PREFIX = MAIN_CLASS + "-",
-	    WHITE_SPACE = "&#160;",
-	    // white-space
-	BOOLEAN = "boolean",
-	    DEF_BUTTON_PRESS_TIME = 300;
-
-	var Button = React.createClass({
-	    displayName: "Button",
-
-
-	    propTypes: {
-	        /**
-	         * Array with the keys that can press the button when focussed.
-	         * Default: [13, 32]
-	         *
-	         * @property activatedBy
-	         * @type Array
-	         * @since 0.0.1
-	        */
-	        activatedBy: PropTypes.array,
-
-	        /**
-	         * The aria-label. When not set, it will equal the buttonText
-	         *
-	         * @property aria-label
-	         * @type String
-	         * @since 0.0.1
-	        */
-	        "aria-label": PropTypes.string,
-
-	        /**
-	         * Whether to autofocus the Component.
-	         *
-	         * @property autoFocus
-	         * @type Boolean
-	         * @since 0.0.1
-	        */
-	        autoFocus: PropTypes.bool,
-
-	        /**
-	         * The Button-text. Will be escaped. If you need HTML, then use `buttonHTML` instead.
-	         *
-	         * @property buttonText
-	         * @type String
-	         * @since 0.0.1
-	        */
-	        buttonText: PropTypes.string,
-
-	        /**
-	         * The Button-text, retaining html-code. If you don't need HTML,
-	         * then `buttonText` is preferred.
-	         *
-	         * @property buttonHTML
-	         * @type String
-	         * @since 0.0.1
-	        */
-	        buttonHTML: PropTypes.string,
-
-	        /**
-	         * The time that the button retains in its `pressed-state` when activated by a key-press.
-	         *
-	         * Default: 300ms
-	         *
-	         * @property buttonPressTime
-	         * @type Number
-	         * @since 0.0.1
-	        */
-	        buttonPressTime: PropTypes.number,
-
-	        /**
-	         * The class that should be set on the element
-	         *
-	         * @property className
-	         * @type String
-	         * @since 0.0.1
-	        */
-	        className: PropTypes.string,
-
-	        /**
-	         * Whether the button resonses rapidly (keydown and mousedown).
-	         * Note: native HTMLButtonElements don't resonse rapidly --> the onClick event happens on mouseUp.
-	         *
-	         * Default: true
-	         *
-	         * @property directResponse
-	         * @type Boolean
-	         * @since 0.0.1
-	        */
-	        directResponse: PropTypes.bool,
-
-	        /**
-	         * Whether the button is disabled
-	         *
-	         * @property disabled
-	         * @type Boolean
-	         * @since 0.0.1
-	        */
-	        disabled: PropTypes.bool,
-
-	        /**
-	         * The name-attribute of the button
-	         *
-	         * @property name
-	         * @type String
-	         * @since 0.0.1
-	        */
-	        name: PropTypes.string,
-
-	        /**
-	         * Callback whenever the button gets clicked by the left mousebutton.
-	         *
-	         * @property onClick
-	         * @type Function
-	         * @since 0.0.1
-	        */
-	        onClick: PropTypes.func,
-
-	        /**
-	         * Callback wheneveer the button gets clicked by the middle mousebuttin.
-	         *
-	         * @property onMiddleClick
-	         * @type Function
-	         * @since 0.0.1
-	        */
-	        onMiddleClick: PropTypes.func,
-
-	        /**
-	         * Callback wheneveer the button gets clicked by the right mouse-button.
-	         *
-	         * @property onRightClick
-	         * @type Function
-	         * @since 0.0.1
-	        */
-	        onRightClick: PropTypes.func,
-
-	        /**
-	         * Whether the checkbox is readonly
-	         *
-	         * @property readOnly
-	         * @type Boolean
-	         * @default false
-	         * @since 15.2.0
-	        */
-	        readOnly: PropTypes.bool,
-
-	        /**
-	         * Whether keypress should show active status. (should be set `false` for file-uploadbuttons)
-	         * Default: true
-	         *
-	         * @property showActivated
-	         * @type Boolean
-	         * @since 0.0.5
-	        */
-	        showActivated: PropTypes.bool,
-
-	        /**
-	         * Inline style
-	         *
-	         * @property style
-	         * @type object
-	         * @since 0.0.1
-	        */
-	        style: PropTypes.object,
-
-	        /**
-	         * The tabIndex
-	         *
-	         * @property tabIndex
-	         * @type Number
-	         * @since 0.0.1
-	        */
-	        tabIndex: PropTypes.number,
-
-	        /**
-	         * Whether the button is in a toggle-state.
-	         * You don;t need to use this directly: use the module ToggleButton instead.
-	         *
-	         * @property toggled
-	         * @type Boolean
-	         * @since 0.0.1
-	        */
-	        toggled: PropTypes.bool,
-
-	        /**
-	         * The type of the button
-	         * Default: "button"
-	         *
-	         * @property children
-	         * @type String
-	         * @since 0.0.1
-	        */
-	        type: PropTypes.string
-	    },
-
-	    /**
-	     * Blurs the Component.
-	     *
-	     * @method blur
-	     * @chainable
-	     * @since 0.0.1
-	     */
-	    blur: function blur() {
-	        var instance = this;
-	        instance._buttonNode.blur();
-	        return instance;
-	    },
-
-
-	    /**
-	     * componentDidMount does some initialization.
-	     *
-	     * @method componentDidMount
-	     * @since 0.0.1
-	     */
-	    componentDidMount: function componentDidMount() {
-	        var instance = this;
-	        instance._buttonNode = ReactDom.findDOMNode(instance);
-	        instance._mounted = true;
-	        instance._knownMobile = "ontouchstart" in window || navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0;
-	        if (instance.props.autoFocus) {
-	            instance._focusLater = later(function () {
-	                return instance.focus();
-	            }, 50);
-	        }
-	    },
-
-
-	    /**
-	     * componentWilUnmount does some cleanup.
-	     *
-	     * @method componentWillUnmount
-	     * @since 0.0.1
-	     */
-	    componentWillUnmount: function componentWillUnmount() {
-	        this._mounted = false;
-	        this._focusLater && this._focusLater.cancel();
-	    },
-
-
-	    /**
-	     * Sets the focus on the Component.
-	     *
-	     * @method focus
-	     * @param [transitionTime] {Number} transition-time to focus the element into the view
-	     * @chainable
-	     * @since 0.0.1
-	     */
-	    focus: function focus(transitionTime) {
-	        var instance = this;
-	        instance._buttonNode.itsa_focus && instance._buttonNode.itsa_focus(null, null, transitionTime);
-	        return instance;
-	    },
-
-
-	    /**
-	     * Returns the default props.
-	     *
-	     * @method getDefaultProps
-	     * @return object
-	     * @since 0.0.1
-	     */
-	    getDefaultProps: function getDefaultProps() {
-	        return {
-	            activatedBy: [13, 32],
-	            autoFocus: false,
-	            buttonPressTime: DEF_BUTTON_PRESS_TIME,
-	            directResponse: true,
-	            disabled: false,
-	            readOnly: false,
-	            showActivated: true,
-	            type: "button"
-	        };
-	    },
-
-
-	    /**
-	     * Returns the initial state.
-	     *
-	     * @method getInitialState
-	     * @return object
-	     * @since 0.0.1
-	     */
-	    getInitialState: function getInitialState() {
-	        return {
-	            active: false,
-	            mouseDown: false
-	        };
-	    },
-	    handleBlur: function handleBlur() {
-	        this._keyDown = false;
-	    },
-
-
-	    /**
-	     * Callback-fn for the onClick-event.
-	     * Will invoke `this.props.onChange`
-	     *
-	     * @method handleClick
-	     * @since 0.0.1
-	     */
-	    handleClick: function handleClick(e) {
-	        var button = void 0,
-	            leftClick = void 0,
-	            middleClick = void 0,
-	            rightClick = void 0;
-	        var instance = this,
-	            props = instance.props,
-	            onMiddleClick = props.onMiddleClick,
-	            onRightClick = props.onRightClick,
-	            onClick = props.onClick;
-	        if (!props.disabled && !props.readOnly && !instance._keyDown && !this.state.mouseDown) {
-	            // don't double execute
-	            if (onClick || onMiddleClick || onRightClick) {
-	                button = e.nativeEvent.button || 1;
-	                leftClick = button <= 1;
-	                middleClick = button === 2;
-	                rightClick = button === 3;
-	                if (onClick && leftClick || onMiddleClick && middleClick || onRightClick && rightClick) {
-	                    e.preventDefault();
-	                    // NOT element.focus or node.itsa_focus ! --> would have side-effects, besides, the node is in the view if it got clicked
-	                    instance._buttonNode.focus();
-	                }
-	                if (onClick && leftClick) {
-	                    onClick();
-	                }
-	                if (middleClick && onMiddleClick) {
-	                    onMiddleClick();
-	                }
-	                if (rightClick && onRightClick) {
-	                    onRightClick();
-	                }
-	            }
-	        }
-	    },
-
-
-	    /**
-	     * Callback-fn for the onKeyDown-event.
-	     *
-	     * @method handleKeyDown
-	     * @since 0.0.1
-	     */
-	    handleKeyDown: function handleKeyDown(e, directResponse, force) {
-	        var instance = this,
-	            props = instance.props,
-	            onClick = props.onClick,
-	            activatedBy = props.activatedBy,
-	            forced = force === true,
-	            // IMPORTANT --> on a keyEvent this is an object in which we are not interested
-	        pressTimer = instance.pressTimer,
-	            keyCode = e.keyCode,
-	            isDirectResponse = (typeof directResponse === "undefined" ? "undefined" : _typeof(directResponse)) === BOOLEAN ? directResponse : props.directResponse;
-
-	        if (!props.disabled && !props.readOnly && instance._mounted) {
-	            if (keyCode === 27) {
-	                // escape keyDown in case it was set
-	                instance._keyDown = false;
-	                pressTimer && pressTimer.cancel();
-	                if (instance.state.active) {
-	                    instance.setState({
-	                        active: false
-	                    });
-	                }
-	            } else {
-	                if (forced || activatedBy.indexOf(keyCode) !== -1) {
-	                    instance._keyDown = true;
-	                    if (_typeof(props.toggled) === BOOLEAN) {
-	                        onClick && onClick();
-	                    } else {
-	                        if (!instance.state.active) {
-	                            instance.setState({
-	                                active: true
-	                            });
-	                            pressTimer && pressTimer.cancel();
-	                            instance.pressTimer = later(instance._processKeyUp.bind(instance, null, isDirectResponse, forced), props.buttonPressTime);
-	                            if (isDirectResponse && onClick) {
-	                                later(function () {
-	                                    onClick();
-	                                }, 100); // we MUST delay, because an `onClick` that rerenders, would prevent `onKeyUp` from happening!
-	                            }
-	                        }
-	                    }
-	                }
-	            }
-	        }
-	    },
-
-
-	    /**
-	     * Callback-fn for the onKeyUp-event.
-	     *
-	     * @method handleKeyUp
-	     * @since 0.0.1
-	     */
-	    handleKeyUp: function handleKeyUp() {
-	        var _this = this;
-
-	        // we must go async --> instance._keyDown cannot be set 'false' right away,
-	        // because the handleClick method needs to be processed first
-	        // if we don;t do this, props.onClick() would be executed twice when the spacebutton is pressed
-	        async(function () {
-	            var instance = _this;
-	            instance._keyDown = false;
-	            if (_typeof(instance.props.toggled) !== BOOLEAN && instance.state.active) {
-	                instance._processKeyUp(true);
-	            }
-	        });
-	    },
-
-
-	    /**
-	     * Callback-fn for the onMouseDown-event.
-	     *
-	     * @method handleMouseDown
-	     * @since 0.0.1
-	     */
-	    handleMouseDown: function handleMouseDown(e) {
-	        var instance = this,
-	            props = instance.props;
-	        if (!props.disabled && !props.readOnly && instance._mounted) {
-	            instance.handleClick(e);
-	            async(function () {
-	                // check if still mounted
-	                if (instance._mounted) {
-	                    instance._mouseDown = true;
-	                    instance.setState({
-	                        active: true,
-	                        mouseDown: true
-	                    });
-	                    if (instance._knownMobile) {
-	                        async(function () {
-	                            return instance.handleMouseUp();
-	                        });
-	                    } else {
-	                        // for those mobile devices that were not feature-detected, we need a fallback to simulate mouseUp,
-	                        // to prevent the button from being blocked:
-	                        instance._mouseUpEvt = later(instance.handleMouseUp, 2000);
-	                    }
-	                }
-	            });
-	        }
-	    },
-	    handleMouseOut: function handleMouseOut() {
-	        this.handleMouseUp();
-	    },
-
-
-	    /**
-	     * Callback-fn for the onMouseUp-event.
-	     *
-	     * @method handleMouseUp
-	     * @since 0.0.1
-	     */
-	    handleMouseUp: function handleMouseUp() {
-	        var instance = this;
-	        // only if `_mouseDown` still is false --> it could be set `true` by `onMouseOut`
-	        if (instance._mouseDown && instance._mounted) {
-	            instance._mouseDown = false;
-	            instance._mouseUpEvt && instance._mouseUpEvt.cancel();
-	            instance.setState({
-	                active: false,
-	                mouseDown: false
-	            });
-	        }
-	    },
-
-
-	    /**
-	     * Callback-fn for the onClick-event.
-	     * Will invoke `this.props.onChange`
-	     *
-	     * @method press
-	     * @param boolean [directResponse] whether directly call onClick, or wait until the button raises up.
-	     * @since 0.0.1
-	     */
-	    press: function press(directResponse) {
-	        this.handleKeyDown({}, directResponse, true);
-	    },
-
-
-	    /**
-	     * React render-method --> renderes the Component.
-	     *
-	     * @method render
-	     * @return ReactComponent
-	     * @since 0.0.1
-	     */
-	    render: function render() {
-	        var classname = MAIN_CLASS + FORM_ELEMENT_CLASS_SPACES,
-	            buttonHTML = this.props.buttonHTML,
-	            dangerouslySetInnerHTML = void 0,
-	            buttonText = void 0,
-	            handleClick = void 0,
-	            handleKeyDown = void 0,
-	            handleKeyUp = void 0,
-	            handleMouseDown = void 0,
-	            handleMouseUp = void 0;
-
-	        var instance = this,
-	            props = instance.props,
-	            state = instance.state,
-	            disabled = props.disabled,
-	            directResponse = props.directResponse,
-	            saveButtonText = instance._saveHTML(props.buttonText),
-	            isToggleButton = _typeof(props.toggled) === BOOLEAN,
-	            ariaLabel = props["aria-label"] || saveButtonText || instance._saveHTML(buttonHTML);
-
-	        if (state.active || props.toggled) {
-	            if (props.showActivated || state.mouseDown) {
-	                classname += " " + MAIN_CLASS_PREFIX + "active";
-	            }
-	            props.toggled && (classname += " " + MAIN_CLASS_PREFIX + "toggled");
-	        }
-	        isToggleButton && (classname += " " + MAIN_CLASS_PREFIX + "togglebtn");
-	        props.className && (classname += " " + props.className);
-	        props.readOnly && (classname += " readonly");
-
-	        if (!buttonHTML && !props.buttonText) {
-	            buttonHTML = WHITE_SPACE;
-	        }
-	        if (buttonHTML) {
-	            dangerouslySetInnerHTML = { __html: buttonHTML };
-	        } else {
-	            buttonText = saveButtonText;
-	        }
-
-	        if (!disabled) {
-	            if (directResponse || isToggleButton) {
-	                handleMouseDown = instance.handleMouseDown;
-	                handleMouseUp = instance.handleMouseUp;
-	            } else {
-	                handleClick = instance.handleClick;
-	            }
-	            handleKeyDown = instance.handleKeyDown;
-	            handleKeyUp = instance.handleKeyUp;
-	        }
-
-	        return React.createElement(
-	            "button",
-	            _extends({}, instance._getDataAttrs(), {
-	                accessKey: props.accessKey,
-	                "aria-label": ariaLabel,
-	                "aria-pressed": props.toggled,
-	                className: classname,
-	                dangerouslySetInnerHTML: dangerouslySetInnerHTML,
-	                disabled: disabled,
-	                name: props.name,
-	                onBlur: instance.handleBlur,
-	                onClick: handleClick,
-	                onKeyDown: handleKeyDown,
-	                onKeyUp: handleKeyUp,
-	                onMouseDown: handleMouseDown,
-	                onMouseOut: instance.handleMouseOut,
-	                onMouseUp: handleMouseUp,
-	                role: "button",
-	                style: props.style,
-	                tabIndex: props.tabIndex,
-	                type: props.type }),
-	            buttonText
-	        );
-	    },
-
-
-	    /**
-	     * Extracts the `data-*` attributes from props.
-	     *
-	     * @method _getDataAttrs
-	     * @private
-	     * @return object all the data-* attributes
-	     * @since 0.0.3
-	     */
-	    _getDataAttrs: function _getDataAttrs() {
-	        var dataAttrs = {};
-	        var props = this.props,
-	            keys = Object.keys(props);
-
-	        keys.forEach(function (key) {
-	            key.substr(0, 5).toLowerCase() === "data-" && (dataAttrs[key] = props[key]);
-	        });
-	        return dataAttrs;
-	    },
-
-
-	    /**
-	     * React render-method --> renderes the Component.
-	     *
-	     * @method _processKeyUp
-	     * @param Boolean manual whether this routine gets called manually (keypress), or from a click-event
-	     * @param Boolean directResponse Whether to direct response or wait for the button to raise up
-	     * @param Boolean force whether to force (initiated by the method `press`)
-	     * @private
-	     * @since 0.0.1
-	     */
-	    _processKeyUp: function _processKeyUp(manual, directResponse, force) {
-	        var instance = this,
-	            props = instance.props,
-	            onClick = props.onClick,
-	            pressTimer = instance.pressTimer,
-	            manualDeactivation = manual && !pressTimer,
-	            timerDeactivation = !manual && pressTimer;
-	        if (this._mounted) {
-	            // we don't want unMounted Buttons to trigger the state and onClick-prop
-	            if (timerDeactivation) {
-	                pressTimer.cancel();
-	                delete instance.pressTimer;
-	            }
-	            force && (instance._keyDown = false); // because we didn;t came from `handleKeyUp`
-	            if ((!instance._keyDown || force) && (manualDeactivation || timerDeactivation)) {
-	                if (instance.state.active) {
-	                    instance.setState({
-	                        active: false
-	                    });
-	                    if ((typeof directResponse === "undefined" ? "undefined" : _typeof(directResponse)) === BOOLEAN ? !directResponse : !props.directResponse) {
-	                        onClick && onClick();
-	                    }
-	                }
-	            }
-	        }
-	    },
-
-
-	    /**
-	     * Returns a save string
-	     *
-	     * @method _saveHTML
-	     * @private
-	     * @param String html the text that should be removed from any html-entities
-	     * @return String
-	     * @since 0.0.1
-	     */
-	    _saveHTML: function _saveHTML(html) {
-	        return html && html.replace(/<[^>]*>/g, "");
-	    }
-	});
-
-	module.exports = Button;
-
-/***/ },
 /* 193 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/* WEBPACK VAR INJECTION */(function(global) {"use strict";
-
-	var isNode = __webpack_require__(186).isNode,
-	    win = isNode ? global.window : window;
-
-	if (win) {
-	    __webpack_require__(194)(win);
-	    __webpack_require__(195)(win);
-	    __webpack_require__(201)(win);
-	    __webpack_require__(202)(win);
-	    __webpack_require__(203)(win);
-	}
-	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
-
-/***/ },
-/* 194 */
 /***/ function(module, exports) {
 
 	/**
@@ -24226,7 +23628,7 @@
 	};
 
 /***/ },
-/* 195 */
+/* 194 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -24246,7 +23648,7 @@
 
 	module.exports = function (WINDOW) {
 
-	    var scrollTo = __webpack_require__(196)(WINDOW);
+	    var scrollTo = __webpack_require__(195)(WINDOW);
 
 	    var getScrollOffsets = function getScrollOffsets() {
 	        var doc = WINDOW.document;
@@ -24346,7 +23748,7 @@
 	};
 
 /***/ },
-/* 196 */
+/* 195 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -24367,7 +23769,7 @@
 	        MARGIN_LEFT = MARGIN + _LEFT,
 	        MARGIN_TOP = MARGIN + _TOP,
 	        SCROLL_TIMER = 20,
-	        utils = __webpack_require__(186),
+	        utils = __webpack_require__(187),
 	        async = utils.async,
 	        later = utils.later,
 	        css3Transition = DOCUMENT.body.style && _typeof(DOCUMENT.body.style.transitionProperty) === STRING,
@@ -24432,7 +23834,7 @@
 	            windowContainer && (container = WINDOW.document.documentElement);
 	            if (transitionTime) {
 	                if (windowContainer && calcSupport === undefined) {
-	                    calcSupport = __webpack_require__(197)(WINDOW);
+	                    calcSupport = __webpack_require__(196)(WINDOW);
 	                }
 	                // on the full-screen, we can use CSS3 transition :)
 	                if (windowContainer && css3Transition && calcSupport) {
@@ -24486,7 +23888,7 @@
 
 	                    // first: define the inlyne-style when there was no transition:
 	                    // use the right transition-css - vendor-specific:
-	                    vendorTransition || (vendorTransition = __webpack_require__(198)(WINDOW).generator(TRANSITION));
+	                    vendorTransition || (vendorTransition = __webpack_require__(197)(WINDOW).generator(TRANSITION));
 	                    prevStyleObj[vendorTransition] = "none" + _IMPORTANT;
 	                    inlinestyleNoTrans = objToStyle(prevStyleObj);
 
@@ -24524,7 +23926,7 @@
 	                    prevStyleObj[vendorTransition] = transitionTime + "ms ease-in-out" + _IMPORTANT;
 
 	                    // set eventlistener: revert when transition is ready:
-	                    evTransitionEnd || (evTransitionEnd = __webpack_require__(199)("./vendor-" + TRANSITION + "-end")(WINDOW));
+	                    evTransitionEnd || (evTransitionEnd = __webpack_require__(198)("./vendor-" + TRANSITION + "-end")(WINDOW));
 	                    if (IE8_Events) {
 	                        container.attachEvent("on" + evTransitionEnd, _afterTrans);
 	                    } else {
@@ -24585,7 +23987,7 @@
 	};
 
 /***/ },
-/* 197 */
+/* 196 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -24605,7 +24007,7 @@
 	};
 
 /***/ },
-/* 198 */
+/* 197 */
 /***/ function(module, exports) {
 
 	/* WEBPACK VAR INJECTION */(function(global) {"use strict";
@@ -24669,11 +24071,11 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
 /***/ },
-/* 199 */
+/* 198 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var map = {
-		"./vendor-transition-end": 200
+		"./vendor-transition-end": 199
 	};
 	function webpackContext(req) {
 		return __webpack_require__(webpackContextResolve(req));
@@ -24686,11 +24088,11 @@
 	};
 	webpackContext.resolve = webpackContextResolve;
 	module.exports = webpackContext;
-	webpackContext.id = 199;
+	webpackContext.id = 198;
 
 
 /***/ },
-/* 200 */
+/* 199 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -24729,7 +24131,7 @@
 	};
 
 /***/ },
-/* 201 */
+/* 200 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -24794,7 +24196,7 @@
 	};
 
 /***/ },
-/* 202 */
+/* 201 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -24844,10 +24246,10 @@
 	    BORDER_BOTTOM_WIDTH = BORDER + "-bottom-" + WIDTH;
 
 	module.exports = function (WINDOW) {
-	    __webpack_require__(195)(WINDOW);
+	    __webpack_require__(194)(WINDOW);
 
 	    var DOCUMENT = WINDOW.document,
-	        scrollTo = __webpack_require__(196)(WINDOW);
+	        scrollTo = __webpack_require__(195)(WINDOW);
 
 	    if (WINDOW.Element && WINDOW.Element.prototype) {
 	        (function (ElementPrototype) {
@@ -25489,7 +24891,7 @@
 	};
 
 /***/ },
-/* 203 */
+/* 202 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -25631,6 +25033,677 @@
 	        (COOKIE_SUPPORT = DOCUMENT.itsa_getCookie(TMP_COOKIE_NAME) === "true") && DOCUMENT.itsa_removeCookie(TMP_COOKIE_NAME);
 	    }
 	};
+
+/***/ },
+/* 203 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+
+	/**
+	 * React-Component: refined Button.
+	 *
+	 *
+	 *
+	 * <i>Copyright (c) 2016 ItsAsbreuk - http://itsasbreuk.nl</i><br>
+	 * New BSD License - http://choosealicense.com/licenses/bsd-3-clause/
+	 *
+	 *
+	 * @module itsa-react-button
+	 * @class Button
+	 * @since 0.0.1
+	*/
+
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
+	__webpack_require__(186);
+
+	var React = __webpack_require__(5),
+	    PropTypes = React.PropTypes,
+	    ReactDom = __webpack_require__(36),
+	    utils = __webpack_require__(187),
+	    later = utils.later,
+	    async = utils.async,
+	    MAIN_CLASS = "itsa-button",
+	    FORM_ELEMENT_CLASS_SPACES = " itsa-formelement",
+	    MAIN_CLASS_PREFIX = MAIN_CLASS + "-",
+	    WHITE_SPACE = "&#160;",
+	    // white-space
+	BOOLEAN = "boolean",
+	    DEF_BUTTON_PRESS_TIME = 300;
+
+	var Button = React.createClass({
+	    displayName: "Button",
+
+
+	    propTypes: {
+	        /**
+	         * Array with the keys that can press the button when focussed.
+	         * Default: [13, 32]
+	         *
+	         * @property activatedBy
+	         * @type Array
+	         * @since 0.0.1
+	        */
+	        activatedBy: PropTypes.array,
+
+	        /**
+	         * The aria-label. When not set, it will equal the buttonText
+	         *
+	         * @property aria-label
+	         * @type String
+	         * @since 0.0.1
+	        */
+	        "aria-label": PropTypes.string,
+
+	        /**
+	         * Whether to autofocus the Component.
+	         *
+	         * @property autoFocus
+	         * @type Boolean
+	         * @since 0.0.1
+	        */
+	        autoFocus: PropTypes.bool,
+
+	        /**
+	         * The Button-text. Will be escaped. If you need HTML, then use `buttonHTML` instead.
+	         *
+	         * @property buttonText
+	         * @type String
+	         * @since 0.0.1
+	        */
+	        buttonText: PropTypes.string,
+
+	        /**
+	         * The Button-text, retaining html-code. If you don't need HTML,
+	         * then `buttonText` is preferred.
+	         *
+	         * @property buttonHTML
+	         * @type String
+	         * @since 0.0.1
+	        */
+	        buttonHTML: PropTypes.string,
+
+	        /**
+	         * The time that the button retains in its `pressed-state` when activated by a key-press.
+	         *
+	         * Default: 300ms
+	         *
+	         * @property buttonPressTime
+	         * @type Number
+	         * @since 0.0.1
+	        */
+	        buttonPressTime: PropTypes.number,
+
+	        /**
+	         * The class that should be set on the element
+	         *
+	         * @property className
+	         * @type String
+	         * @since 0.0.1
+	        */
+	        className: PropTypes.string,
+
+	        /**
+	         * Whether the button resonses rapidly (keydown and mousedown).
+	         * Note: native HTMLButtonElements don't resonse rapidly --> the onClick event happens on mouseUp.
+	         *
+	         * Default: true
+	         *
+	         * @property directResponse
+	         * @type Boolean
+	         * @since 0.0.1
+	        */
+	        directResponse: PropTypes.bool,
+
+	        /**
+	         * Whether the button is disabled
+	         *
+	         * @property disabled
+	         * @type Boolean
+	         * @since 0.0.1
+	        */
+	        disabled: PropTypes.bool,
+
+	        /**
+	         * The name-attribute of the button
+	         *
+	         * @property name
+	         * @type String
+	         * @since 0.0.1
+	        */
+	        name: PropTypes.string,
+
+	        /**
+	         * Callback whenever the button gets clicked by the left mousebutton.
+	         *
+	         * @property onClick
+	         * @type Function
+	         * @since 0.0.1
+	        */
+	        onClick: PropTypes.func,
+
+	        /**
+	         * Callback wheneveer the button gets clicked by the middle mousebuttin.
+	         *
+	         * @property onMiddleClick
+	         * @type Function
+	         * @since 0.0.1
+	        */
+	        onMiddleClick: PropTypes.func,
+
+	        /**
+	         * Callback wheneveer the button gets clicked by the right mouse-button.
+	         *
+	         * @property onRightClick
+	         * @type Function
+	         * @since 0.0.1
+	        */
+	        onRightClick: PropTypes.func,
+
+	        /**
+	         * Whether the checkbox is readonly
+	         *
+	         * @property readOnly
+	         * @type Boolean
+	         * @default false
+	         * @since 15.2.0
+	        */
+	        readOnly: PropTypes.bool,
+
+	        /**
+	         * Whether keypress should show active status. (should be set `false` for file-uploadbuttons)
+	         * Default: true
+	         *
+	         * @property showActivated
+	         * @type Boolean
+	         * @since 0.0.5
+	        */
+	        showActivated: PropTypes.bool,
+
+	        /**
+	         * Inline style
+	         *
+	         * @property style
+	         * @type object
+	         * @since 0.0.1
+	        */
+	        style: PropTypes.object,
+
+	        /**
+	         * The tabIndex
+	         *
+	         * @property tabIndex
+	         * @type Number
+	         * @since 0.0.1
+	        */
+	        tabIndex: PropTypes.number,
+
+	        /**
+	         * Whether the button is in a toggle-state.
+	         * You don;t need to use this directly: use the module ToggleButton instead.
+	         *
+	         * @property toggled
+	         * @type Boolean
+	         * @since 0.0.1
+	        */
+	        toggled: PropTypes.bool,
+
+	        /**
+	         * The type of the button
+	         * Default: "button"
+	         *
+	         * @property children
+	         * @type String
+	         * @since 0.0.1
+	        */
+	        type: PropTypes.string
+	    },
+
+	    /**
+	     * Blurs the Component.
+	     *
+	     * @method blur
+	     * @chainable
+	     * @since 0.0.1
+	     */
+	    blur: function blur() {
+	        var instance = this;
+	        instance._buttonNode.blur();
+	        return instance;
+	    },
+
+
+	    /**
+	     * componentDidMount does some initialization.
+	     *
+	     * @method componentDidMount
+	     * @since 0.0.1
+	     */
+	    componentDidMount: function componentDidMount() {
+	        var instance = this;
+	        instance._buttonNode = ReactDom.findDOMNode(instance);
+	        instance._mounted = true;
+	        instance._knownMobile = "ontouchstart" in window || navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0;
+	        if (instance.props.autoFocus) {
+	            instance._focusLater = later(function () {
+	                return instance.focus();
+	            }, 50);
+	        }
+	    },
+
+
+	    /**
+	     * componentWilUnmount does some cleanup.
+	     *
+	     * @method componentWillUnmount
+	     * @since 0.0.1
+	     */
+	    componentWillUnmount: function componentWillUnmount() {
+	        this._mounted = false;
+	        this._focusLater && this._focusLater.cancel();
+	    },
+
+
+	    /**
+	     * Sets the focus on the Component.
+	     *
+	     * @method focus
+	     * @param [transitionTime] {Number} transition-time to focus the element into the view
+	     * @chainable
+	     * @since 0.0.1
+	     */
+	    focus: function focus(transitionTime) {
+	        var instance = this;
+	        instance._buttonNode.itsa_focus && instance._buttonNode.itsa_focus(null, null, transitionTime);
+	        return instance;
+	    },
+
+
+	    /**
+	     * Returns the default props.
+	     *
+	     * @method getDefaultProps
+	     * @return object
+	     * @since 0.0.1
+	     */
+	    getDefaultProps: function getDefaultProps() {
+	        return {
+	            activatedBy: [13, 32],
+	            autoFocus: false,
+	            buttonPressTime: DEF_BUTTON_PRESS_TIME,
+	            directResponse: true,
+	            disabled: false,
+	            readOnly: false,
+	            showActivated: true,
+	            type: "button"
+	        };
+	    },
+
+
+	    /**
+	     * Returns the initial state.
+	     *
+	     * @method getInitialState
+	     * @return object
+	     * @since 0.0.1
+	     */
+	    getInitialState: function getInitialState() {
+	        return {
+	            active: false,
+	            mouseDown: false
+	        };
+	    },
+	    handleBlur: function handleBlur() {
+	        this._keyDown = false;
+	    },
+
+
+	    /**
+	     * Callback-fn for the onClick-event.
+	     * Will invoke `this.props.onChange`
+	     *
+	     * @method handleClick
+	     * @since 0.0.1
+	     */
+	    handleClick: function handleClick(e) {
+	        var button = void 0,
+	            leftClick = void 0,
+	            middleClick = void 0,
+	            rightClick = void 0;
+	        var instance = this,
+	            props = instance.props,
+	            onMiddleClick = props.onMiddleClick,
+	            onRightClick = props.onRightClick,
+	            onClick = props.onClick;
+	        if (!props.disabled && !props.readOnly && !instance._keyDown && !this.state.mouseDown) {
+	            // don't double execute
+	            if (onClick || onMiddleClick || onRightClick) {
+	                button = e.nativeEvent.button || 1;
+	                leftClick = button <= 1;
+	                middleClick = button === 2;
+	                rightClick = button === 3;
+	                if (onClick && leftClick || onMiddleClick && middleClick || onRightClick && rightClick) {
+	                    e.preventDefault();
+	                    // NOT element.focus or node.itsa_focus ! --> would have side-effects, besides, the node is in the view if it got clicked
+	                    instance._buttonNode.focus();
+	                }
+	                if (onClick && leftClick) {
+	                    onClick();
+	                }
+	                if (middleClick && onMiddleClick) {
+	                    onMiddleClick();
+	                }
+	                if (rightClick && onRightClick) {
+	                    onRightClick();
+	                }
+	            }
+	        }
+	    },
+
+
+	    /**
+	     * Callback-fn for the onKeyDown-event.
+	     *
+	     * @method handleKeyDown
+	     * @since 0.0.1
+	     */
+	    handleKeyDown: function handleKeyDown(e, directResponse, force) {
+	        var instance = this,
+	            props = instance.props,
+	            onClick = props.onClick,
+	            activatedBy = props.activatedBy,
+	            forced = force === true,
+	            // IMPORTANT --> on a keyEvent this is an object in which we are not interested
+	        pressTimer = instance.pressTimer,
+	            keyCode = e.keyCode,
+	            isDirectResponse = (typeof directResponse === "undefined" ? "undefined" : _typeof(directResponse)) === BOOLEAN ? directResponse : props.directResponse;
+
+	        if (!props.disabled && !props.readOnly && instance._mounted) {
+	            if (keyCode === 27) {
+	                // escape keyDown in case it was set
+	                instance._keyDown = false;
+	                pressTimer && pressTimer.cancel();
+	                if (instance.state.active) {
+	                    instance.setState({
+	                        active: false
+	                    });
+	                }
+	            } else {
+	                if (forced || activatedBy.indexOf(keyCode) !== -1) {
+	                    instance._keyDown = true;
+	                    if (_typeof(props.toggled) === BOOLEAN) {
+	                        onClick && onClick();
+	                    } else {
+	                        if (!instance.state.active) {
+	                            instance.setState({
+	                                active: true
+	                            });
+	                            pressTimer && pressTimer.cancel();
+	                            instance.pressTimer = later(instance._processKeyUp.bind(instance, null, isDirectResponse, forced), props.buttonPressTime);
+	                            if (isDirectResponse && onClick) {
+	                                later(function () {
+	                                    onClick();
+	                                }, 100); // we MUST delay, because an `onClick` that rerenders, would prevent `onKeyUp` from happening!
+	                            }
+	                        }
+	                    }
+	                }
+	            }
+	        }
+	    },
+
+
+	    /**
+	     * Callback-fn for the onKeyUp-event.
+	     *
+	     * @method handleKeyUp
+	     * @since 0.0.1
+	     */
+	    handleKeyUp: function handleKeyUp() {
+	        var _this = this;
+
+	        // we must go async --> instance._keyDown cannot be set 'false' right away,
+	        // because the handleClick method needs to be processed first
+	        // if we don;t do this, props.onClick() would be executed twice when the spacebutton is pressed
+	        async(function () {
+	            var instance = _this;
+	            instance._keyDown = false;
+	            if (_typeof(instance.props.toggled) !== BOOLEAN && instance.state.active) {
+	                instance._processKeyUp(true);
+	            }
+	        });
+	    },
+
+
+	    /**
+	     * Callback-fn for the onMouseDown-event.
+	     *
+	     * @method handleMouseDown
+	     * @since 0.0.1
+	     */
+	    handleMouseDown: function handleMouseDown(e) {
+	        var instance = this,
+	            props = instance.props;
+	        if (!props.disabled && !props.readOnly && instance._mounted) {
+	            instance.handleClick(e);
+	            async(function () {
+	                // check if still mounted
+	                if (instance._mounted) {
+	                    instance._mouseDown = true;
+	                    instance.setState({
+	                        active: true,
+	                        mouseDown: true
+	                    });
+	                    if (instance._knownMobile) {
+	                        async(function () {
+	                            return instance.handleMouseUp();
+	                        });
+	                    } else {
+	                        // for those mobile devices that were not feature-detected, we need a fallback to simulate mouseUp,
+	                        // to prevent the button from being blocked:
+	                        instance._mouseUpEvt = later(instance.handleMouseUp, 2000);
+	                    }
+	                }
+	            });
+	        }
+	    },
+	    handleMouseOut: function handleMouseOut() {
+	        this.handleMouseUp();
+	    },
+
+
+	    /**
+	     * Callback-fn for the onMouseUp-event.
+	     *
+	     * @method handleMouseUp
+	     * @since 0.0.1
+	     */
+	    handleMouseUp: function handleMouseUp() {
+	        var instance = this;
+	        // only if `_mouseDown` still is false --> it could be set `true` by `onMouseOut`
+	        if (instance._mouseDown && instance._mounted) {
+	            instance._mouseDown = false;
+	            instance._mouseUpEvt && instance._mouseUpEvt.cancel();
+	            instance.setState({
+	                active: false,
+	                mouseDown: false
+	            });
+	        }
+	    },
+
+
+	    /**
+	     * Callback-fn for the onClick-event.
+	     * Will invoke `this.props.onChange`
+	     *
+	     * @method press
+	     * @param boolean [directResponse] whether directly call onClick, or wait until the button raises up.
+	     * @since 0.0.1
+	     */
+	    press: function press(directResponse) {
+	        this.handleKeyDown({}, directResponse, true);
+	    },
+
+
+	    /**
+	     * React render-method --> renderes the Component.
+	     *
+	     * @method render
+	     * @return ReactComponent
+	     * @since 0.0.1
+	     */
+	    render: function render() {
+	        var classname = MAIN_CLASS + FORM_ELEMENT_CLASS_SPACES,
+	            buttonHTML = this.props.buttonHTML,
+	            dangerouslySetInnerHTML = void 0,
+	            buttonText = void 0,
+	            handleClick = void 0,
+	            handleKeyDown = void 0,
+	            handleKeyUp = void 0,
+	            handleMouseDown = void 0,
+	            handleMouseUp = void 0;
+
+	        var instance = this,
+	            props = instance.props,
+	            state = instance.state,
+	            disabled = props.disabled,
+	            directResponse = props.directResponse,
+	            saveButtonText = instance._saveHTML(props.buttonText),
+	            isToggleButton = _typeof(props.toggled) === BOOLEAN,
+	            ariaLabel = props["aria-label"] || saveButtonText || instance._saveHTML(buttonHTML);
+
+	        if (state.active || props.toggled) {
+	            if (props.showActivated || state.mouseDown) {
+	                classname += " " + MAIN_CLASS_PREFIX + "active";
+	            }
+	            props.toggled && (classname += " " + MAIN_CLASS_PREFIX + "toggled");
+	        }
+	        isToggleButton && (classname += " " + MAIN_CLASS_PREFIX + "togglebtn");
+	        props.className && (classname += " " + props.className);
+	        props.readOnly && (classname += " readonly");
+
+	        if (!buttonHTML && !props.buttonText) {
+	            buttonHTML = WHITE_SPACE;
+	        }
+	        if (buttonHTML) {
+	            dangerouslySetInnerHTML = { __html: buttonHTML };
+	        } else {
+	            buttonText = saveButtonText;
+	        }
+
+	        if (!disabled) {
+	            if (directResponse || isToggleButton) {
+	                handleMouseDown = instance.handleMouseDown;
+	                handleMouseUp = instance.handleMouseUp;
+	            } else {
+	                handleClick = instance.handleClick;
+	            }
+	            handleKeyDown = instance.handleKeyDown;
+	            handleKeyUp = instance.handleKeyUp;
+	        }
+
+	        return React.createElement(
+	            "button",
+	            _extends({}, instance._getDataAttrs(), {
+	                accessKey: props.accessKey,
+	                "aria-label": ariaLabel,
+	                "aria-pressed": props.toggled,
+	                className: classname,
+	                dangerouslySetInnerHTML: dangerouslySetInnerHTML,
+	                disabled: disabled,
+	                name: props.name,
+	                onBlur: instance.handleBlur,
+	                onClick: handleClick,
+	                onKeyDown: handleKeyDown,
+	                onKeyUp: handleKeyUp,
+	                onMouseDown: handleMouseDown,
+	                onMouseOut: instance.handleMouseOut,
+	                onMouseUp: handleMouseUp,
+	                role: "button",
+	                style: props.style,
+	                tabIndex: props.tabIndex,
+	                type: props.type }),
+	            buttonText
+	        );
+	    },
+
+
+	    /**
+	     * Extracts the `data-*` attributes from props.
+	     *
+	     * @method _getDataAttrs
+	     * @private
+	     * @return object all the data-* attributes
+	     * @since 0.0.3
+	     */
+	    _getDataAttrs: function _getDataAttrs() {
+	        var dataAttrs = {};
+	        var props = this.props,
+	            keys = Object.keys(props);
+
+	        keys.forEach(function (key) {
+	            key.substr(0, 5).toLowerCase() === "data-" && (dataAttrs[key] = props[key]);
+	        });
+	        return dataAttrs;
+	    },
+
+
+	    /**
+	     * React render-method --> renderes the Component.
+	     *
+	     * @method _processKeyUp
+	     * @param Boolean manual whether this routine gets called manually (keypress), or from a click-event
+	     * @param Boolean directResponse Whether to direct response or wait for the button to raise up
+	     * @param Boolean force whether to force (initiated by the method `press`)
+	     * @private
+	     * @since 0.0.1
+	     */
+	    _processKeyUp: function _processKeyUp(manual, directResponse, force) {
+	        var instance = this,
+	            props = instance.props,
+	            onClick = props.onClick,
+	            pressTimer = instance.pressTimer,
+	            manualDeactivation = manual && !pressTimer,
+	            timerDeactivation = !manual && pressTimer;
+	        if (this._mounted) {
+	            // we don't want unMounted Buttons to trigger the state and onClick-prop
+	            if (timerDeactivation) {
+	                pressTimer.cancel();
+	                delete instance.pressTimer;
+	            }
+	            force && (instance._keyDown = false); // because we didn;t came from `handleKeyUp`
+	            if ((!instance._keyDown || force) && (manualDeactivation || timerDeactivation)) {
+	                if (instance.state.active) {
+	                    instance.setState({
+	                        active: false
+	                    });
+	                    if ((typeof directResponse === "undefined" ? "undefined" : _typeof(directResponse)) === BOOLEAN ? !directResponse : !props.directResponse) {
+	                        onClick && onClick();
+	                    }
+	                }
+	            }
+	        }
+	    },
+
+
+	    /**
+	     * Returns a save string
+	     *
+	     * @method _saveHTML
+	     * @private
+	     * @param String html the text that should be removed from any html-entities
+	     * @return String
+	     * @since 0.0.1
+	     */
+	    _saveHTML: function _saveHTML(html) {
+	        return html && html.replace(/<[^>]*>/g, "");
+	    }
+	});
+
+	module.exports = Button;
 
 /***/ }
 /******/ ]);

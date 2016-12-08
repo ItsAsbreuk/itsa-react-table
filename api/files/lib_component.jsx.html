@@ -98,18 +98,21 @@
 */
 
 require(&#x27;itsa-jsext&#x27;);
+require(&#x27;itsa-dom&#x27;);
 
 const React = require(&#x27;react&#x27;),
     ReactDom = require(&#x27;react-dom&#x27;),
     PropTypes = React.PropTypes,
     async = require(&#x27;itsa-utils&#x27;).async,
     Button = require(&#x27;itsa-react-button&#x27;),
+    CLICK = &#x27;click&#x27;,
     MAIN_CLASS = &#x27;itsa-table&#x27;,
     ROW_CLASS = &#x27;itsa-table-row&#x27;,
     CELL_CLASS = &#x27;itsa-table-cell itsa-table-col-&#x27;,
-    EDITABLE_CELL_CLASS_SPACED = &#x27; itsa-table-editable-cell&#x27;;
+    EDITABLE_CELL_CLASS_SPACED = &#x27; itsa-table-editable-cell&#x27;,
+    ROW_REMOVE_ID = &#x27;__row-remove&#x27;;
 
-const Component = React.createClass({
+const Table = React.createClass({
 
     propTypes: {
         autoFocus: PropTypes.bool,
@@ -125,6 +128,7 @@ const Component = React.createClass({
         disabled: PropTypes.bool,
         editable: PropTypes.oneOfType([PropTypes.bool, PropTypes.string]),
         editDirectionDown: PropTypes.bool,
+        removeableY: PropTypes.bool,
         extendableX: PropTypes.bool,
         extendableY: PropTypes.bool,
         onChange: PropTypes.func,
@@ -133,7 +137,33 @@ const Component = React.createClass({
     },
 
     componentDidMount() {
-        this.props.autoFocus &amp;&amp; this.focus();
+        const instance = this;
+        instance._componentNode = ReactDom.findDOMNode(instance);
+        // set outside clickHandler which watches for outside clicks that will collapse the component:
+        instance.IE8_EVENTS = !instance._componentNode.addEventListener;
+        if (instance.IE8_EVENTS) {
+            document.attachEvent(&quot;on&quot;+CLICK, instance._handleDocumentClick);
+        }
+        else {
+            document.addEventListener(CLICK, instance._handleDocumentClick, true);
+        }
+        instance.props.autoFocus &amp;&amp; instance.focus();
+    },
+
+    /**
+     * componentWilUnmount does some cleanup.
+     *
+     * @method componentWillUnmount
+     * @since 0.0.1
+     */
+    componentWillUnmount() {
+        const instance = this;
+        if (instance.IE8_EVENTS) {
+            document.detachEvent(&quot;on&quot;+CLICK, instance._handleDocumentClick);
+        }
+        else {
+            document.removeEventListener(CLICK, instance._handleDocumentClick, true);
+        }
     },
 
     changeCell(rowIndex, field, e) {
@@ -186,6 +216,7 @@ const Component = React.createClass({
             editDirectionDown: true,
             extendableX: false,
             extendableY: false,
+            removeableY: false,
             rowHeader: false
         };
     },
@@ -198,26 +229,30 @@ const Component = React.createClass({
     },
 
     generateHead() {
+        let cols = [];
         const instance = this,
             props = instance.props,
+            removeableY = props.removeableY,
             colums = props.columns,
             rowHeader = props.rowHeader;
         if (colums &amp;&amp; (colums.length&gt;0)) {
+            cols = colums.map((col, i) =&gt; {
+                let colName, classname;
+                const field = (typeof col===&#x27;string&#x27;) ? col : col.key;
+                classname = &#x27;itsa-table-header itsa-table-col-&#x27;+field;
+                if ((i&gt;0) || !rowHeader) {
+                    colName = (typeof col===&#x27;string&#x27;) ? col : (col.label || col.key);
+                }
+                else {
+                    classname += &#x27;itsa-table-header-rowheader&#x27;;
+                }
+                return (&lt;th className={classname} key={field}&gt;{colName}&lt;/th&gt;);
+            });
+            removeableY &amp;&amp; cols.unshift((&lt;th key={ROW_REMOVE_ID}&gt;&lt;/th&gt;));
             return (
                 &lt;thead&gt;
                     &lt;tr&gt;
-                        {colums.map((col, i) =&gt; {
-                            let colName, classname;
-                            const field = (typeof col===&#x27;string&#x27;) ? col : col.key;
-                            classname = &#x27;itsa-table-header itsa-table-col-&#x27;+field;
-                            if ((i&gt;0) || !rowHeader) {
-                                colName = (typeof col===&#x27;string&#x27;) ? col : (col.label || col.key);
-                            }
-                            else {
-                                classname += &#x27;itsa-table-header-rowheader&#x27;;
-                            }
-                            return (&lt;th className={classname} key={field}&gt;{colName}&lt;/th&gt;);
-                        })}
+                        {cols}
                     &lt;/tr&gt;
                 &lt;/thead&gt;
             );
@@ -233,6 +268,7 @@ const Component = React.createClass({
             colums = props.columns,
             rowHeader = props.rowHeader,
             editable = props.editable,
+            removeableY = props.removeableY,
             fullEditable = (editable===&#x27;full&#x27;),
             hasColums = (colums &amp;&amp; (colums.length&gt;0));
 
@@ -297,6 +333,13 @@ const Component = React.createClass({
                     }
                     cells.push((&lt;td className={classname} data-colid={colCount} key={key}&gt;{cellContent}&lt;/td&gt;));
                 });
+            }
+            if (removeableY) {
+                cells.unshift((
+                    &lt;td className={CELL_CLASS+ROW_REMOVE_ID} key={ROW_REMOVE_ID}&gt;
+                        &lt;Button buttonText=&quot;-&quot; className=&quot;remove-row controll-btn&quot; disabled={disabled} onClick={instance.deleteRow.bind(instance, i)} /&gt;
+                    &lt;/td&gt;
+                ));
             }
             return (&lt;tr className={ROW_CLASS} data-rowid={i} data-recordid={i} key={i}&gt;{cells}&lt;/tr&gt;);
         });
@@ -430,6 +473,17 @@ const Component = React.createClass({
         }
     },
 
+    deleteRow(index) {
+        let newData;
+        const props = this.props,
+            onChange = props.onChange;
+        if (onChange) {
+            newData = props.data.itsa_deepClone();
+            newData.splice(index, 1);
+            onChange(newData);
+        }
+    },
+
     /**
      * React render-method --&gt; renderes the Component.
      *
@@ -448,10 +502,10 @@ const Component = React.createClass({
 
         propsClassName &amp;&amp; (classname+=&#x27; &#x27;+propsClassName);
         if (props.extendableY) {
-            addRowBtn = (&lt;Button buttonText=&quot;+&quot; className=&quot;add-row&quot; disabled={disabled} onClick={instance.addRow} /&gt;);
+            addRowBtn = (&lt;Button buttonText=&quot;+&quot; className=&quot;add-row controll-btn&quot; disabled={disabled} onClick={instance.addRow} /&gt;);
         }
         if (props.extendableX &amp;&amp; !props.columns) {
-            addColBtn = (&lt;Button buttonText=&quot;+&quot; disabled={disabled} onClick={instance.addCol} /&gt;);
+            addColBtn = (&lt;Button buttonText=&quot;+&quot; className=&quot;controll-btn&quot; disabled={disabled} onClick={instance.addCol} /&gt;);
         }
         if ((editable===true) || (editable===&#x27;full&#x27;)) {
             refocusByClick = instance.refocusByClick;
@@ -471,11 +525,30 @@ const Component = React.createClass({
                 {addRowBtn}
             &lt;/div&gt;
         );
+    },
+
+    /**
+     * Callback for a click on the document. Is needed to close the Component when clicked outside.
+     *
+     * @method _handleDocumentClick
+     * @private
+     * @param Object e
+     * @since 0.0.1
+     */
+    _handleDocumentClick(e) {
+        const instance = this,
+            targetNode = e.target;
+        if ((instance.props.editable===true) &amp;&amp; (!instance._componentNode.contains(targetNode) || (targetNode.tagName!==&#x27;TEXTAREA&#x27;))) {
+            instance.setState({
+                editableRow: null,
+                editableCol: null
+            });
+        }
     }
 
 });
 
-module.exports = Component;
+module.exports = Table;
 
     </pre>
 </div>

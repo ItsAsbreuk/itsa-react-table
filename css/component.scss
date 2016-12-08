@@ -2,19 +2,35 @@
     .add-row {
         clear: both;
         display: block;
+        margin-left: 1px;
+    }
+    .controll-btn {
+        width: 2.5em;
+    }
+    button.itsa-button {
+        &.controll-btn {
+            background-color: #CCC;
+        }
     }
     table {
         box-sizing: border-box !important;
         float: left !important;
     }
     td {
+        height: 1em;
         &.itsa-table-rowheader {
             background-color: #E0E0E0;
             border-top: 1px solid #CBCBCB;
             font-weight: bold;
         }
-        &.itsa-table-editable-cell {
+        &.itsa-table-editable-cell,
+        &.itsa-table-col-__row-remove {
             padding: 0;
+        }
+        textarea {
+            width: 100%;
+            box-sizing: border-box;
+            height: 2em;
         }
     }
     th {

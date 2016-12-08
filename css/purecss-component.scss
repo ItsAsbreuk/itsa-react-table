@@ -19,5 +19,9 @@
                 color: #cad2d3;
             }
         }
+        textarea:focus {
+            outline: thin solid #129FEA;
+            outline: 1px auto #129FEA;
+        }
     }
 }
