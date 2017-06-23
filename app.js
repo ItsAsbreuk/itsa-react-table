@@ -32,7 +32,7 @@ let props = {
     columns,
     data,
     rowHeader: true,
-    editable: true,
+    editable: 'full',
     onChange: changeData
 };
 

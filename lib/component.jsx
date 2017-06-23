@@ -19,7 +19,7 @@ require('itsa-dom');
 
 const React = require('react'),
     ReactDom = require('react-dom'),
-    PropTypes = React.PropTypes,
+    PropTypes = require("prop-types"),
     async = require('itsa-utils').async,
     Button = require('itsa-react-button'),
     CLICK = 'click',
@@ -29,29 +29,26 @@ const React = require('react'),
     EDITABLE_CELL_CLASS_SPACED = ' itsa-table-editable-cell',
     ROW_REMOVE_CLASS = '__row-remove';
 
-const Table = React.createClass({
-
-    propTypes: {
-        autoFocus: PropTypes.bool,
-        columns: PropTypes.array,
-        /**
-         * The Component its children
-         *
-         * @property children
-         * @type Object
-         * @since 2.0.0
-        */
-        data: PropTypes.array,
-        disabled: PropTypes.bool,
-        editable: PropTypes.oneOfType([PropTypes.bool, PropTypes.string]),
-        editDirectionDown: PropTypes.bool,
-        removeableY: PropTypes.bool,
-        extendableX: PropTypes.bool,
-        extendableY: PropTypes.bool,
-        onChange: PropTypes.func,
-        rowHeader: PropTypes.bool,
-        tableClass: PropTypes.string
-    },
+class Table extends React.Component {
+    constructor(props) {
+        super(props);
+        const instance = this;
+        instance.state = {
+            editableRow: null,
+            editableCol: null
+        };
+        instance.changeCell = instance.changeCell.bind(instance);
+        instance.focus = instance.focus.bind(instance);
+        instance._focusActiveCell = instance._focusActiveCell.bind(instance);
+        instance.generateHead = instance.generateHead.bind(instance);
+        instance.generateRows = instance.generateRows.bind(instance);
+        instance.refocus = instance.refocus.bind(instance);
+        instance.refocusByClick = instance.refocusByClick.bind(instance);
+        instance.addRow = instance.addRow.bind(instance);
+        instance.addCol = instance.addCol.bind(instance);
+        instance.deleteRow = instance.deleteRow.bind(instance);
+        instance._handleDocumentClick = instance._handleDocumentClick.bind(instance);
+    }
 
     componentDidMount() {
         const instance = this;
@@ -65,7 +62,7 @@ const Table = React.createClass({
             document.addEventListener(CLICK, instance._handleDocumentClick, true);
         }
         instance.props.autoFocus && instance.focus();
-    },
+    }
 
     /**
      * componentWilUnmount does some cleanup.
@@ -81,7 +78,7 @@ const Table = React.createClass({
         else {
             document.removeEventListener(CLICK, instance._handleDocumentClick, true);
         }
-    },
+    }
 
     changeCell(rowIndex, field, e) {
         let newData;
@@ -92,7 +89,7 @@ const Table = React.createClass({
             newData[rowIndex][field] = e.target.value;
             onChange(newData);
         }
-    },
+    }
 
     focus() {
         const instance = this,
@@ -104,7 +101,7 @@ const Table = React.createClass({
             });
         }
         instance._focusActiveCell();
-    },
+    }
 
     _focusActiveCell() {
         const instance = this;
@@ -123,49 +120,41 @@ const Table = React.createClass({
                 }
             }
         });
-    },
-
-    getDefaultProps() {
-        return {
-            autoFocus: false,
-            data: [],
-            editable: false,
-            editDirectionDown: true,
-            extendableX: false,
-            extendableY: false,
-            removeableY: false,
-            rowHeader: false
-        };
-    },
-
-    getInitialState() {
-        return {
-            editableRow: null,
-            editableCol: null
-        };
-    },
+    }
 
     generateHead() {
-        let cols = [];
+        let cols, alreadyDefined,
+            j = -1;
         const instance = this,
             props = instance.props,
             removeableY = props.removeableY,
-            colums = props.columns,
+            columns = props.columns,
             rowHeader = props.rowHeader;
-        if (colums && (colums.length>0)) {
-            cols = colums.map((col, i) => {
-                let colName, classname;
+        if (columns && (columns.length>0)) {
+            // first dedupe duplicated col-keys
+            alreadyDefined = {};
+            cols = columns.filter(col => {
+                let dupe;
+                const field = (typeof col==='string') ? col : col.key;
+                dupe = alreadyDefined[field];
+                alreadyDefined[field] = true;
+                return !dupe;
+            })
+            .map((col, i) => {
+                let colName, classname, key;
                 const field = (typeof col==='string') ? col : col.key;
                 classname = 'itsa-table-header itsa-table-col-'+field;
                 if ((i>0) || !rowHeader) {
                     colName = (typeof col==='string') ? col : (col.label || col.key);
+                    key = (typeof col==='string') ? col : col.key;
                 }
                 else {
-                    classname += 'itsa-table-header-rowheader';
+                    classname += ' itsa-table-header-rowheader';
+                    key=j--;
                 }
-                return (<th className={classname} key={field}>{colName}</th>);
+                return (<th className={classname} key={key}>{colName}</th>);
             });
-            removeableY && cols.unshift((<th className={ROW_REMOVE_CLASS} key={ROW_REMOVE_CLASS}></th>));
+            removeableY && cols.unshift((<th className={ROW_REMOVE_CLASS} key={j--}></th>));
             return (
                 <thead>
                     <tr>
@@ -174,7 +163,7 @@ const Table = React.createClass({
                 </thead>
             );
         }
-    },
+    }
 
     generateRows() {
         const instance = this,
@@ -201,6 +190,13 @@ const Table = React.createClass({
                     if (rowHeader && (j===0)) {
                         classname += ' itsa-table-rowheader';
                         cellContent = value;
+                        return (
+                            <td
+                                className={classname}
+                                dangerouslySetInnerHTML={{__html: cellContent}}
+                                data-colid={j}
+                                key={field} />
+                        );
                     }
                     else if (fullEditable || ((editable===true) && (state.editableRow===i) && (state.editableCol===j))) {
                         classname += EDITABLE_CELL_CLASS_SPACED;
@@ -214,11 +210,28 @@ const Table = React.createClass({
                                 rows={1}
                                 value={value} />
                         );
+                        return (
+                            <td
+                                className={classname}
+                                data-colid={j}
+                                key={field}>
+                                {cellContent}
+                            </td>
+                        );
                     }
                     else {
-                        cellContent = value;
+                        value || (value='');
+                        value = String(value);
+                        (value.itsa_trim()==='') && (value='&nbsp;');
+                        cellContent = value.itsa_replaceAll('\n', '<br />');
+                        return (
+                            <td
+                                className={classname}
+                                dangerouslySetInnerHTML={{__html: cellContent}}
+                                data-colid={j}
+                                key={field} />
+                        );
                     }
-                    return (<td className={classname} data-colid={j} key={field}>{cellContent}</td>);
                 });
             }
             else {
@@ -231,6 +244,7 @@ const Table = React.createClass({
                     if (rowHeader && (colCount===0)) {
                         classname += ' itsa-table-rowheader';
                         cellContent = value;
+                        cells.push((<td className={classname} dangerouslySetInnerHTML={{__html: cellContent}} data-colid={colCount} key={key} />));
                     }
                     else if (fullEditable || ((editable===true) && (state.editableRow===i) && (state.editableCol===colCount))) {
                         classname += EDITABLE_CELL_CLASS_SPACED;
@@ -244,11 +258,15 @@ const Table = React.createClass({
                                 rows={1}
                                 value={value} />
                         );
+                        cells.push((<td className={classname} data-colid={colCount} key={key}>{cellContent}</td>));
                     }
                     else {
-                        cellContent = value;
+                        value || (value='');
+                        value = String(value);
+                        (value.itsa_trim()==='') && (value='&nbsp;');
+                        cellContent = value.itsa_replaceAll('\n', '<br />');
+                        cells.push((<td className={classname} dangerouslySetInnerHTML={{__html: cellContent}} data-colid={colCount} key={key} />));
                     }
-                    cells.push((<td className={classname} data-colid={colCount} key={key}>{cellContent}</td>));
                 });
             }
             if (removeableY) {
@@ -260,7 +278,7 @@ const Table = React.createClass({
             }
             return (<tr className={ROW_CLASS} data-rowid={i} data-recordid={i} key={i}>{cells}</tr>);
         });
-    },
+    }
 
     refocus(e) {
         let focusRow, focusCol, match, maxRow, maxCol, firstItem, colChangedByRow;
@@ -337,7 +355,7 @@ const Table = React.createClass({
             });
             instance._focusActiveCell();
         }
-    },
+    }
 
     refocusByClick(e) {
         let node = e.target,
@@ -351,7 +369,7 @@ const Table = React.createClass({
             editableCol: colId
         });
         this._focusActiveCell();
-    },
+    }
 
     addRow() {
         let newData, len;
@@ -361,14 +379,14 @@ const Table = React.createClass({
             newData = props.data.itsa_deepClone();
             len = newData.length;
             if (len==0) {
-                newData = [{'_row0': null}];
+                newData = [{'__row0': null}];
             }
             else {
                 newData[len] = newData[0].itsa_map(() => null);
             }
             onChange(newData);
         }
-    },
+    }
 
     addCol() {
         let newData, len, size;
@@ -384,11 +402,11 @@ const Table = React.createClass({
                 size = newData[0].itsa_size();
             }
             newData.forEach(record => {
-                record['_col'+size] = null;
+                record['__col'+size] = null;
             });
             onChange(newData);
         }
-    },
+    }
 
     deleteRow(index) {
         let newData;
@@ -399,7 +417,7 @@ const Table = React.createClass({
             newData.splice(index, 1);
             onChange(newData);
         }
-    },
+    }
 
     /**
      * React render-method --> renderes the Component.
@@ -442,7 +460,7 @@ const Table = React.createClass({
                 {addRowBtn}
             </div>
         );
-    },
+    }
 
     /**
      * Callback for a click on the document. Is needed to close the Component when clicked outside.
@@ -463,6 +481,39 @@ const Table = React.createClass({
         }
     }
 
-});
+}
+
+Table.propTypes = {
+    autoFocus: PropTypes.bool,
+    columns: PropTypes.array,
+    /**
+     * The Component its children
+     *
+     * @property children
+     * @type Object
+     * @since 2.0.0
+    */
+    data: PropTypes.array,
+    disabled: PropTypes.bool,
+    editable: PropTypes.oneOfType([PropTypes.bool, PropTypes.string]),
+    editDirectionDown: PropTypes.bool,
+    removeableY: PropTypes.bool,
+    extendableX: PropTypes.bool,
+    extendableY: PropTypes.bool,
+    onChange: PropTypes.func,
+    rowHeader: PropTypes.bool,
+    tableClass: PropTypes.string
+};
+
+Table.defaultProps = {
+    autoFocus: false,
+    data: [],
+    editable: false,
+    editDirectionDown: true,
+    extendableX: false,
+    extendableY: false,
+    removeableY: false,
+    rowHeader: false
+};
 
 module.exports = Table;
