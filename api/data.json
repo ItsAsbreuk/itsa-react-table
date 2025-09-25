@@ -55,7 +55,7 @@
     "classitems": [
         {
             "file": "lib/component.jsx",
-            "line": 67,
+            "line": 192,
             "description": "componentWilUnmount does some cleanup.",
             "itemtype": "method",
             "name": "componentWillUnmount",
@@ -65,7 +65,7 @@
         },
         {
             "file": "lib/component.jsx",
-            "line": 422,
+            "line": 1058,
             "description": "React render-method --> renderes the Component.",
             "itemtype": "method",
             "name": "render",
@@ -78,7 +78,7 @@
         },
         {
             "file": "lib/component.jsx",
-            "line": 465,
+            "line": 1127,
             "description": "Callback for a click on the document. Is needed to close the Component when clicked outside.",
             "itemtype": "method",
             "name": "_handleDocumentClick",
@@ -96,7 +96,7 @@
         },
         {
             "file": "lib/component.jsx",
-            "line": 489,
+            "line": 1160,
             "description": "The Component its children",
             "itemtype": "property",
             "name": "children",

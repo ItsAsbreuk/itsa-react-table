@@ -52,10 +52,20 @@
 	    ReactDOM = __webpack_require__(41),
 	    Component = __webpack_require__(188);
 
-	var data = [{ id: "ga-3475", name: "gadget", price: "$6.99", cost: "$5.99" }, { id: "sp-9980", name: "sprocket", price: "$3.75", cost: "$3.25" }, { id: "wi-0650", name: "widget", price: "$4.25", cost: "$3.75" }],
+	var data = [{ id: "ga-3475", name: "gadget", price: "$6.99", cost: 5.99 }, { id: "sp-9980", name: "sprocket", price: "$3.75", cost: 0 }, { id: "wi-0650", name: "widget", price: "$4.25", cost: 3.75 }],
 	    columns = ["id", { key: "name", label: "part name" }, "price", "cost"];
 
 	var changeData = function changeData(newData) {
+	    props.data = newData.itsa_deepClone();
+	    renderTable(props);
+	};
+
+	var onChangeCell = function onChangeCell(cells, editValueBeforeBlur) {
+	    console.warn('app onchangecells', cells, editValueBeforeBlur);
+	    var newData = props.data.itsa_deepClone();
+	    cells.forEach(function (obj) {
+	        newData[obj.row][obj.field] = editValueBeforeBlur;
+	    });
 	    props.data = newData;
 	    renderTable(props);
 	};
@@ -64,13 +74,20 @@
 	    autoFocus: true,
 	    disabled: false,
 	    tableClass: 'pure-table pure-table-striped',
-	    extendableY: true,
+	    extendableX: true,
+	    extendableY: "full",
 	    removeableY: true,
+	    cursorNav: true,
+	    loop: false,
 	    columns: columns,
 	    data: data,
 	    rowHeader: true,
-	    editable: 'full',
-	    onChange: changeData
+	    editable: "full",
+	    fixedHeaders: true,
+	    // editableCols: [1, 3],
+	    onChange: changeData,
+	    onChangeCell: onChangeCell,
+	    multiEdit: true
 	};
 
 	var renderTable = function renderTable(props) {
@@ -22485,7 +22502,7 @@
 
 
 	// module
-	exports.push([module.id, ".itsa-table .add-row {\n  clear: both;\n  display: block;\n  margin-left: 1px; }\n\n.itsa-table .controll-btn {\n  width: 2.5em; }\n\n.itsa-table .itsa-table-col-__row-remove {\n  width: 1px; }\n\n.itsa-table button.itsa-button.controll-btn {\n  background-color: #CCC; }\n\n.itsa-table table {\n  box-sizing: border-box !important;\n  float: left !important; }\n\n.itsa-table td {\n  height: 1em; }\n  .itsa-table td.itsa-table-rowheader {\n    background-color: #E0E0E0;\n    border-top: 1px solid #CBCBCB;\n    font-weight: bold; }\n  .itsa-table td.itsa-table-editable-cell, .itsa-table td.itsa-table-col-__row-remove {\n    padding: 0; }\n  .itsa-table td textarea {\n    width: 100%;\n    box-sizing: border-box;\n    height: 2em; }\n\n.itsa-table th {\n  background-color: #E0E0E0;\n  border-left: 1px solid #CBCBCB;\n  font-weight: bold; }\n\n.itsa-table textarea {\n  resize: none;\n  display: inline-block;\n  border: 1px solid #ccc;\n  box-shadow: inset 0 1px 3px #ddd;\n  vertical-align: middle;\n  -webkit-box-sizing: border-box;\n  -moz-box-sizing: border-box;\n  box-sizing: border-box; }\n", ""]);
+	exports.push([module.id, ".itsa-table {\n  position: relative; }\n  .itsa-table.scrollable-y {\n    overflow-y: auto; }\n  .itsa-table .add-row {\n    clear: both;\n    display: block;\n    margin-left: 1px; }\n    .itsa-table .add-row.add-row-indent {\n      margin-left: calc(2.5em + 2px); }\n  .itsa-table .controll-btn {\n    width: 2.5em; }\n  .itsa-table .itsa-table-col-__row-remove,\n  .itsa-table .itsa-table-col-__row-add,\n  .itsa-table .__row-remove,\n  .itsa-table .__row-add {\n    width: 1px;\n    border-left: none !important; }\n  .itsa-table button.itsa-button.controll-btn {\n    background-color: #CCC; }\n  .itsa-table table {\n    box-sizing: border-box !important;\n    float: left !important;\n    width: 100% !important; }\n  .itsa-table thead .itsa-table-header {\n    background-color: #E0E0E0;\n    border-left: 1px solid #CBCBCB;\n    border-top: 1px solid #CBCBCB;\n    font-weight: bold;\n    white-space: nowrap;\n    box-sizing: border-box !important; }\n    .itsa-table thead .itsa-table-header div.itsa-table-header-cont {\n      position: relative !important;\n      padding: 0 !important;\n      z-index: 9 !important; }\n      .itsa-table thead .itsa-table-header div.itsa-table-header-cont div.itsa-table-header {\n        position: fixed !important;\n        z-index: 1 !important;\n        opacity: 0;\n        background-color: #FFF !important; }\n  .itsa-table td {\n    height: 1em; }\n    .itsa-table td.itsa-table-rowheader {\n      background-color: #E0E0E0;\n      border-top: 1px solid #CBCBCB;\n      font-weight: bold; }\n    .itsa-table td.selected-range {\n      background-color: #FFF !important;\n      border: 1px solid #ccc;\n      -webkit-box-sizing: border-box;\n      -moz-box-sizing: border-box;\n      box-sizing: border-box; }\n    .itsa-table td.itsa-table-editable-cell, .itsa-table td.itsa-table-col-__row-remove, .itsa-table td.itsa-table-col-__row-add {\n      padding: 0 !important;\n      position: relative; }\n    .itsa-table td.itsa-table-editable-cell > span {\n      opacity: 0 !important; }\n    .itsa-table td textarea {\n      position: absolute;\n      top: 0;\n      left: 0;\n      width: 100%;\n      height: 100%;\n      box-sizing: border-box;\n      overflow-y: hidden; }\n  .itsa-table textarea {\n    resize: none;\n    display: inline-block;\n    border: 1px solid #ccc;\n    box-shadow: inset 0 1px 3px #ddd;\n    vertical-align: middle;\n    -webkit-box-sizing: border-box;\n    -moz-box-sizing: border-box;\n    box-sizing: border-box; }\n", ""]);
 
 	// exports
 
@@ -22525,7 +22542,7 @@
 
 
 	// module
-	exports.push([module.id, ".itsa-table .pure-table.pure-table-striped tr:nth-child(2n-1) td.itsa-table-rowheader,\n.itsa-table .pure-table td.itsa-table-rowheader {\n  background-color: #E0E0E0;\n  border-top: 1px solid #CBCBCB;\n  font-weight: bold; }\n\n.itsa-table .pure-table td.itsa-table-editable-cell {\n  padding: 0; }\n\n.itsa-table .pure-table textarea {\n  padding: 0.5em 1em;\n  padding-top: calc(0.5em - 2px);\n  padding-left: calc(1em - 1px); }\n  .itsa-table .pure-table textarea[disabled] {\n    cursor: not-allowed;\n    background-color: #eaeded;\n    color: #cad2d3; }\n\n.itsa-table .pure-table textarea:focus {\n  outline: thin solid #129FEA;\n  outline: 1px auto #129FEA; }\n", ""]);
+	exports.push([module.id, ".itsa-table .pure-table.pure-table-striped tr:nth-child(2n-1) td.itsa-table-rowheader,\n.itsa-table .pure-table td.itsa-table-rowheader {\n  background-color: #E0E0E0;\n  border-top: 1px solid #CBCBCB;\n  font-weight: bold; }\n\n.itsa-table .pure-table td.itsa-table-editable-cell {\n  padding: 0; }\n\n.itsa-table .pure-table td.selected-range {\n  background-color: #FFF !important;\n  border: 1px solid #129FEA;\n  padding: calc(.5em - 1px) calc(1em - 1px); }\n\n.itsa-table .pure-table td.itsa-table-editable-cell > span {\n  padding: 0.5em calc(1em - 1px); }\n\n.itsa-table .pure-table textarea {\n  padding-left: calc(1em - 1px);\n  padding-right: calc(1em - 1px);\n  padding-top: calc(.5em - 1px); }\n  .itsa-table .pure-table textarea[disabled] {\n    cursor: not-allowed;\n    background-color: #eaeded;\n    color: #cad2d3; }\n\n.itsa-table .pure-table textarea:focus {\n  outline: thin solid #129FEA;\n  outline: 1px auto #129FEA; }\n", ""]);
 
 	// exports
 
@@ -22565,7 +22582,7 @@
 
 
 	// module
-	exports.push([module.id, "button.itsa-button {\n  margin: 0;\n  padding: 0.5em 1em;\n  font: inherit;\n  /* 2 */\n  font-family: inherit;\n  font-size: 100%;\n  color: #444;\n  /* rgba not supported (IE 8) */\n  color: rgba(0, 0, 0, 0.8);\n  /* rgba supported */\n  border: 1px solid #999;\n  /*IE 6/7/8*/\n  border: none transparent;\n  /*IE9 + everything else*/\n  background-color: #E6E6E6;\n  text-decoration: none;\n  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.15) inset;\n  display: inline-block;\n  position: relative;\n  vertical-align: middle;\n  -webkit-box-sizing: border-box;\n  -moz-box-sizing: border-box;\n  box-sizing: border-box;\n  -webkit-touch-callout: none;\n  -webkit-user-select: none;\n  -khtml-user-select: none;\n  -moz-user-select: none;\n  -ms-user-select: none;\n  user-select: none;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  text-transform: none;\n  line-height: normal;\n  white-space: nowrap;\n  vertical-align: baseline;\n  text-align: center;\n  cursor: pointer; }\n\nbutton.itsa-button.readonly {\n  cursor: default; }\n\nbutton.itsa-button-primary {\n  background-color: #0078E7;\n  color: #FFF; }\n\nbutton.itsa-button-toggled {\n  background-color: #0078E7;\n  color: #FFF; }\n\nbutton.itsa-button:hover:not(.readonly), button.itsa-button.itsa-button-hover:not(.readonly), button.itsa-button:hover:focus:not(.readonly), button.itsa-button.itsa-button-hover:focus:not(.readonly) {\n  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#00000000', endColorstr='#1a000000',GradientType=0);\n  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(transparent), color-stop(40%, rgba(0, 0, 0, 0.05)), to(rgba(0, 0, 0, 0.15)));\n  background-image: -webkit-linear-gradient(transparent, rgba(0, 0, 0, 0.05) 40%, rgba(0, 0, 0, 0.15));\n  background-image: -moz-linear-gradient(top, rgba(0, 0, 0, 0.05) 40%, rgba(0, 0, 0, 0.15));\n  background-image: -o-linear-gradient(transparent, rgba(0, 0, 0, 0.05) 40%, rgba(0, 0, 0, 0.15));\n  background-image: linear-gradient(transparent, rgba(0, 0, 0, 0.05) 40%, rgba(0, 0, 0, 0.15));\n  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.8) inset; }\n\nbutton.itsa-button:focus {\n  outline: 0; }\n\nbutton.itsa-button:focus:not(.readonly) {\n  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#00000000', endColorstr='#1a000000',GradientType=0);\n  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(transparent), color-stop(40%, rgba(0, 0, 0, 0.05)), to(rgba(0, 0, 0, 0.1)));\n  background-image: -webkit-linear-gradient(transparent, rgba(0, 0, 0, 0.05) 40%, rgba(0, 0, 0, 0.1));\n  background-image: -moz-linear-gradient(top, rgba(0, 0, 0, 0.05) 40%, rgba(0, 0, 0, 0.1));\n  background-image: -o-linear-gradient(transparent, rgba(0, 0, 0, 0.05) 40%, rgba(0, 0, 0, 0.1));\n  background-image: linear-gradient(transparent, rgba(0, 0, 0, 0.05) 40%, rgba(0, 0, 0, 0.1));\n  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.6) inset; }\n\nbutton.itsa-button::-moz-focus-inner {\n  /* firefox focusring */\n  border: 0; }\n\nbutton.itsa-button-active:not(.readonly) {\n  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.8) inset, 0 0 10px rgba(0, 0, 0, 0.4) inset; }\n\nbutton.itsa-button:not(.itsa-button-togglebtn):not(.readonly):active:hover, button.itsa-button:not(.itsa-button-togglebtn):not(.readonly).itsa-button-hover:active, button.itsa-button:not(.itsa-button-togglebtn):not(.readonly):active:focus, button.itsa-button:not(.itsa-button-togglebtn):not(.readonly):active:hover:focus, button.itsa-button:not(.itsa-button-togglebtn):not(.readonly).itsa-button-hover:active:focus, button.itsa-button-active:not(.itsa-button-togglebtn):not(.readonly):hover, button.itsa-button-active:not(.itsa-button-togglebtn):not(.readonly).itsa-button-hover, button.itsa-button-active:not(.itsa-button-togglebtn):not(.readonly):focus, button.itsa-button-active:not(.itsa-button-togglebtn):not(.readonly):hover:focus, button.itsa-button-active:not(.itsa-button-togglebtn):not(.readonly).itsa-button-hover:focus {\n  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.8) inset, 0 0 10px black inset; }\n\nbutton.itsa-button[disabled], button.itsa-button[disabled]:focus, button.itsa-button[disabled]:hover, button.itsa-button[disabled].itsa-button-hover, button.itsa-button[disabled]:active, button.itsa-button[disabled].itsa-button-active, button.itsa-button[disabled]:active:hover, button.itsa-button[disabled].itsa-button-hover:active, button.itsa-button[disabled].itsa-button-active:hover, button.itsa-button[disabled].itsa-button-active.itsa-button-hover, button.itsa-button[disabled]:active:focus, button.itsa-button[disabled].itsa-button-active:focus, button.itsa-button[disabled]:active:focus:hover, button.itsa-button[disabled].itsa-button-hover:active:focus, button.itsa-button[disabled].itsa-button-active:focus:hover, button.itsa-button[disabled].itsa-button-hover.itsa-button-active:focus {\n  border: none;\n  background-image: none !important;\n  filter: progid:DXImageTransform.Microsoft.gradient(enabled = false);\n  filter: alpha(opacity=60);\n  -khtml-opacity: 0.6;\n  -moz-opacity: 0.6;\n  opacity: 0.6;\n  cursor: not-allowed;\n  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.15) inset !important;\n  cursor: default; }\n\nbutton.itsa-button-smoothrounded {\n  border-radius: 2px; }\n\nbutton.itsa-button-rounded {\n  border-radius: 0.3em; }\n\nbutton.itsa-button-heavyrounded {\n  border-radius: 0.5em; }\n\nbutton.itsa-button-oval {\n  border-radius: 50%; }\n\nbutton.itsa-button-halfoval {\n  border-radius: 25%; }\n", ""]);
+	exports.push([module.id, "button.itsa-button {\n  margin: 0;\n  padding: 0.5em 1em;\n  font: inherit;\n  /* 2 */\n  font-family: inherit;\n  font-size: 100%;\n  color: #444;\n  /* rgba not supported (IE 8) */\n  color: rgba(0, 0, 0, 0.8);\n  /* rgba supported */\n  border: 1px solid #999;\n  /* IE 6/7/8 */\n  border: none transparent;\n  /* IE9 + everything else */\n  background-color: #E6E6E6;\n  text-decoration: none;\n  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.15) inset;\n  display: inline-block;\n  position: relative;\n  -webkit-box-sizing: border-box;\n  -moz-box-sizing: border-box;\n  box-sizing: border-box;\n  -webkit-touch-callout: none;\n  -webkit-user-select: none;\n  -khtml-user-select: none;\n  -moz-user-select: none;\n  -ms-user-select: none;\n  user-select: none;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  text-transform: none;\n  line-height: normal;\n  white-space: nowrap;\n  vertical-align: baseline;\n  text-align: center;\n  cursor: pointer; }\n\nbutton.itsa-button.readonly {\n  cursor: default; }\n\nbutton.itsa-button-primary {\n  background-color: #0078E7;\n  color: #FFF; }\n\nbutton.itsa-button-toggled {\n  background-color: #0078E7;\n  color: #FFF; }\n\nbutton.itsa-button:hover:not(.readonly), button.itsa-button.itsa-button-hover:not(.readonly), button.itsa-button:hover:focus:not(.readonly), button.itsa-button.itsa-button-hover:focus:not(.readonly) {\n  filter: progid:dximagetransform.microsoft.gradient(startColorstr='#00000000', endColorstr='#1a000000', GradientType=0);\n  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(transparent), color-stop(40%, rgba(0, 0, 0, 0.05)), to(rgba(0, 0, 0, 0.15)));\n  background-image: -webkit-linear-gradient(transparent, rgba(0, 0, 0, 0.05) 40%, rgba(0, 0, 0, 0.15));\n  background-image: -moz-linear-gradient(top, rgba(0, 0, 0, 0.05) 40%, rgba(0, 0, 0, 0.15));\n  background-image: -o-linear-gradient(transparent, rgba(0, 0, 0, 0.05) 40%, rgba(0, 0, 0, 0.15));\n  background-image: linear-gradient(transparent, rgba(0, 0, 0, 0.05) 40%, rgba(0, 0, 0, 0.15));\n  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.8) inset; }\n\nbutton.itsa-button:focus {\n  outline: 0; }\n\nbutton.itsa-button:focus:not(.readonly) {\n  filter: progid:dximagetransform.microsoft.gradient(startColorstr='#00000000', endColorstr='#1a000000', GradientType=0);\n  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(transparent), color-stop(40%, rgba(0, 0, 0, 0.05)), to(rgba(0, 0, 0, 0.1)));\n  background-image: -webkit-linear-gradient(transparent, rgba(0, 0, 0, 0.05) 40%, rgba(0, 0, 0, 0.1));\n  background-image: -moz-linear-gradient(top, rgba(0, 0, 0, 0.05) 40%, rgba(0, 0, 0, 0.1));\n  background-image: -o-linear-gradient(transparent, rgba(0, 0, 0, 0.05) 40%, rgba(0, 0, 0, 0.1));\n  background-image: linear-gradient(transparent, rgba(0, 0, 0, 0.05) 40%, rgba(0, 0, 0, 0.1));\n  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.6) inset; }\n\nbutton.itsa-button::-moz-focus-inner {\n  /* firefox focusring */\n  border: 0; }\n\nbutton.itsa-button-active:not(.readonly) {\n  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.8) inset, 0 0 10px rgba(0, 0, 0, 0.4) inset; }\n\nbutton.itsa-button:not(.itsa-button-togglebtn):not(.readonly):active:hover, button.itsa-button:not(.itsa-button-togglebtn):not(.readonly).itsa-button-hover:active, button.itsa-button:not(.itsa-button-togglebtn):not(.readonly):active:focus, button.itsa-button:not(.itsa-button-togglebtn):not(.readonly):active:hover:focus, button.itsa-button:not(.itsa-button-togglebtn):not(.readonly).itsa-button-hover:active:focus, button.itsa-button-active:not(.itsa-button-togglebtn):not(.readonly):hover, button.itsa-button-active:not(.itsa-button-togglebtn):not(.readonly).itsa-button-hover, button.itsa-button-active:not(.itsa-button-togglebtn):not(.readonly):focus, button.itsa-button-active:not(.itsa-button-togglebtn):not(.readonly):hover:focus, button.itsa-button-active:not(.itsa-button-togglebtn):not(.readonly).itsa-button-hover:focus {\n  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.8) inset, 0 0 10px black inset; }\n\nbutton.itsa-button[disabled], button.itsa-button[disabled]:focus, button.itsa-button[disabled]:hover, button.itsa-button[disabled].itsa-button-hover, button.itsa-button[disabled]:active, button.itsa-button[disabled].itsa-button-active, button.itsa-button[disabled]:active:hover, button.itsa-button[disabled].itsa-button-hover:active, button.itsa-button[disabled].itsa-button-active:hover, button.itsa-button[disabled].itsa-button-active.itsa-button-hover, button.itsa-button[disabled]:active:focus, button.itsa-button[disabled].itsa-button-active:focus, button.itsa-button[disabled]:active:focus:hover, button.itsa-button[disabled].itsa-button-hover:active:focus, button.itsa-button[disabled].itsa-button-active:focus:hover, button.itsa-button[disabled].itsa-button-hover.itsa-button-active:focus {\n  border: none;\n  background-image: none !important;\n  filter: progid:dximagetransform.microsoft.gradient(enabled = false);\n  filter: alpha(opacity=60);\n  -khtml-opacity: 0.6;\n  -moz-opacity: 0.6;\n  opacity: 0.6;\n  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.15) inset !important;\n  cursor: default; }\n\nbutton.itsa-button-smoothrounded {\n  border-radius: 2px; }\n\nbutton.itsa-button-rounded {\n  border-radius: 0.3em; }\n\nbutton.itsa-button-heavyrounded {\n  border-radius: 0.5em; }\n\nbutton.itsa-button-oval {\n  border-radius: 50%; }\n\nbutton.itsa-button-halfoval {\n  border-radius: 25%; }\n", ""]);
 
 	// exports
 
@@ -22592,6 +22609,8 @@
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
+	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
@@ -22602,16 +22621,36 @@
 	__webpack_require__(204);
 
 	var React = __webpack_require__(5),
-	    ReactDom = __webpack_require__(41),
 	    PropTypes = __webpack_require__(222),
-	    async = __webpack_require__(205).async,
+	    utils = __webpack_require__(205),
+	    async = utils.async,
+	    later = utils.later,
 	    Button = __webpack_require__(224),
+	    serializeStyles = __webpack_require__(225),
 	    CLICK = 'click',
+	    RESIZE = 'resize',
 	    MAIN_CLASS = 'itsa-table',
 	    ROW_CLASS = 'itsa-table-row',
 	    CELL_CLASS = 'itsa-table-cell itsa-table-col-',
 	    EDITABLE_CELL_CLASS_SPACED = ' itsa-table-editable-cell',
-	    ROW_REMOVE_CLASS = '__row-remove';
+	    ROW_REMOVE_CLASS = '__row-remove',
+	    ROW_ADD_CLASS = '__row-add',
+	    REGEXP_TRANSPARENT = /^rgba\(\d+\,( )?\d+\,( )?\d+\,( )?0\)$/,
+	    COPY_STYLES = ['width', 'height', 'padding-left', 'padding-right', 'padding-top', 'padding-bottom', 'border-top-color', 'border-top-left-radius', 'border-top-right-radius', 'border-top-style', 'border-top-width', 'border-bottom-color', 'border-bottom-left-radius', 'border-bottom-right-radius', 'border-bottom-style', 'border-bottom-width', 'border-left-color', 'border-left-style', 'border-left-width', 'border-right-color', 'border-right-style', 'border-right-width', 'background-color', 'background-image', 'background-attachment', 'background-blend-mode', 'background-clip', 'background-origin', 'background-position-x', 'background-position-y', 'background-repeat-x', 'background-repeat-y', 'background-size', 'color', 'font-family', 'font-feature-settings', 'font-kerning', 'font-size', 'font-stretch', 'font-style', 'font-variant-caps', 'font-variant-east-asian', 'font-variant-ligatures', 'font-variant-numeric', 'font-variant-settings', 'font-weight', 'font-smooting', 'font-size-delta', 'opacity', 'overflow', 'white-space', 'visibility', '-webkit-font-smooting', '-webkit-font-size-delta', '-ms-font-smooting', '-ms-font-size-delta', 'text-align', 'text-align-last', 'text-combine-upright', 'text-decoration-color', 'text-decoration-line', 'text-decoration-skip-ink', 'text-decoration-style', 'text-indent', 'text-orientation', 'text-overflow', 'text-rendering', 'text-shadow', 'text-size-adjust', 'text-transform', 'text-underline-position', '-webkit-text-align', '-webkit-text-combine', '-webkit-text-decorations-in-effect', '-webkit-text-emphasis-color', '-webkit-text-emphasis-position', '-webkit-text-emphasis-style', '-webkit-text-fill-color', '-webkit-text-orientation', '-webkit-text-security', '-webkit-text-stroke-color', '-webkit-text-stroke-width', '-ms-text-align', '-ms-text-combine', '-ms-text-decorations-in-effect', '-ms-text-emphasis-color', '-ms-text-emphasis-position', '-ms-text-emphasis-style', '-ms-text-fill-color', '-ms-text-orientation', '-ms-text-security', '-ms-text-stroke-color', '-ms-text-stroke-width'];
+
+	var retrieveFieldName = function retrieveFieldName(field) {
+	    return (typeof field === 'undefined' ? 'undefined' : _typeof(field)) === 'object' ? field.key : field;
+	};
+
+	var cloneData = function cloneData(arr) {
+	    return arr.map(function (record) {
+	        var newRecord = {};
+	        record.itsa_each(function (value, key) {
+	            newRecord[key] = value;
+	        });
+	        return newRecord;
+	    });
+	};
 
 	var Table = function (_React$Component) {
 	    _inherits(Table, _React$Component);
@@ -22624,35 +22663,46 @@
 	        var instance = _this;
 	        instance.state = {
 	            editableRow: null,
-	            editableCol: null
+	            editableCol: null,
+	            editValue: ''
 	        };
 	        instance.changeCell = instance.changeCell.bind(instance);
+	        instance.handleCellKeyDown = instance.handleCellKeyDown.bind(instance);
 	        instance.focus = instance.focus.bind(instance);
 	        instance._focusActiveCell = instance._focusActiveCell.bind(instance);
 	        instance.generateHead = instance.generateHead.bind(instance);
 	        instance.generateRows = instance.generateRows.bind(instance);
 	        instance.refocus = instance.refocus.bind(instance);
-	        instance.refocusByClick = instance.refocusByClick.bind(instance);
 	        instance.addRow = instance.addRow.bind(instance);
 	        instance.addCol = instance.addCol.bind(instance);
 	        instance.deleteRow = instance.deleteRow.bind(instance);
 	        instance._handleDocumentClick = instance._handleDocumentClick.bind(instance);
+	        instance._handleResize = instance._handleResize.bind(instance);
+	        instance.focusTextArea = instance.focusTextArea.bind(instance);
+	        instance.setFixedHeaderDimensions = instance.setFixedHeaderDimensions.bind(instance);
 	        return _this;
 	    }
 
 	    _createClass(Table, [{
 	        key: 'componentDidMount',
 	        value: function componentDidMount() {
-	            var instance = this;
-	            instance._componentNode = ReactDom.findDOMNode(instance);
+	            var instance = this,
+	                props = instance.props;
+	            instance._tableWidth = instance._tableNode.offsetWidth;
 	            // set outside clickHandler which watches for outside clicks that will collapse the component:
 	            instance.IE8_EVENTS = !instance._componentNode.addEventListener;
 	            if (instance.IE8_EVENTS) {
-	                document.attachEvent("on" + CLICK, instance._handleDocumentClick);
+	                document.attachEvent('on' + CLICK, instance._handleDocumentClick);
+	                window.attachEvent('on' + RESIZE, instance._handleResize);
 	            } else {
 	                document.addEventListener(CLICK, instance._handleDocumentClick, true);
+	                window.addEventListener(RESIZE, instance._handleResize, true);
 	            }
-	            instance.props.autoFocus && instance.focus();
+	            props.autoFocus && instance.focus();
+	            if (props.fixedHeaders) {
+	                async(instance.setFixedHeaderDimensions);
+	                instance._timer = later(instance.setFixedHeaderDimensions, 300, true);
+	            }
 	        }
 
 	        /**
@@ -22666,57 +22716,317 @@
 	        key: 'componentWillUnmount',
 	        value: function componentWillUnmount() {
 	            var instance = this;
+	            instance._timer && instance._timer.cancel();
+	            instance.unmounted = true;
 	            if (instance.IE8_EVENTS) {
-	                document.detachEvent("on" + CLICK, instance._handleDocumentClick);
+	                document.detachEvent('on' + CLICK, instance._handleDocumentClick);
+	                window.detachEvent('on' + RESIZE, instance._handleResize);
 	            } else {
 	                document.removeEventListener(CLICK, instance._handleDocumentClick, true);
+	                window.removeEventListener(RESIZE, instance._handleResize, true);
+	            }
+	        }
+	    }, {
+	        key: 'componentDidUpdate',
+	        value: function componentDidUpdate() {
+	            this.setFixedHeaderDimensions();
+	        }
+	    }, {
+	        key: '_handleResize',
+	        value: function _handleResize() {
+	            var instance = this,
+	                newWidth = instance._tableNode.offsetWidth;
+	            if (instance._tableWidth !== newWidth) {
+	                instance._tableWidth = newWidth;
+	                instance.setFixedHeaderDimensions();
+	            }
+	        }
+	    }, {
+	        key: 'setFixedHeaderDimensions',
+	        value: function setFixedHeaderDimensions() {
+	            var headNode = void 0,
+	                ths = void 0;
+	            var instance = this,
+	                props = instance.props;
+	            if (props.fixedHeaders && props.columns && !instance.unmounted) {
+	                headNode = instance._headNode;
+	                if (headNode) {
+	                    ths = headNode.itsa_getAll('th');
+	                    Array.prototype.forEach.call(ths, function (thNode) {
+	                        var inlineStyle = {},
+	                            fixedNode = void 0,
+	                            fixedContainerNode = void 0,
+	                            contStyle = void 0,
+	                            currentLeft = void 0,
+	                            currentTop = void 0,
+	                            prevAttr = void 0,
+	                            newAttr = void 0;
+	                        COPY_STYLES.forEach(function (style) {
+	                            var nodeStyle = thNode.itsa_getStyle(style);
+	                            if (style === 'background-color' && nodeStyle && REGEXP_TRANSPARENT.test(nodeStyle)) {
+	                                nodeStyle = undefined; // fixed headers cannot be transparent -> revert to the class background-color
+	                            }
+	                            nodeStyle === undefined || (inlineStyle[style] = nodeStyle + ' !important');
+	                        });
+	                        fixedContainerNode = thNode.itsa_getElement('div.itsa-table-header-cont');
+	                        if (fixedContainerNode) {
+	                            currentLeft = fixedContainerNode.itsa_getInlineStyle('left');
+	                            if (currentLeft) {
+	                                currentLeft = parseInt(currentLeft, 10);
+	                            } else {
+	                                currentLeft = 0;
+	                            }
+	                            currentTop = fixedContainerNode.itsa_getInlineStyle('top');
+	                            if (currentTop) {
+	                                currentTop = parseInt(currentTop, 10);
+	                            } else {
+	                                currentTop = 0;
+	                            }
+	                            contStyle = {
+	                                left: thNode.itsa_left - fixedContainerNode.itsa_left + currentLeft + 'px',
+	                                top: thNode.itsa_top - fixedContainerNode.itsa_top + currentTop + 'px'
+	                            };
+	                            prevAttr = fixedContainerNode.getAttribute('style');
+	                            newAttr = serializeStyles.serialize(contStyle);
+	                            prevAttr === newAttr || fixedContainerNode.setAttribute('style', newAttr);
+	                        }
+	                        fixedNode = thNode.itsa_getElement('div.itsa-table-header');
+	                        if (fixedNode) {
+	                            prevAttr = fixedNode.getAttribute('style');
+	                            newAttr = serializeStyles.serialize(inlineStyle);
+	                            prevAttr === newAttr || fixedNode.setAttribute('style', newAttr);
+	                        }
+	                    });
+	                }
 	            }
 	        }
 	    }, {
 	        key: 'changeCell',
-	        value: function changeCell(rowIndex, field, e) {
-	            var newData = void 0;
-	            var props = this.props,
-	                onChange = props.onChange;
+	        value: function changeCell(e) {
+	            var value = e.target.value;
+	            this._editValueBeforeBlur = value;
+	            this.setState({
+	                editValue: value
+	            });
+	        }
+	    }, {
+	        key: 'handleCellKeyDown',
+	        value: function handleCellKeyDown(e) {
+	            var instance = this;
+	            if (e.keyCode === 27) {
+	                instance.setState(function (prevState) {
+	                    return {
+	                        editValue: instance._editValueBeforeEdit,
+	                        editableRow: null,
+	                        editableCol: null
+	                    };
+	                }, function () {
+	                    instance._blurActiveCell();
+	                });
+	            }
+	        }
+	    }, {
+	        key: 'implementCellChanges',
+	        value: function implementCellChanges(rowIndex, field, force) {
+	            var changed = void 0,
+	                newData = void 0,
+	                col = void 0,
+	                secondField = void 0,
+	                x = void 0,
+	                y = void 0,
+	                columns = void 0,
+	                cells = void 0,
+	                editableCols = void 0;
+	            var instance = this,
+	                props = instance.props,
+	                propsData = props.data,
+	                state = instance.state,
+	                onChange = props.onChange,
+	                onChangeCell = props.onChangeCell,
+	                selectedRange = state.selectedRange,
+	                editValueBeforeBlur = instance._editValueBeforeBlur,
+	                editValueBeforeEdit = instance._editValueBeforeEdit;
+
+	            delete instance._editValueBeforeBlur;
+	            if ((typeof field === 'undefined' ? 'undefined' : _typeof(field)) === 'object') {
+	                field = field.key;
+	            }
+
+	            if (editValueBeforeEdit === editValueBeforeBlur && !selectedRange || editValueBeforeBlur === undefined) {
+	                // nothing changed
+	                return;
+	            }
+
+	            // if ((props.data[rowIndex][field]==editValueBeforeBlur) ||
+	            //     ((props.data[rowIndex][field]===undefined) && (editValueBeforeBlur==='')) ||
+	            //     ((props.data[rowIndex][field]===null) && (editValueBeforeBlur===''))) { // DO NOT tripple check -> the original value may not be a string, whereas the editvalue is!!
+	            //     // nothing changed
+	            //     return;
+	            // }
+
+	            if (selectedRange) {
+	                // editableCols: PropTypes.oneOfType([PropTypes.array, PropTypes.number]),
+	                if (force !== true) {
+	                    return;
+	                }
+	                columns = props.columns;
+	                if (!columns || columns.length === 0) {
+	                    columns = instance._columns;
+	                }
+	                editableCols = props.editableCols;
+	                if (typeof editableCols === 'number') {
+	                    editableCols = [editableCols];
+	                }
+	            }
 	            if (onChange) {
-	                newData = props.data.itsa_deepClone();
-	                newData[rowIndex][field] = e.target.value;
-	                onChange(newData);
+	                console.warn('onchange');
+	                changed = false;
+	                newData = cloneData(propsData);
+	                if (newData[rowIndex][field] != editValueBeforeBlur) {
+	                    changed = true;
+	                    newData[rowIndex][field] = editValueBeforeBlur;
+	                }
+	                // we might need to change multiple cells, in case `multiEdit` is set, which leads into a value for state.selectedRange:
+	                if (selectedRange) {
+	                    // editableCols: PropTypes.oneOfType([PropTypes.array, PropTypes.number]),
+	                    for (x = selectedRange.x1; x <= selectedRange.x2; x++) {
+	                        if (!editableCols || editableCols.itsa_contains(x)) {
+	                            for (y = selectedRange.y1; y <= selectedRange.y2; y++) {
+	                                col = columns[x];
+	                                secondField = typeof col === 'string' ? col : col.key;
+	                                if (newData[y][secondField] != editValueBeforeBlur) {
+	                                    changed = true;
+	                                    newData[y][secondField] = editValueBeforeBlur;
+	                                }
+	                            }
+	                        }
+	                    }
+	                }
+	                changed && onChange(newData);
+	            }
+	            if (onChangeCell) {
+	                console.warn('onchangecells A');
+	                if (!props.multiEdit) {
+	                    console.warn('onchangecells B');
+	                    if (propsData[rowIndex][field] != editValueBeforeBlur) {
+	                        onChangeCell(rowIndex, field, editValueBeforeBlur);
+	                    }
+	                } else {
+	                    console.warn('onchangecells C');
+	                    changed = false;
+	                    cells = [{ row: rowIndex, field: field }];
+	                    if (propsData[rowIndex][field] != editValueBeforeBlur) {
+	                        console.warn('onchangecells D');
+	                        changed = true;
+	                    }
+	                    // we might need to change multiple cells, in case `multiEdit` is set, which leads into a value for state.selectedRange:
+	                    if (selectedRange) {
+	                        // editableCols: PropTypes.oneOfType([PropTypes.array, PropTypes.number]),
+	                        for (x = selectedRange.x1; x <= selectedRange.x2; x++) {
+	                            if (!editableCols || editableCols.itsa_contains(x)) {
+	                                for (y = selectedRange.y1; y <= selectedRange.y2; y++) {
+	                                    col = columns[x];
+	                                    secondField = typeof col === 'string' ? col : col.key;
+	                                    cells.push({ row: y, field: secondField });
+	                                    if (propsData[y][secondField] != editValueBeforeBlur) {
+	                                        console.warn('onchangecells E');
+	                                        changed = true;
+	                                    }
+	                                }
+	                            }
+	                        }
+	                    }
+	                    changed && onChangeCell(cells, editValueBeforeBlur);
+	                }
+	            }
+	            if (selectedRange) {
+	                instance.setState({ selectedRange: null });
 	            }
 	        }
 	    }, {
 	        key: 'focus',
 	        value: function focus() {
+	            var editableCol = void 0,
+	                columns = void 0,
+	                hasColumns = void 0,
+	                item = void 0,
+	                editValue = void 0,
+	                editableCols = void 0;
 	            var instance = this,
+	                props = instance.props,
 	                state = instance.state;
-	            if (state.editableRow === null || state.editableRow === null) {
+	            editableCols = props.editableCols;
+	            if (state.editableRow === null || state.editableCol === null) {
+	                editableCol = props.rowHeader ? 1 : 0;
+	                if (typeof editableCols === 'number') {
+	                    editableCols = [editableCols];
+	                }
+	                if (editableCols) {
+	                    editableCol += editableCols[0];
+	                    if (props.rowHeader) {
+	                        editableCol--;
+	                    }
+	                }
+	                columns = props.columns;
+	                hasColumns = columns && columns.length > 0;
+	                item = props.data[0];
+	                editValue = hasColumns ? item[retrieveFieldName(columns[editableCol])] : item[retrieveFieldName(instance._columns[editableCol])];
 	                instance.setState({
 	                    editableRow: 0,
-	                    editableCol: instance.props.rowHeader ? 1 : 0
+	                    editableCol: editableCol,
+	                    editValue: editValue,
+	                    selectedRangeStart: {
+	                        x: editableCol,
+	                        y: 0
+	                    }
 	                });
 	            }
 	            instance._focusActiveCell();
+	        }
+	    }, {
+	        key: 'focusTextArea',
+	        value: function focusTextArea(e) {
+	            var length = void 0;
+	            var instance = this,
+	                node = e.target;
+	            instance._editValueBeforeBlur = node.value;
+	            if (instance.props.fullSelectOnEdit) {
+	                length = node.value.length;
+	                node.setSelectionRange(length, length);
+	            }
+	        }
+	    }, {
+	        key: '_blurActiveCell',
+	        value: function _blurActiveCell() {
+	            var instance = this,
+	                state = instance.state,
+	                textareaNode = instance['_textarea_' + state.editableRow + '_' + state.editableCol];
+	            if (textareaNode && document.activeElement === textareaNode) {
+	                textareaNode.blur();
+	            }
 	        }
 	    }, {
 	        key: '_focusActiveCell',
 	        value: function _focusActiveCell() {
 	            var instance = this;
 	            async(function () {
-	                var textareaNode = void 0,
-	                    length = void 0;
+	                var length = void 0;
 	                var state = instance.state,
-	                    textarea = instance.refs['textarea_' + state.editableRow + '_' + state.editableCol];
-	                if (textarea) {
-	                    textareaNode = ReactDom.findDOMNode(textarea);
-	                    if (textareaNode && document.activeElement !== textareaNode) {
-	                        textareaNode.focus();
-	                        if (textareaNode.setSelectionRange) {
-	                            length = textareaNode.value.length;
-	                            textareaNode.setSelectionRange(length, length);
-	                        }
+	                    textareaNode = instance['_textarea_' + state.editableRow + '_' + state.editableCol];
+	                if (textareaNode && document.activeElement !== textareaNode) {
+	                    instance._editValueBeforeEdit = textareaNode.value || '';
+	                    textareaNode.focus();
+	                    if (textareaNode.setSelectionRange) {
+	                        length = textareaNode.value.length;
+	                        textareaNode.setSelectionRange(0, length);
 	                    }
 	                }
 	            });
+	        }
+	    }, {
+	        key: 'scrollTo',
+	        value: function scrollTo(amount) {
+	            this._componentNode.scrollTop = amount;
 	        }
 	    }, {
 	        key: 'generateHead',
@@ -22727,8 +23037,12 @@
 	            var instance = this,
 	                props = instance.props,
 	                removeableY = props.removeableY,
+	                extendableY = props.extendableY,
 	                columns = props.columns,
-	                rowHeader = props.rowHeader;
+	                fixedHeaders = props.fixedHeaders,
+	                rowHeader = props.rowHeader,
+	                onHeaderClick = props.onHeaderClick;
+
 	            if (columns && columns.length > 0) {
 	                // first dedupe duplicated col-keys
 	                alreadyDefined = {};
@@ -22741,9 +23055,37 @@
 	                }).map(function (col, i) {
 	                    var colName = void 0,
 	                        classname = void 0,
-	                        key = void 0;
+	                        key = void 0,
+	                        cellContent = void 0,
+	                        headerClick = void 0;
 	                    var field = typeof col === 'string' ? col : col.key;
 	                    classname = 'itsa-table-header itsa-table-col-' + field;
+	                    headerClick = function headerClick(e) {
+	                        var selectedRange = void 0;
+	                        var state = instance.state,
+	                            rowIndex = state.editableRow,
+	                            colIndex = state.editableCol,
+	                            editCol = typeof colIndex === 'number' && columns[colIndex],
+	                            editField = editCol && (typeof editCol === 'string' ? editCol : editCol.key);
+	                        if (state.selectedRange) {
+	                            selectedRange = state.selectedRange.itsa_deepClone();
+	                        }
+	                        instance.setState({
+	                            editableRow: null,
+	                            editableCol: null,
+	                            editValue: ''
+	                        }, function () {
+	                            if (selectedRange) {
+	                                instance.setState({ selectedRange: null });
+	                            }
+	                        });
+	                        if (typeof rowIndex === 'number') {
+	                            instance.implementCellChanges(rowIndex, editField);
+	                        }
+	                        if (onHeaderClick) {
+	                            async(onHeaderClick.call(null, field, editField, state.editValue, rowIndex, colIndex, selectedRange, e));
+	                        }
+	                    };
 	                    if (i > 0 || !rowHeader) {
 	                        colName = typeof col === 'string' ? col : col.label || col.key;
 	                        key = typeof col === 'string' ? col : col.key;
@@ -22751,16 +23093,59 @@
 	                        classname += ' itsa-table-header-rowheader';
 	                        key = j--;
 	                    }
-	                    return React.createElement(
-	                        'th',
-	                        { className: classname, key: key },
-	                        colName
-	                    );
+	                    if (fixedHeaders) {
+	                        colName || (colName = '&nbsp;');
+	                        cellContent = '<div class="itsa-table-header-cont"><div class="itsa-table-header">' + colName + '</div></div>' + colName;
+	                        return React.createElement('th', { className: classname, dangerouslySetInnerHTML: { __html: cellContent }, key: key, onClick: headerClick });
+	                    }
+	                    return React.createElement('th', { className: classname, dangerouslySetInnerHTML: { __html: colName }, key: key, onClick: headerClick });
 	                });
-	                removeableY && cols.unshift(React.createElement('th', { className: ROW_REMOVE_CLASS, key: j-- }));
+	                if (extendableY === "full") {
+	                    if (fixedHeaders) {
+	                        cols.unshift(React.createElement(
+	                            'th',
+	                            { className: 'itsa-table-header ' + ROW_ADD_CLASS, key: j-- },
+	                            React.createElement(
+	                                'div',
+	                                { className: 'itsa-table-header-cont' },
+	                                React.createElement(
+	                                    'div',
+	                                    { className: 'itsa-table-header' },
+	                                    '\xA0'
+	                                )
+	                            ),
+	                            '\xA0'
+	                        ));
+	                    } else {
+	                        cols.unshift(React.createElement('th', { className: 'itsa-table-header ' + ROW_ADD_CLASS, key: j-- }));
+	                    }
+	                }
+	                if (removeableY) {
+	                    if (fixedHeaders) {
+	                        cols.unshift(React.createElement(
+	                            'th',
+	                            { className: 'itsa-table-header ' + ROW_REMOVE_CLASS, key: j-- },
+	                            React.createElement(
+	                                'div',
+	                                { className: 'itsa-table-header-cont' },
+	                                React.createElement(
+	                                    'div',
+	                                    { className: 'itsa-table-header' },
+	                                    '\xA0'
+	                                )
+	                            ),
+	                            '\xA0'
+	                        ));
+	                    } else {
+	                        cols.unshift(React.createElement('th', { className: 'itsa-table-header ' + ROW_REMOVE_CLASS, key: j-- }));
+	                    }
+	                }
+
 	                return React.createElement(
 	                    'thead',
-	                    null,
+	                    { ref: function ref(node) {
+	                            return instance._headNode = node;
+	                        } },
 	                    React.createElement(
 	                        'tr',
 	                        null,
@@ -22772,55 +23157,105 @@
 	    }, {
 	        key: 'generateRows',
 	        value: function generateRows() {
+	            var rowclass = void 0,
+	                editableColsArray = void 0;
 	            var instance = this,
 	                props = instance.props,
 	                state = instance.state,
 	                data = props.data,
 	                disabled = props.disabled,
-	                colums = props.columns,
+	                columns = props.columns,
+	                selectedRange = state.selectedRange,
+	                editableCols = props.editableCols,
+	                rowClassRenderer = props.rowClassRenderer,
 	                rowHeader = props.rowHeader,
 	                editable = props.editable,
 	                removeableY = props.removeableY,
+	                extendableY = props.extendableY,
 	                fullEditable = editable === 'full',
-	                hasColums = colums && colums.length > 0;
+	                hasColumns = columns && columns.length > 0;
+
+	            var colIsEditable = function colIsEditable(colIndex) {
+	                if (disabled) {
+	                    return false;
+	                }
+	                if (!editableCols) {
+	                    return true;
+	                }
+	                if (typeof editableCols === 'number') {
+	                    return editableCols === colIndex;
+	                }
+	                return editableCols.itsa_contains(colIndex);
+	            };
+
+	            if (editableCols) {
+	                editableColsArray = typeof editableCols === 'number' ? [editableCols] : editableCols;
+	            }
 
 	            return data.map(function (rowdata, i) {
-	                var cells = void 0;
-	                if (hasColums) {
+	                var cells = void 0,
+	                    extraClass = void 0;
+	                if (hasColumns) {
 	                    // create based upon the columns
-	                    cells = colums.map(function (col, j) {
+	                    cells = columns.map(function (col, j) {
 	                        var field = typeof col === 'string' ? col : col.key;
 	                        var classname = CELL_CLASS + field,
 	                            value = rowdata[field],
-	                            cellContent = void 0;
+	                            cellContent = void 0,
+	                            onBlur = void 0,
+	                            textAreaValue = void 0;
 	                        if (rowHeader && j === 0) {
 	                            classname += ' itsa-table-rowheader';
-	                            cellContent = value;
+	                            if (value === null) {
+	                                value = '';
+	                            }
+	                            cellContent = String(value);
 	                            return React.createElement('td', {
 	                                className: classname,
 	                                dangerouslySetInnerHTML: { __html: cellContent },
 	                                'data-colid': j,
 	                                key: field });
-	                        } else if (fullEditable || editable === true && state.editableRow === i && state.editableCol === j) {
+	                        } else if (fullEditable || editable === true && state.editableRow === i && state.editableCol === j && colIsEditable(j)) {
 	                            classname += EDITABLE_CELL_CLASS_SPACED;
 	                            typeof value === 'number' || value || (value = '');
 	                            value = String(value);
+	                            if (state.editableRow === i && state.editableCol === j && typeof instance._editValueBeforeBlur === 'string') {
+	                                textAreaValue = state.editValue;
+	                            } else {
+	                                textAreaValue = value;
+	                            }
+	                            fullEditable && (onBlur = instance.implementCellChanges.bind(instance, i, field));
 	                            cellContent = React.createElement('textarea', {
 	                                disabled: disabled,
-	                                onChange: instance.changeCell.bind(instance, i, field),
-	                                ref: 'textarea_' + i + '_' + j,
+	                                onBlur: onBlur,
+	                                onChange: instance.changeCell,
+	                                onFocus: instance.focusTextArea,
+	                                onKeyDown: instance.handleCellKeyDown,
+	                                ref: function ref(node) {
+	                                    return instance['_textarea_' + i + '_' + j] = node;
+	                                },
 	                                rows: 1,
-	                                value: value });
+	                                value: textAreaValue });
 	                            return React.createElement(
 	                                'td',
 	                                {
 	                                    className: classname,
 	                                    'data-colid': j,
 	                                    key: field },
+	                                React.createElement(
+	                                    'span',
+	                                    null,
+	                                    textAreaValue
+	                                ),
 	                                cellContent
 	                            );
-	                        } else {
-	                            value || (value = '');
+	                        }
+	                        typeof value === 'number' || value || (value = '');
+	                        // we may need to add an 'selected' class:
+	                        if (selectedRange && j >= selectedRange.x1 && j <= selectedRange.x2 && i >= selectedRange.y1 && i <= selectedRange.y2 && (!editableCols || editableColsArray.itsa_contains(j))) {
+	                            classname += ' selected-range';
+	                        }
+	                        if ((typeof value === 'undefined' ? 'undefined' : _typeof(value)) !== 'object') {
 	                            value = String(value);
 	                            value.itsa_trim() === '' && (value = '&nbsp;');
 	                            cellContent = value.itsa_replaceAll('\n', '<br />');
@@ -22830,52 +23265,111 @@
 	                                'data-colid': j,
 	                                key: field });
 	                        }
+	                        // else
+	                        return React.createElement(
+	                            'td',
+	                            {
+	                                className: classname,
+	                                'data-colid': j,
+	                                key: field },
+	                            value
+	                        );
 	                    });
 	                } else {
 	                    // all fields
 	                    cells = [];
+	                    var j = -1;
+	                    instance._columns = [];
 	                    rowdata.itsa_each(function (value, key) {
+	                        var field = typeof key === 'string' ? key : key.key;
 	                        var classname = CELL_CLASS + key,
 	                            cellContent = void 0,
+	                            onBlur = void 0,
+	                            textAreaValue = void 0,
 	                            colCount = cells.length;
+	                        j++;
+	                        instance._columns[j] = key;
 	                        if (rowHeader && colCount === 0) {
 	                            classname += ' itsa-table-rowheader';
+	                            if (value === null) {
+	                                value = '';
+	                            }
 	                            cellContent = value;
 	                            cells.push(React.createElement('td', { className: classname, dangerouslySetInnerHTML: { __html: cellContent }, 'data-colid': colCount, key: key }));
 	                        } else if (fullEditable || editable === true && state.editableRow === i && state.editableCol === colCount) {
 	                            classname += EDITABLE_CELL_CLASS_SPACED;
 	                            typeof value === 'number' || value || (value = '');
 	                            value = String(value);
+	                            if (state.editableRow === i && state.editableCol === j) {
+	                                textAreaValue = state.editValue;
+	                            } else {
+	                                textAreaValue = value;
+	                            }
+	                            fullEditable && (onBlur = instance.implementCellChanges.bind(instance, i, field));
 	                            cellContent = React.createElement('textarea', {
 	                                disabled: disabled,
-	                                onChange: instance.changeCell.bind(instance, i, key),
-	                                ref: 'textarea_' + i + '_' + colCount,
+	                                onBlur: onBlur,
+	                                onChange: instance.changeCell,
+	                                onFocus: instance.focusTextArea,
+	                                onKeyDown: instance.handleCellKeyDown,
+	                                ref: function ref(node) {
+	                                    return instance['_textarea_' + i + '_' + colCount] = node;
+	                                },
 	                                rows: 1,
-	                                value: value });
+	                                value: textAreaValue });
 	                            cells.push(React.createElement(
 	                                'td',
 	                                { className: classname, 'data-colid': colCount, key: key },
-	                                cellContent
+	                                cellContent,
+	                                React.createElement(
+	                                    'span',
+	                                    null,
+	                                    textAreaValue
+	                                )
 	                            ));
 	                        } else {
-	                            value || (value = '');
-	                            value = String(value);
-	                            value.itsa_trim() === '' && (value = '&nbsp;');
-	                            cellContent = value.itsa_replaceAll('\n', '<br />');
-	                            cells.push(React.createElement('td', { className: classname, dangerouslySetInnerHTML: { __html: cellContent }, 'data-colid': colCount, key: key }));
+	                            typeof value === 'number' || value || (value = '');
+	                            // we may need to add an 'selected' class:
+	                            if (selectedRange && j >= selectedRange.x1 && j <= selectedRange.x2 && i >= selectedRange.y1 && i <= selectedRange.y2 && (!editableCols || editableColsArray.itsa_contains(j))) {
+	                                classname += ' selected-range';
+	                            }
+	                            if ((typeof value === 'undefined' ? 'undefined' : _typeof(value)) !== 'object') {
+	                                value = String(value);
+	                                value.itsa_trim() === '' && (value = '&nbsp;');
+	                                cellContent = value.itsa_replaceAll('\n', '<br />');
+	                                cells.push(React.createElement('td', { className: classname, dangerouslySetInnerHTML: { __html: cellContent }, 'data-colid': colCount, key: key }));
+	                            } else {
+	                                cells.push(React.createElement(
+	                                    'td',
+	                                    { className: classname, 'data-colid': colCount, key: key },
+	                                    value
+	                                ));
+	                            }
 	                        }
 	                    });
+	                }
+	                if (extendableY === 'full') {
+	                    cells.unshift(React.createElement(
+	                        'td',
+	                        { className: CELL_CLASS + ROW_ADD_CLASS, key: ROW_ADD_CLASS },
+	                        React.createElement(Button, { buttonText: '+', className: 'controll-btn', disabled: disabled, onClick: instance.addRow.bind(instance, i) })
+	                    ));
 	                }
 	                if (removeableY) {
 	                    cells.unshift(React.createElement(
 	                        'td',
 	                        { className: CELL_CLASS + ROW_REMOVE_CLASS, key: ROW_REMOVE_CLASS },
-	                        React.createElement(Button, { buttonText: '-', className: 'remove-row controll-btn', disabled: disabled, onClick: instance.deleteRow.bind(instance, i) })
+	                        React.createElement(Button, { buttonText: '-', className: 'controll-btn', disabled: disabled, onClick: instance.deleteRow.bind(instance, i) })
 	                    ));
+	                }
+	                rowclass = ROW_CLASS;
+	                if (rowClassRenderer) {
+	                    extraClass = rowClassRenderer(i, rowdata);
+	                    extraClass && (rowclass += ' ' + extraClass);
 	                }
 	                return React.createElement(
 	                    'tr',
-	                    { className: ROW_CLASS, 'data-rowid': i, 'data-recordid': i, key: i },
+	                    { className: rowclass, 'data-recordid': i, 'data-rowid': i, key: i },
 	                    cells
 	                );
 	            });
@@ -22889,25 +23383,49 @@
 	                maxRow = void 0,
 	                maxCol = void 0,
 	                firstItem = void 0,
-	                colChangedByRow = void 0;
+	                item = void 0,
+	                editValue = void 0,
+	                colChangedByRow = void 0,
+	                prevRowIndex = void 0,
+	                prevColIndex = void 0,
+	                field = void 0,
+	                editDirectionDown = void 0,
+	                arrowDown = void 0,
+	                arrowUp = void 0;
 	            var instance = this,
 	                props = instance.props,
 	                state = instance.state,
 	                keyCode = e.keyCode,
-	                editDirectionDown = props.editDirectionDown,
 	                shiftKey = e.shiftKey,
+	                ctrlKey = e.metaKey || e.ctrlKey,
 	                data = props.data,
+	                loop = props.loop,
+	                editableCols = props.editableCols,
+	                cursorNav = props.cursorNav,
 	                lowestColIndex = props.rowHeader ? 1 : 0,
-	                columns = props.columns;
+	                highestColIndex = data.itsa_keys().length - (props.rowHeader ? 0 : 1),
+	                columns = props.columns,
+	                hasColumns = columns && columns.length > 0;
 
+	            var implementChanges = function implementChanges(keepFocus) {
+	                if (props.editable === true || state.selectedRange) {
+	                    // NOT 'full' for that would take care of itself
+	                    field = hasColumns ? columns[prevColIndex] : instance._columns[prevColIndex];
+	                    instance.implementCellChanges(prevRowIndex, field, true);
+	                    keepFocus && (instance._editValueBeforeEdit = instance._editValueBeforeBlur);
+	                }
+	            };
+	            editDirectionDown = keyCode === 9 || keyCode === 37 || keyCode === 39 ? false : props.editDirectionDown;
 	            if (keyCode === 13) {
 	                if (shiftKey) {
 	                    return;
 	                }
 	            }
-	            match = keyCode === 9 || keyCode === 13;
+	            match = keyCode === 9 || keyCode === 13 || cursorNav && (keyCode === 40 || keyCode === 38) || cursorNav && ctrlKey && (keyCode === 37 || keyCode === 39); // 40=arrowDown, 38=arrowUp
 	            if (match) {
 	                e.preventDefault();
+	                arrowDown = keyCode === 40;
+	                arrowUp = keyCode === 38;
 	                maxRow = data.length - 1;
 	                if (columns) {
 	                    maxCol = columns.length - 1;
@@ -22915,81 +23433,184 @@
 	                    firstItem = data[0];
 	                    maxCol = firstItem ? firstItem.itsa_size() - 1 : 0;
 	                }
-	                focusRow = state.editableRow;
-	                focusCol = state.editableCol;
-	                if (keyCode === 9 && shiftKey) {
+	                focusRow = prevRowIndex = state.editableRow;
+	                focusCol = prevColIndex = state.editableCol;
+
+	                if (keyCode === 9 && shiftKey || keyCode === 37 && ctrlKey || arrowUp) {
 	                    // backwards
-	                    if (editDirectionDown) {
+	                    if (editDirectionDown || arrowUp) {
 	                        focusRow--;
 	                    } else {
-	                        focusCol--;
+	                        do {
+	                            focusCol--;
+	                            if (focusCol < lowestColIndex) {
+	                                break;
+	                            }
+	                        } while (!editableCols || !editableCols.itsa_contains(focusCol));
 	                    }
 	                } else {
 	                    // forewards
-	                    if (editDirectionDown) {
+	                    if (editDirectionDown || arrowDown) {
 	                        focusRow++;
 	                    } else {
-	                        focusCol++;
+	                        do {
+	                            focusCol++;
+	                            if (focusCol > highestColIndex) {
+	                                break;
+	                            }
+	                        } while (!editableCols || !editableCols.itsa_contains(focusCol));
 	                    }
 	                }
 	                // now we might need to adjust the values when out of range
 	                if (focusRow < 0) {
+	                    if (!loop) {
+	                        implementChanges(true);
+	                        return;
+	                    }
 	                    focusRow = maxRow;
-	                    focusCol--;
+	                    do {
+	                        focusCol--;
+	                        if (focusCol < lowestColIndex) {
+	                            focusCol = highestColIndex;
+	                        }
+	                    } while (!editableCols || !editableCols.itsa_contains(focusCol));
 	                    colChangedByRow = true;
 	                } else if (focusRow > maxRow) {
+	                    if (!loop) {
+	                        implementChanges(true);
+	                        return;
+	                    }
 	                    focusRow = 0;
-	                    focusCol++;
+	                    do {
+	                        focusCol++;
+	                        if (focusCol > highestColIndex) {
+	                            focusCol = lowestColIndex;
+	                        }
+	                    } while (!editableCols || !editableCols.itsa_contains(focusCol));
 	                    colChangedByRow = true;
 	                }
 	                if (focusCol < lowestColIndex) {
+	                    if (!loop) {
+	                        implementChanges(true);
+	                        return;
+	                    }
 	                    colChangedByRow || focusRow--;
 	                    focusRow < 0 && (focusRow = maxRow);
 	                    focusCol = maxCol;
 	                } else if (focusCol > maxCol) {
+	                    if (!loop) {
+	                        implementChanges(true);
+	                        return;
+	                    }
 	                    colChangedByRow || focusRow++;
 	                    focusCol = lowestColIndex;
 	                    focusRow > maxRow && (focusRow = 0);
 	                }
+	                item = props.data[focusRow];
+	                editValue = hasColumns ? item[retrieveFieldName(columns[focusCol])] : item[retrieveFieldName(instance._columns[focusCol])];
 	                this.setState({
 	                    editableRow: focusRow,
-	                    editableCol: focusCol
+	                    editableCol: focusCol,
+	                    editValue: editValue,
+	                    selectedRangeStart: {
+	                        x: focusCol,
+	                        y: focusRow
+	                    },
+	                    selectedRange: null
 	                });
 	                instance._focusActiveCell();
+	                implementChanges();
 	            }
 	        }
 	    }, {
-	        key: 'refocusByClick',
-	        value: function refocusByClick(e) {
+	        key: 'handleClick',
+	        value: function handleClick(editable, e) {
+	            var instance = this,
+	                props = instance.props,
+	                onClick = instance.props.onClick,
+	                state = instance.state,
+	                shiftClick = e.shiftKey;
 	            var node = e.target,
+	                editableCols = props.editableCols,
 	                colId = void 0,
-	                rowId = void 0;
+	                rowId = void 0,
+	                columns = void 0,
+	                hasColumns = void 0,
+	                item = void 0,
+	                editValue = void 0,
+	                newState = void 0,
+	                prevRowId = void 0,
+	                prevColId = void 0,
+	                selectedRangeStart = void 0;
 	            node.tagName === 'TD' || (node = node.parentNode);
 	            colId = parseInt(node.getAttribute('data-colid'), 10);
 	            node = node.parentNode;
 	            rowId = parseInt(node.getAttribute('data-rowid'), 10);
-	            this.setState({
-	                editableRow: rowId,
-	                editableCol: colId
-	            });
-	            this._focusActiveCell();
+	            if (typeof editableCols === 'number') {
+	                editableCols = [editableCols];
+	            }
+	            if (editable && (!editableCols || editableCols.itsa_contains(colId))) {
+	                columns = props.columns;
+	                hasColumns = columns && columns.length > 0;
+	                item = props.data[rowId];
+	                editValue = hasColumns ? item[retrieveFieldName(columns[colId])] : item[retrieveFieldName(instance._columns[colId])];
+	                newState = {
+	                    editableRow: rowId,
+	                    editableCol: colId,
+	                    editValue: editValue
+	                };
+	                if (props.editable && props.multiEdit) {
+	                    if (shiftClick) {
+	                        selectedRangeStart = state.selectedRangeStart;
+	                        if (selectedRangeStart) {
+	                            prevRowId = selectedRangeStart.y;
+	                            prevColId = selectedRangeStart.x;
+	                            if (typeof prevRowId === 'number' && typeof prevColId === 'number' && (prevColId !== colId || prevRowId !== rowId)) {
+	                                newState.selectedRange = {
+	                                    x1: Math.min(prevColId, colId),
+	                                    y1: Math.min(prevRowId, rowId),
+	                                    x2: Math.max(prevColId, colId),
+	                                    y2: Math.max(prevRowId, rowId)
+	                                };
+	                            }
+	                        } else {
+	                            newState.selectedRange = null;
+	                        }
+	                    } else {
+	                        newState.selectedRange = null;
+	                        newState.selectedRangeStart = {
+	                            x: colId,
+	                            y: rowId
+	                        };
+	                    }
+	                }
+	                instance.setState(newState);
+	                instance._focusActiveCell();
+	            }
+	            onClick && onClick(rowId, colId);
 	        }
 	    }, {
 	        key: 'addRow',
-	        value: function addRow() {
+	        value: function addRow(index) {
 	            var newData = void 0,
-	                len = void 0;
+	                len = void 0,
+	                newRecord = void 0;
 	            var props = this.props,
 	                onChange = props.onChange;
 	            if (onChange) {
-	                newData = props.data.itsa_deepClone();
+	                newData = cloneData(props.data);
 	                len = newData.length;
 	                if (len == 0) {
 	                    newData = [{ '__row0': null }];
 	                } else {
-	                    newData[len] = newData[0].itsa_map(function () {
+	                    newRecord = newData[0].itsa_map(function () {
 	                        return null;
 	                    });
+	                    if (typeof index === 'number') {
+	                        newData.itsa_insertAt(newRecord, index);
+	                    } else {
+	                        newData[props.extendableY === "begin" ? "unshift" : "push"](newRecord);
+	                    }
 	                }
 	                onChange(newData);
 	            }
@@ -23003,7 +23624,7 @@
 	            var props = this.props,
 	                onChange = props.onChange;
 	            if (onChange) {
-	                newData = props.data.itsa_deepClone();
+	                newData = cloneData(props.data);
 	                len = newData.length;
 	                if (len == 0) {
 	                    size = 0;
@@ -23023,7 +23644,7 @@
 	            var props = this.props,
 	                onChange = props.onChange;
 	            if (onChange) {
-	                newData = props.data.itsa_deepClone();
+	                newData = cloneData(props.data);
 	                newData.splice(index, 1);
 	                onChange(newData);
 	            }
@@ -23041,38 +23662,69 @@
 	        key: 'render',
 	        value: function render() {
 	            var classname = MAIN_CLASS,
-	                refocusByClick = void 0,
+	                handleClick = void 0,
 	                refocus = void 0,
 	                addRowBtn = void 0,
-	                addColBtn = void 0;
+	                addColBtn = void 0,
+	                tableClassName = void 0,
+	                addRowClass = void 0;
 	            var instance = this,
 	                props = instance.props,
 	                editable = props.editable,
 	                disabled = props.disabled,
 	                propsClassName = props.className;
 
+	            tableClassName = props.tableClass;
 	            propsClassName && (classname += ' ' + propsClassName);
 	            if (props.extendableY) {
-	                addRowBtn = React.createElement(Button, { buttonText: '+', className: 'add-row controll-btn', disabled: disabled, onClick: instance.addRow });
+	                addRowClass = 'add-row controll-btn';
+	                if (props.removeableY && props.extendableY === 'full') {
+	                    addRowClass += ' add-row-indent';
+	                }
+	                addRowBtn = React.createElement(Button, { buttonText: '+', className: addRowClass, disabled: disabled, onClick: instance.addRow });
 	            }
 	            if (props.extendableX && !props.columns) {
 	                addColBtn = React.createElement(Button, { buttonText: '+', className: 'controll-btn', disabled: disabled, onClick: instance.addCol });
 	            }
 	            if (editable === true || editable === 'full') {
-	                refocusByClick = instance.refocusByClick;
+	                handleClick = instance.handleClick.bind(instance, true);
 	                refocus = instance.refocus;
+	            } else {
+	                handleClick = instance.handleClick.bind(instance, false);
 	            }
+	            if (props.fixedHeaders) {
+	                tableClassName += ' fixed-headers';
+	                classname += ' scrollable-y';
+	                // fixedHeadertable = (
+	                //     <table className={props.tableClass+' fixed-headers'}>
+	                //         {instance.generateHead()}
+	                //         <tbody>
+	                //             {instance.generateRows()}
+	                //         </tbody>
+	                //     </table>
+	                // );
+	            }
+	            // classname+='flex-container-vertical';
 	            return React.createElement(
 	                'div',
-	                { className: classname },
+	                {
+	                    className: classname,
+	                    onScroll: props.onScroll,
+	                    ref: function ref(node) {
+	                        return instance._componentNode = node;
+	                    } },
 	                React.createElement(
 	                    'table',
-	                    { className: props.tableClass },
+	                    {
+	                        className: tableClassName,
+	                        ref: function ref(node) {
+	                            return instance._tableNode = node;
+	                        } },
 	                    instance.generateHead(),
 	                    React.createElement(
 	                        'tbody',
 	                        {
-	                            onClick: refocusByClick,
+	                            onClick: handleClick,
 	                            onKeyDown: refocus },
 	                        instance.generateRows()
 	                    )
@@ -23094,12 +23746,25 @@
 	    }, {
 	        key: '_handleDocumentClick',
 	        value: function _handleDocumentClick(e) {
+	            var rowIndex = void 0,
+	                field = void 0,
+	                colIndex = void 0,
+	                columns = void 0,
+	                hasColumns = void 0;
 	            var instance = this,
 	                targetNode = e.target;
-	            if (instance.props.editable === true && (!instance._componentNode.contains(targetNode) || targetNode.tagName !== 'TEXTAREA')) {
+	            if (instance.props.editable === true && (!instance._componentNode.contains(targetNode) || targetNode.tagName !== 'TEXTAREA' && !instance._headNode.contains(targetNode))) {
+	                rowIndex = instance.state.editableRow;
+	                colIndex = instance.state.editableCol;
+	                columns = instance.props.columns;
+	                hasColumns = columns && columns.length > 0;
+	                field = hasColumns ? columns[colIndex] : instance._columns[colIndex];
 	                instance.setState({
 	                    editableRow: null,
-	                    editableCol: null
+	                    editableCol: null,
+	                    editValue: ''
+	                }, function () {
+	                    typeof rowIndex === 'number' && instance.implementCellChanges(rowIndex, field);
 	                });
 	            }
 	        }
@@ -23118,25 +23783,40 @@
 	     * @type Object
 	     * @since 2.0.0
 	    */
+	    cursorNav: PropTypes.bool,
 	    data: PropTypes.array,
 	    disabled: PropTypes.bool,
 	    editable: PropTypes.oneOfType([PropTypes.bool, PropTypes.string]),
+	    editableCols: PropTypes.oneOfType([PropTypes.array, PropTypes.number]),
 	    editDirectionDown: PropTypes.bool,
-	    removeableY: PropTypes.bool,
 	    extendableX: PropTypes.bool,
-	    extendableY: PropTypes.bool,
+	    extendableY: PropTypes.oneOfType([PropTypes.bool, PropTypes.string]), // true, "begin" or "all"
+	    fixedHeaders: PropTypes.bool,
+	    fullSelectOnEdit: PropTypes.bool,
+	    loop: PropTypes.bool,
+	    multiEdit: PropTypes.bool,
 	    onChange: PropTypes.func,
+	    onChangeCell: PropTypes.func,
+	    onClick: PropTypes.func,
+	    onHeaderClick: PropTypes.func,
+	    onScroll: PropTypes.func,
+	    removeableY: PropTypes.bool,
+	    rowClassRenderer: PropTypes.func,
 	    rowHeader: PropTypes.bool,
 	    tableClass: PropTypes.string
 	};
 
 	Table.defaultProps = {
 	    autoFocus: false,
+	    cursorNav: false,
 	    data: [],
 	    editable: false,
 	    editDirectionDown: true,
 	    extendableX: false,
 	    extendableY: false,
+	    fullSelectOnEdit: true,
+	    loop: true,
+	    multiEdit: false,
 	    removeableY: false,
 	    rowHeader: false
 	};
@@ -27274,7 +27954,6 @@
 
 	var React = __webpack_require__(5),
 	    PropTypes = __webpack_require__(222),
-	    ReactDom = __webpack_require__(41),
 	    utils = __webpack_require__(205),
 	    later = utils.later,
 	    async = utils.async,
@@ -27343,7 +28022,6 @@
 	        key: "componentDidMount",
 	        value: function componentDidMount() {
 	            var instance = this;
-	            instance._buttonNode = ReactDom.findDOMNode(instance);
 	            instance._mounted = true;
 	            instance._knownMobile = "ontouchstart" in window || navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0;
 	            if (instance.props.autoFocus) {
@@ -27667,6 +28345,9 @@
 	                    onMouseDown: handleMouseDown,
 	                    onMouseOut: instance.handleMouseOut,
 	                    onMouseUp: handleMouseUp,
+	                    ref: function ref(node) {
+	                        return instance._buttonNode = node;
+	                    },
 	                    role: "button",
 	                    style: props.style,
 	                    tabIndex: props.tabIndex,
@@ -27953,6 +28634,31 @@
 	};
 
 	module.exports = Button;
+
+/***/ }),
+/* 225 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	__webpack_require__(196);
+
+	var serialize = function serialize(styles) {
+	    if (!Object.itsa_isObject(styles)) {
+	        return '';
+	    }
+	    var serialized = '';
+	    styles.itsa_each(function (value, key) {
+	        value && (serialized += key + ':' + value + ';');
+	    });
+	    // serialized += '}';
+	    // (serialized==='{}') && (serialized='');
+	    return serialized;
+	};
+
+	module.exports = {
+	    serialize: serialize
+	};
 
 /***/ })
 /******/ ]);

@@ -1,46 +1,107 @@
 .itsa-table {
+    position: relative;
+
+    &.scrollable-y {
+        overflow-y: auto;
+    }
+
     .add-row {
         clear: both;
         display: block;
         margin-left: 1px;
+
+        &.add-row-indent {
+            margin-left: calc(2.5em + 2px);
+        }
     }
+
     .controll-btn {
         width: 2.5em;
     }
-    .itsa-table-col-__row-remove {
+
+    .itsa-table-col-__row-remove,
+    .itsa-table-col-__row-add,
+    .__row-remove,
+    .__row-add {
         width: 1px;
+        border-left: none !important;
     }
+
     button.itsa-button {
         &.controll-btn {
             background-color: #CCC;
         }
     }
+
     table {
         box-sizing: border-box !important;
         float: left !important;
+        width: 100% !important;
     }
+
+    thead {
+        .itsa-table-header {
+            background-color: #E0E0E0;
+            border-left: 1px solid #CBCBCB;
+            border-top: 1px solid #CBCBCB;
+            font-weight: bold;
+            white-space: nowrap;
+            box-sizing: border-box !important;
+
+            div.itsa-table-header-cont {
+                position: relative !important;
+                padding: 0 !important;
+                z-index: 9 !important;
+
+                div.itsa-table-header {
+                    position: fixed !important;
+                    z-index: 1 !important;
+                    opacity: 0;
+                    background-color: #FFF !important;
+                }
+            }
+        }
+    }
+
     td {
         height: 1em;
+
         &.itsa-table-rowheader {
             background-color: #E0E0E0;
             border-top: 1px solid #CBCBCB;
             font-weight: bold;
         }
-        &.itsa-table-editable-cell,
-        &.itsa-table-col-__row-remove {
-            padding: 0;
-        }
-        textarea {
-            width: 100%;
+
+        &.selected-range {
+            background-color: #FFF !important;
+            border: 1px solid #ccc;
+            -webkit-box-sizing: border-box;
+            -moz-box-sizing: border-box;
             box-sizing: border-box;
-            height: 2em;
+        }
+
+        &.itsa-table-editable-cell,
+        &.itsa-table-col-__row-remove,
+        &.itsa-table-col-__row-add {
+            padding: 0 !important;
+            position: relative;
+        }
+
+        &.itsa-table-editable-cell > span {
+            opacity: 0 !important;
+        }
+
+        textarea {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            box-sizing: border-box;
+            overflow-y: hidden;
         }
     }
-    th {
-        background-color: #E0E0E0;
-        border-left: 1px solid #CBCBCB;
-        font-weight: bold;
-    }
+
     textarea {
         resize: none;
         display: inline-block;

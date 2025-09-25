@@ -10,10 +10,22 @@
         td.itsa-table-editable-cell {
             padding: 0;
         }
+
+        td.selected-range {
+            background-color: #FFF !important;
+            border: 1px solid #129FEA;
+            padding: calc(.5em - 1px) calc(1em - 1px);
+        }
+
+        td.itsa-table-editable-cell > span {
+            padding: 0.5em calc(1em - 1px);
+        }
+
+
         textarea {
-            padding: 0.5em 1em;
-            padding-top: calc(0.5em - 2px);
             padding-left: calc(1em - 1px);
+            padding-right: calc(1em - 1px);
+            padding-top: calc(.5em - 1px);
 
             &[disabled] {
                 cursor: not-allowed;
@@ -21,6 +33,7 @@
                 color: #cad2d3;
             }
         }
+
         textarea:focus {
             outline: thin solid #129FEA;
             outline: 1px auto #129FEA;

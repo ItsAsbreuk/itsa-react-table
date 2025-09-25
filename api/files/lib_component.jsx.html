@@ -101,16 +101,130 @@ require(&#x27;itsa-jsext&#x27;);
 require(&#x27;itsa-dom&#x27;);
 
 const React = require(&#x27;react&#x27;),
-    ReactDom = require(&#x27;react-dom&#x27;),
-    PropTypes = require(&quot;prop-types&quot;),
-    async = require(&#x27;itsa-utils&#x27;).async,
+    PropTypes = require(&#x27;prop-types&#x27;),
+    utils = require(&#x27;itsa-utils&#x27;),
+    async = utils.async,
+    later = utils.later,
     Button = require(&#x27;itsa-react-button&#x27;),
+    serializeStyles = require(&#x27;./serialize-styles&#x27;),
     CLICK = &#x27;click&#x27;,
+    RESIZE = &#x27;resize&#x27;,
     MAIN_CLASS = &#x27;itsa-table&#x27;,
     ROW_CLASS = &#x27;itsa-table-row&#x27;,
     CELL_CLASS = &#x27;itsa-table-cell itsa-table-col-&#x27;,
     EDITABLE_CELL_CLASS_SPACED = &#x27; itsa-table-editable-cell&#x27;,
-    ROW_REMOVE_CLASS = &#x27;__row-remove&#x27;;
+    ROW_REMOVE_CLASS = &#x27;__row-remove&#x27;,
+    ROW_ADD_CLASS = &#x27;__row-add&#x27;,
+    REGEXP_TRANSPARENT = /^rgba\(\d+\,( )?\d+\,( )?\d+\,( )?0\)$/,
+    COPY_STYLES = [
+        &#x27;width&#x27;,
+        &#x27;height&#x27;,
+        &#x27;padding-left&#x27;,
+        &#x27;padding-right&#x27;,
+        &#x27;padding-top&#x27;,
+        &#x27;padding-bottom&#x27;,
+        &#x27;border-top-color&#x27;,
+        &#x27;border-top-left-radius&#x27;,
+        &#x27;border-top-right-radius&#x27;,
+        &#x27;border-top-style&#x27;,
+        &#x27;border-top-width&#x27;,
+        &#x27;border-bottom-color&#x27;,
+        &#x27;border-bottom-left-radius&#x27;,
+        &#x27;border-bottom-right-radius&#x27;,
+        &#x27;border-bottom-style&#x27;,
+        &#x27;border-bottom-width&#x27;,
+        &#x27;border-left-color&#x27;,
+        &#x27;border-left-style&#x27;,
+        &#x27;border-left-width&#x27;,
+        &#x27;border-right-color&#x27;,
+        &#x27;border-right-style&#x27;,
+        &#x27;border-right-width&#x27;,
+        &#x27;background-color&#x27;,
+        &#x27;background-image&#x27;,
+        &#x27;background-attachment&#x27;,
+        &#x27;background-blend-mode&#x27;,
+        &#x27;background-clip&#x27;,
+        &#x27;background-origin&#x27;,
+        &#x27;background-position-x&#x27;,
+        &#x27;background-position-y&#x27;,
+        &#x27;background-repeat-x&#x27;,
+        &#x27;background-repeat-y&#x27;,
+        &#x27;background-size&#x27;,
+        &#x27;color&#x27;,
+        &#x27;font-family&#x27;,
+        &#x27;font-feature-settings&#x27;,
+        &#x27;font-kerning&#x27;,
+        &#x27;font-size&#x27;,
+        &#x27;font-stretch&#x27;,
+        &#x27;font-style&#x27;,
+        &#x27;font-variant-caps&#x27;,
+        &#x27;font-variant-east-asian&#x27;,
+        &#x27;font-variant-ligatures&#x27;,
+        &#x27;font-variant-numeric&#x27;,
+        &#x27;font-variant-settings&#x27;,
+        &#x27;font-weight&#x27;,
+        &#x27;font-smooting&#x27;,
+        &#x27;font-size-delta&#x27;,
+        &#x27;opacity&#x27;,
+        &#x27;overflow&#x27;,
+        &#x27;white-space&#x27;,
+        &#x27;visibility&#x27;,
+        &#x27;-webkit-font-smooting&#x27;,
+        &#x27;-webkit-font-size-delta&#x27;,
+        &#x27;-ms-font-smooting&#x27;,
+        &#x27;-ms-font-size-delta&#x27;,
+        &#x27;text-align&#x27;,
+        &#x27;text-align-last&#x27;,
+        &#x27;text-combine-upright&#x27;,
+        &#x27;text-decoration-color&#x27;,
+        &#x27;text-decoration-line&#x27;,
+        &#x27;text-decoration-skip-ink&#x27;,
+        &#x27;text-decoration-style&#x27;,
+        &#x27;text-indent&#x27;,
+        &#x27;text-orientation&#x27;,
+        &#x27;text-overflow&#x27;,
+        &#x27;text-rendering&#x27;,
+        &#x27;text-shadow&#x27;,
+        &#x27;text-size-adjust&#x27;,
+        &#x27;text-transform&#x27;,
+        &#x27;text-underline-position&#x27;,
+        &#x27;-webkit-text-align&#x27;,
+        &#x27;-webkit-text-combine&#x27;,
+        &#x27;-webkit-text-decorations-in-effect&#x27;,
+        &#x27;-webkit-text-emphasis-color&#x27;,
+        &#x27;-webkit-text-emphasis-position&#x27;,
+        &#x27;-webkit-text-emphasis-style&#x27;,
+        &#x27;-webkit-text-fill-color&#x27;,
+        &#x27;-webkit-text-orientation&#x27;,
+        &#x27;-webkit-text-security&#x27;,
+        &#x27;-webkit-text-stroke-color&#x27;,
+        &#x27;-webkit-text-stroke-width&#x27;,
+        &#x27;-ms-text-align&#x27;,
+        &#x27;-ms-text-combine&#x27;,
+        &#x27;-ms-text-decorations-in-effect&#x27;,
+        &#x27;-ms-text-emphasis-color&#x27;,
+        &#x27;-ms-text-emphasis-position&#x27;,
+        &#x27;-ms-text-emphasis-style&#x27;,
+        &#x27;-ms-text-fill-color&#x27;,
+        &#x27;-ms-text-orientation&#x27;,
+        &#x27;-ms-text-security&#x27;,
+        &#x27;-ms-text-stroke-color&#x27;,
+        &#x27;-ms-text-stroke-width&#x27;
+    ];
+
+const retrieveFieldName = field =&gt; {
+    return (typeof field===&#x27;object&#x27;) ? field.key : field;
+};
+
+const cloneData = arr =&gt; {
+    return arr.map(record =&gt; {
+        let newRecord = {};
+        record.itsa_each((value, key) =&gt; {
+            newRecord[key] = value;
+        });
+        return newRecord;
+    });
+};
 
 class Table extends React.Component {
     constructor(props) {
@@ -118,33 +232,44 @@ class Table extends React.Component {
         const instance = this;
         instance.state = {
             editableRow: null,
-            editableCol: null
+            editableCol: null,
+            editValue: &#x27;&#x27;
         };
         instance.changeCell = instance.changeCell.bind(instance);
+        instance.handleCellKeyDown = instance.handleCellKeyDown.bind(instance);
         instance.focus = instance.focus.bind(instance);
         instance._focusActiveCell = instance._focusActiveCell.bind(instance);
         instance.generateHead = instance.generateHead.bind(instance);
         instance.generateRows = instance.generateRows.bind(instance);
         instance.refocus = instance.refocus.bind(instance);
-        instance.refocusByClick = instance.refocusByClick.bind(instance);
         instance.addRow = instance.addRow.bind(instance);
         instance.addCol = instance.addCol.bind(instance);
         instance.deleteRow = instance.deleteRow.bind(instance);
         instance._handleDocumentClick = instance._handleDocumentClick.bind(instance);
+        instance._handleResize = instance._handleResize.bind(instance);
+        instance.focusTextArea = instance.focusTextArea.bind(instance);
+        instance.setFixedHeaderDimensions = instance.setFixedHeaderDimensions.bind(instance);
     }
 
     componentDidMount() {
-        const instance = this;
-        instance._componentNode = ReactDom.findDOMNode(instance);
+        const instance = this,
+            props = instance.props;
+        instance._tableWidth = instance._tableNode.offsetWidth;
         // set outside clickHandler which watches for outside clicks that will collapse the component:
         instance.IE8_EVENTS = !instance._componentNode.addEventListener;
         if (instance.IE8_EVENTS) {
-            document.attachEvent(&quot;on&quot;+CLICK, instance._handleDocumentClick);
+            document.attachEvent(&#x27;on&#x27;+CLICK, instance._handleDocumentClick);
+            window.attachEvent(&#x27;on&#x27;+RESIZE, instance._handleResize);
         }
         else {
             document.addEventListener(CLICK, instance._handleDocumentClick, true);
+            window.addEventListener(RESIZE, instance._handleResize, true);
         }
-        instance.props.autoFocus &amp;&amp; instance.focus();
+        props.autoFocus &amp;&amp; instance.focus();
+        if (props.fixedHeaders) {
+            async(instance.setFixedHeaderDimensions);
+            instance._timer = later(instance.setFixedHeaderDimensions, 300, true);
+        }
     }
 
     /**
@@ -155,54 +280,290 @@ class Table extends React.Component {
      */
     componentWillUnmount() {
         const instance = this;
+        instance._timer &amp;&amp; instance._timer.cancel();
+        instance.unmounted = true;
         if (instance.IE8_EVENTS) {
-            document.detachEvent(&quot;on&quot;+CLICK, instance._handleDocumentClick);
+            document.detachEvent(&#x27;on&#x27;+CLICK, instance._handleDocumentClick);
+            window.detachEvent(&#x27;on&#x27;+RESIZE, instance._handleResize);
         }
         else {
             document.removeEventListener(CLICK, instance._handleDocumentClick, true);
+            window.removeEventListener(RESIZE, instance._handleResize, true);
         }
     }
 
-    changeCell(rowIndex, field, e) {
-        let newData;
-        const props = this.props,
-            onChange = props.onChange;
+    componentDidUpdate() {
+        this.setFixedHeaderDimensions();
+    }
+
+    _handleResize() {
+        const instance = this,
+            newWidth = instance._tableNode.offsetWidth;
+        if (instance._tableWidth!==newWidth) {
+            instance._tableWidth = newWidth;
+            instance.setFixedHeaderDimensions();
+        }
+    }
+
+    setFixedHeaderDimensions() {
+        let headNode, ths;
+        const instance = this,
+            props = instance.props;
+        if (props.fixedHeaders &amp;&amp; props.columns &amp;&amp; !instance.unmounted) {
+            headNode = instance._headNode;
+            if (headNode) {
+                ths = headNode.itsa_getAll(&#x27;th&#x27;);
+                Array.prototype.forEach.call(ths, thNode =&gt; {
+                    let inlineStyle = {},
+                        fixedNode, fixedContainerNode, contStyle, currentLeft, currentTop, prevAttr, newAttr;
+                    COPY_STYLES.forEach(style =&gt; {
+                        let nodeStyle = thNode.itsa_getStyle(style);
+                        if ((style===&#x27;background-color&#x27;) &amp;&amp; nodeStyle &amp;&amp; REGEXP_TRANSPARENT.test(nodeStyle)) {
+                            nodeStyle = undefined; // fixed headers cannot be transparent -&gt; revert to the class background-color
+                        }
+                        (nodeStyle===undefined) || (inlineStyle[style]=nodeStyle+&#x27; !important&#x27;);
+                    });
+                    fixedContainerNode = thNode.itsa_getElement(&#x27;div.itsa-table-header-cont&#x27;);
+                    if (fixedContainerNode) {
+                        currentLeft = fixedContainerNode.itsa_getInlineStyle(&#x27;left&#x27;);
+                        if (currentLeft) {
+                            currentLeft = parseInt(currentLeft, 10);
+                        }
+                        else {
+                            currentLeft = 0;
+                        }
+                        currentTop = fixedContainerNode.itsa_getInlineStyle(&#x27;top&#x27;);
+                        if (currentTop) {
+                            currentTop = parseInt(currentTop, 10);
+                        }
+                        else {
+                            currentTop = 0;
+                        }
+                        contStyle = {
+                            left: (thNode.itsa_left-fixedContainerNode.itsa_left+currentLeft)+&#x27;px&#x27;,
+                            top: (thNode.itsa_top-fixedContainerNode.itsa_top+currentTop)+&#x27;px&#x27;
+                        };
+                        prevAttr = fixedContainerNode.getAttribute(&#x27;style&#x27;);
+                        newAttr = serializeStyles.serialize(contStyle);
+                        (prevAttr===newAttr) || fixedContainerNode.setAttribute(&#x27;style&#x27;, newAttr);
+                    }
+                    fixedNode = thNode.itsa_getElement(&#x27;div.itsa-table-header&#x27;);
+                    if (fixedNode) {
+                        prevAttr = fixedNode.getAttribute(&#x27;style&#x27;);
+                        newAttr = serializeStyles.serialize(inlineStyle);
+                        (prevAttr===newAttr) || fixedNode.setAttribute(&#x27;style&#x27;, newAttr);
+                    }
+                });
+            }
+        }
+    }
+
+    changeCell(e) {
+        const value = e.target.value;
+        this._editValueBeforeBlur = value;
+        this.setState({
+            editValue: value
+        });
+    }
+
+    handleCellKeyDown(e) {
+        const instance = this;
+        if (e.keyCode===27) {
+            instance.setState(prevState =&gt; {
+                return {
+                    editValue: instance._editValueBeforeEdit,
+                    editableRow: null,
+                    editableCol: null
+                };
+            }, () =&gt; {
+                instance._blurActiveCell();
+            });
+        }
+    }
+
+    implementCellChanges(rowIndex, field, force) {
+        let changed, newData, col, secondField, x, y, columns, cells, editableCols;
+        const instance = this,
+            props = instance.props,
+            propsData = props.data,
+            state = instance.state,
+            onChange = props.onChange,
+            onChangeCell = props.onChangeCell,
+            selectedRange = state.selectedRange,
+            editValueBeforeBlur = instance._editValueBeforeBlur,
+            editValueBeforeEdit = instance._editValueBeforeEdit;
+
+        delete instance._editValueBeforeBlur;
+        if (typeof field===&#x27;object&#x27;) {
+            field = field.key;
+        }
+
+        if (((editValueBeforeEdit===editValueBeforeBlur) &amp;&amp; !selectedRange) || (editValueBeforeBlur===undefined)) {
+            // nothing changed
+            return;
+        }
+
+        // if ((props.data[rowIndex][field]==editValueBeforeBlur) ||
+        //     ((props.data[rowIndex][field]===undefined) &amp;&amp; (editValueBeforeBlur===&#x27;&#x27;)) ||
+        //     ((props.data[rowIndex][field]===null) &amp;&amp; (editValueBeforeBlur===&#x27;&#x27;))) { // DO NOT tripple check -&gt; the original value may not be a string, whereas the editvalue is!!
+        //     // nothing changed
+        //     return;
+        // }
+
+        if (selectedRange) {
+            // editableCols: PropTypes.oneOfType([PropTypes.array, PropTypes.number]),
+            if (force!==true) {
+                return;
+            }
+            columns = props.columns;
+            if (!columns || (columns.length===0)) {
+                columns = instance._columns;
+            }
+            editableCols = props.editableCols;
+            if (typeof editableCols===&#x27;number&#x27;) {
+                editableCols = [editableCols];
+            }
+        }
         if (onChange) {
-            newData = props.data.itsa_deepClone();
-            newData[rowIndex][field] = e.target.value;
-            onChange(newData);
+            console.warn(&#x27;onchange&#x27;);
+            changed = false;
+            newData = cloneData(propsData);
+            if (newData[rowIndex][field]!=editValueBeforeBlur) {
+                changed = true;
+                newData[rowIndex][field] = editValueBeforeBlur;
+            }
+            // we might need to change multiple cells, in case &#x60;multiEdit&#x60; is set, which leads into a value for state.selectedRange:
+            if (selectedRange) {
+                // editableCols: PropTypes.oneOfType([PropTypes.array, PropTypes.number]),
+                for (x=selectedRange.x1; x&lt;=selectedRange.x2; x++) {
+                    if (!editableCols || editableCols.itsa_contains(x)) {
+                        for (y=selectedRange.y1; y&lt;=selectedRange.y2; y++) {
+                            col = columns[x];
+                            secondField = (typeof col===&#x27;string&#x27;) ? col : col.key;
+                            if (newData[y][secondField]!=editValueBeforeBlur) {
+                                changed = true;
+                                newData[y][secondField] = editValueBeforeBlur;
+                            }
+                        }
+                    }
+                }
+            }
+            changed &amp;&amp; onChange(newData);
+        }
+        if (onChangeCell) {
+            console.warn(&#x27;onchangecells A&#x27;);
+            if (!props.multiEdit) {
+                console.warn(&#x27;onchangecells B&#x27;);
+                if (propsData[rowIndex][field]!=editValueBeforeBlur) {
+                    onChangeCell(rowIndex, field, editValueBeforeBlur);
+                }
+            }
+            else {
+                console.warn(&#x27;onchangecells C&#x27;);
+                changed = false;
+                cells = [{row: rowIndex, field}];
+                if (propsData[rowIndex][field]!=editValueBeforeBlur) {
+                    console.warn(&#x27;onchangecells D&#x27;);
+                    changed = true;
+                }
+                // we might need to change multiple cells, in case &#x60;multiEdit&#x60; is set, which leads into a value for state.selectedRange:
+                if (selectedRange) {
+                    // editableCols: PropTypes.oneOfType([PropTypes.array, PropTypes.number]),
+                    for (x=selectedRange.x1; x&lt;=selectedRange.x2; x++) {
+                        if (!editableCols || editableCols.itsa_contains(x)) {
+                            for (y=selectedRange.y1; y&lt;=selectedRange.y2; y++) {
+                                col = columns[x];
+                                secondField = (typeof col===&#x27;string&#x27;) ? col : col.key;
+                                cells.push({row: y, field: secondField});
+                                if (propsData[y][secondField]!=editValueBeforeBlur) {
+                                    console.warn(&#x27;onchangecells E&#x27;);
+                                    changed = true;
+                                }
+                            }
+                        }
+                    }
+                }
+                changed &amp;&amp; onChangeCell(cells, editValueBeforeBlur);
+            }
+        }
+        if (selectedRange) {
+            instance.setState({selectedRange: null});
         }
     }
 
     focus() {
+        let editableCol, columns, hasColumns, item, editValue, editableCols;
         const instance = this,
+            props = instance.props,
             state = instance.state;
-        if ((state.editableRow===null) || (state.editableRow===null)) {
+        editableCols = props.editableCols;
+        if ((state.editableRow===null) || (state.editableCol===null)) {
+            editableCol = props.rowHeader ? 1 : 0;
+            if (typeof editableCols===&#x27;number&#x27;) {
+                editableCols = [editableCols];
+            }
+            if (editableCols) {
+                editableCol += editableCols[0];
+                if (props.rowHeader) {
+                    editableCol--;
+                }
+            }
+            columns = props.columns;
+            hasColumns = (columns &amp;&amp; (columns.length&gt;0));
+            item = props.data[0];
+            editValue = hasColumns ? item[retrieveFieldName(columns[editableCol])] : item[retrieveFieldName(instance._columns[editableCol])];
             instance.setState({
                 editableRow: 0,
-                editableCol: instance.props.rowHeader ? 1 : 0
+                editableCol,
+                editValue,
+                selectedRangeStart: {
+                    x: editableCol,
+                    y: 0
+                }
             });
         }
         instance._focusActiveCell();
     }
 
+    focusTextArea(e) {
+        let length;
+        const instance = this,
+            node = e.target;
+        instance._editValueBeforeBlur = node.value;
+        if (instance.props.fullSelectOnEdit) {
+            length = node.value.length;
+            node.setSelectionRange(length, length);
+        }
+    }
+
+    _blurActiveCell() {
+        const instance = this,
+            state = instance.state,
+            textareaNode = instance[&#x27;_textarea_&#x27;+state.editableRow+&#x27;_&#x27;+state.editableCol];
+        if (textareaNode &amp;&amp; (document.activeElement===textareaNode)) {
+            textareaNode.blur();
+        }
+    }
+
     _focusActiveCell() {
         const instance = this;
         async(() =&gt; {
-            let textareaNode, length;
+            let length;
             const state = instance.state,
-                textarea = instance.refs[&#x27;textarea_&#x27;+state.editableRow+&#x27;_&#x27;+state.editableCol];
-            if (textarea) {
-                textareaNode = ReactDom.findDOMNode(textarea);
-                if (textareaNode &amp;&amp; (document.activeElement!==textareaNode)) {
-                    textareaNode.focus();
-                    if (textareaNode.setSelectionRange) {
-                        length = textareaNode.value.length;
-                        textareaNode.setSelectionRange(length, length);
-                    }
+                textareaNode = instance[&#x27;_textarea_&#x27;+state.editableRow+&#x27;_&#x27;+state.editableCol];
+            if (textareaNode &amp;&amp; (document.activeElement!==textareaNode)) {
+                instance._editValueBeforeEdit = textareaNode.value || &#x27;&#x27;;
+                textareaNode.focus();
+                if (textareaNode.setSelectionRange) {
+                    length = textareaNode.value.length;
+                    textareaNode.setSelectionRange(0, length);
                 }
             }
         });
+    }
+
+    scrollTo(amount) {
+        this._componentNode.scrollTop = amount;
     }
 
     generateHead() {
@@ -211,8 +572,12 @@ class Table extends React.Component {
         const instance = this,
             props = instance.props,
             removeableY = props.removeableY,
+            extendableY = props.extendableY,
             columns = props.columns,
-            rowHeader = props.rowHeader;
+            fixedHeaders = props.fixedHeaders,
+            rowHeader = props.rowHeader,
+            onHeaderClick = props.onHeaderClick;
+
         if (columns &amp;&amp; (columns.length&gt;0)) {
             // first dedupe duplicated col-keys
             alreadyDefined = {};
@@ -222,11 +587,36 @@ class Table extends React.Component {
                 dupe = alreadyDefined[field];
                 alreadyDefined[field] = true;
                 return !dupe;
-            })
-            .map((col, i) =&gt; {
-                let colName, classname, key;
+            }).map((col, i) =&gt; {
+                let colName, classname, key, cellContent, headerClick;
                 const field = (typeof col===&#x27;string&#x27;) ? col : col.key;
                 classname = &#x27;itsa-table-header itsa-table-col-&#x27;+field;
+                headerClick = e =&gt; {
+                    let selectedRange;
+                    const state = instance.state,
+                        rowIndex = state.editableRow,
+                        colIndex = state.editableCol,
+                        editCol = (typeof colIndex===&#x27;number&#x27;) &amp;&amp; columns[colIndex],
+                        editField = editCol &amp;&amp; ((typeof editCol===&#x27;string&#x27;) ? editCol : editCol.key);
+                    if (state.selectedRange) {
+                        selectedRange = state.selectedRange.itsa_deepClone();
+                    }
+                    instance.setState({
+                        editableRow: null,
+                        editableCol: null,
+                        editValue: &#x27;&#x27;
+                    }, () =&gt; {
+                        if (selectedRange) {
+                            instance.setState({selectedRange: null});
+                        }
+                    });
+                    if (typeof rowIndex===&#x27;number&#x27;) {
+                        instance.implementCellChanges(rowIndex, editField);
+                    }
+                    if (onHeaderClick) {
+                        async(onHeaderClick.call(null, field, editField, state.editValue, rowIndex, colIndex, selectedRange, e));
+                    }
+                };
                 if ((i&gt;0) || !rowHeader) {
                     colName = (typeof col===&#x27;string&#x27;) ? col : (col.label || col.key);
                     key = (typeof col===&#x27;string&#x27;) ? col : col.key;
@@ -235,11 +625,32 @@ class Table extends React.Component {
                     classname += &#x27; itsa-table-header-rowheader&#x27;;
                     key=j--;
                 }
-                return (&lt;th className={classname} key={key}&gt;{colName}&lt;/th&gt;);
+                if (fixedHeaders) {
+                    colName || (colName=&#x27;&amp;nbsp;&#x27;);
+                    cellContent = &#x27;&lt;div class=&quot;itsa-table-header-cont&quot;&gt;&lt;div class=&quot;itsa-table-header&quot;&gt;&#x27;+colName+&#x27;&lt;/div&gt;&lt;/div&gt;&#x27;+colName;
+                    return (&lt;th className={classname} dangerouslySetInnerHTML={{__html: cellContent}} key={key} onClick={headerClick} /&gt;);
+                }
+                return (&lt;th className={classname} dangerouslySetInnerHTML={{__html: colName}} key={key} onClick={headerClick} /&gt;);
             });
-            removeableY &amp;&amp; cols.unshift((&lt;th className={ROW_REMOVE_CLASS} key={j--}&gt;&lt;/th&gt;));
+            if (extendableY===&quot;full&quot;) {
+                if (fixedHeaders) {
+                    cols.unshift((&lt;th className={&#x27;itsa-table-header &#x27;+ROW_ADD_CLASS} key={j--}&gt;&lt;div className=&quot;itsa-table-header-cont&quot;&gt;&lt;div className=&quot;itsa-table-header&quot;&gt;&amp;nbsp;&lt;/div&gt;&lt;/div&gt;&amp;nbsp;&lt;/th&gt;));
+                }
+                else {
+                    cols.unshift((&lt;th className={&#x27;itsa-table-header &#x27;+ROW_ADD_CLASS} key={j--} /&gt;));
+                }
+            }
+            if (removeableY) {
+                if (fixedHeaders) {
+                    cols.unshift((&lt;th className={&#x27;itsa-table-header &#x27;+ROW_REMOVE_CLASS} key={j--}&gt;&lt;div className=&quot;itsa-table-header-cont&quot;&gt;&lt;div className=&quot;itsa-table-header&quot;&gt;&amp;nbsp;&lt;/div&gt;&lt;/div&gt;&amp;nbsp;&lt;/th&gt;));
+                }
+                else {
+                    cols.unshift((&lt;th className={&#x27;itsa-table-header &#x27;+ROW_REMOVE_CLASS} key={j--} /&gt;));
+                }
+            }
+
             return (
-                &lt;thead&gt;
+                &lt;thead ref={node =&gt; instance._headNode=node}&gt;
                     &lt;tr&gt;
                         {cols}
                     &lt;/tr&gt;
@@ -249,30 +660,55 @@ class Table extends React.Component {
     }
 
     generateRows() {
+        let rowclass, editableColsArray;
         const instance = this,
             props = instance.props,
             state = instance.state,
             data = props.data,
             disabled = props.disabled,
-            colums = props.columns,
+            columns = props.columns,
+            selectedRange = state.selectedRange,
+            editableCols = props.editableCols,
+            rowClassRenderer = props.rowClassRenderer,
             rowHeader = props.rowHeader,
             editable = props.editable,
             removeableY = props.removeableY,
+            extendableY = props.extendableY,
             fullEditable = (editable===&#x27;full&#x27;),
-            hasColums = (colums &amp;&amp; (colums.length&gt;0));
+            hasColumns = (columns &amp;&amp; (columns.length&gt;0));
+
+        const colIsEditable = colIndex =&gt; {
+            if (disabled) {
+                return false;
+            }
+            if (!editableCols) {
+                return true;
+            }
+            if (typeof editableCols===&#x27;number&#x27;) {
+                return editableCols===colIndex;
+            }
+            return editableCols.itsa_contains(colIndex);
+        };
+
+        if (editableCols) {
+            editableColsArray = (typeof editableCols===&#x27;number&#x27;) ? [editableCols] : editableCols;
+        }
 
         return data.map((rowdata, i) =&gt; {
-            let cells;
-            if (hasColums) {
+            let cells, extraClass;
+            if (hasColumns) {
                 // create based upon the columns
-                cells = colums.map((col, j) =&gt; {
+                cells = columns.map((col, j) =&gt; {
                     const field = (typeof col===&#x27;string&#x27;) ? col : col.key;
                     let classname = CELL_CLASS+field,
                         value = rowdata[field],
-                        cellContent;
+                        cellContent, onBlur, textAreaValue;
                     if (rowHeader &amp;&amp; (j===0)) {
                         classname += &#x27; itsa-table-rowheader&#x27;;
-                        cellContent = value;
+                        if (value===null) {
+                            value = &#x27;&#x27;;
+                        }
+                        cellContent = String(value);
                         return (
                             &lt;td
                                 className={classname}
@@ -281,29 +717,49 @@ class Table extends React.Component {
                                 key={field} /&gt;
                         );
                     }
-                    else if (fullEditable || ((editable===true) &amp;&amp; (state.editableRow===i) &amp;&amp; (state.editableCol===j))) {
+                    else if (fullEditable || ((editable===true) &amp;&amp; (state.editableRow===i) &amp;&amp; (state.editableCol===j)) &amp;&amp; colIsEditable(j)) {
                         classname += EDITABLE_CELL_CLASS_SPACED;
                         (typeof value===&#x27;number&#x27;) || value || (value=&#x27;&#x27;);
                         value = String(value);
+                        if ((state.editableRow===i) &amp;&amp; (state.editableCol===j) &amp;&amp; (typeof instance._editValueBeforeBlur===&#x27;string&#x27;)) {
+                            textAreaValue = state.editValue;
+                        }
+                        else {
+                            textAreaValue = value;
+                        }
+                        fullEditable &amp;&amp; (onBlur=instance.implementCellChanges.bind(instance, i, field));
                         cellContent = (
                             &lt;textarea
                                 disabled={disabled}
-                                onChange={instance.changeCell.bind(instance, i, field)}
-                                ref={&#x27;textarea_&#x27;+i+&#x27;_&#x27;+j}
+                                onBlur={onBlur}
+                                onChange={instance.changeCell}
+                                onFocus={instance.focusTextArea}
+                                onKeyDown={instance.handleCellKeyDown}
+                                ref={node =&gt; instance[&#x27;_textarea_&#x27;+i+&#x27;_&#x27;+j] = node}
                                 rows={1}
-                                value={value} /&gt;
+                                value={textAreaValue} /&gt;
                         );
                         return (
                             &lt;td
                                 className={classname}
                                 data-colid={j}
                                 key={field}&gt;
+                                &lt;span&gt;{textAreaValue}&lt;/span&gt;
                                 {cellContent}
                             &lt;/td&gt;
                         );
                     }
-                    else {
-                        value || (value=&#x27;&#x27;);
+                    (typeof value===&#x27;number&#x27;) || value || (value=&#x27;&#x27;);
+                    // we may need to add an &#x27;selected&#x27; class:
+                    if (selectedRange &amp;&amp;
+                        (j&gt;=selectedRange.x1) &amp;&amp;
+                        (j&lt;=selectedRange.x2) &amp;&amp;
+                        (i&gt;=selectedRange.y1) &amp;&amp;
+                        (i&lt;=selectedRange.y2) &amp;&amp;
+                        (!editableCols || editableColsArray.itsa_contains(j))) {
+                        classname += &#x27; selected-range&#x27;;
+                    }
+                    if (typeof value!==&#x27;object&#x27;) {
                         value = String(value);
                         (value.itsa_trim()===&#x27;&#x27;) &amp;&amp; (value=&#x27;&amp;nbsp;&#x27;);
                         cellContent = value.itsa_replaceAll(&#x27;\n&#x27;, &#x27;&lt;br /&gt;&#x27;);
@@ -315,17 +771,34 @@ class Table extends React.Component {
                                 key={field} /&gt;
                         );
                     }
+                    // else
+                    return (
+                        &lt;td
+                            className={classname}
+                            data-colid={j}
+                            key={field}&gt;
+                            {value}
+                        &lt;/td&gt;
+                    );
                 });
             }
             else {
                 // all fields
                 cells = [];
+                let j = -1;
+                instance._columns = [];
                 rowdata.itsa_each((value, key) =&gt; {
+                    const field = (typeof key===&#x27;string&#x27;) ? key : key.key;
                     let classname = CELL_CLASS+key,
-                        cellContent,
+                        cellContent, onBlur, textAreaValue,
                         colCount = cells.length;
+                    j++;
+                    instance._columns[j] = key;
                     if (rowHeader &amp;&amp; (colCount===0)) {
                         classname += &#x27; itsa-table-rowheader&#x27;;
+                        if (value===null) {
+                            value = &#x27;&#x27;;
+                        }
                         cellContent = value;
                         cells.push((&lt;td className={classname} dangerouslySetInnerHTML={{__html: cellContent}} data-colid={colCount} key={key} /&gt;));
                     }
@@ -333,56 +806,118 @@ class Table extends React.Component {
                         classname += EDITABLE_CELL_CLASS_SPACED;
                         (typeof value===&#x27;number&#x27;) || value || (value=&#x27;&#x27;);
                         value = String(value);
+                        if ((state.editableRow===i) &amp;&amp; (state.editableCol===j)) {
+                            textAreaValue = state.editValue;
+                        }
+                        else {
+                            textAreaValue = value;
+                        }
+                        fullEditable &amp;&amp; (onBlur=instance.implementCellChanges.bind(instance, i, field));
                         cellContent = (
                             &lt;textarea
                                 disabled={disabled}
-                                onChange={instance.changeCell.bind(instance, i, key)}
-                                ref={&#x27;textarea_&#x27;+i+&#x27;_&#x27;+colCount}
+                                onBlur={onBlur}
+                                onChange={instance.changeCell}
+                                onFocus={instance.focusTextArea}
+                                onKeyDown={instance.handleCellKeyDown}
+                                ref={node =&gt; instance[&#x27;_textarea_&#x27;+i+&#x27;_&#x27;+colCount] = node}
                                 rows={1}
-                                value={value} /&gt;
+                                value={textAreaValue} /&gt;
                         );
-                        cells.push((&lt;td className={classname} data-colid={colCount} key={key}&gt;{cellContent}&lt;/td&gt;));
+                        cells.push((
+                            &lt;td className={classname} data-colid={colCount} key={key}&gt;
+                                {cellContent}
+                                &lt;span&gt;{textAreaValue}&lt;/span&gt;
+                            &lt;/td&gt;
+                        ));
                     }
                     else {
-                        value || (value=&#x27;&#x27;);
-                        value = String(value);
-                        (value.itsa_trim()===&#x27;&#x27;) &amp;&amp; (value=&#x27;&amp;nbsp;&#x27;);
-                        cellContent = value.itsa_replaceAll(&#x27;\n&#x27;, &#x27;&lt;br /&gt;&#x27;);
-                        cells.push((&lt;td className={classname} dangerouslySetInnerHTML={{__html: cellContent}} data-colid={colCount} key={key} /&gt;));
+                        (typeof value===&#x27;number&#x27;) || value || (value=&#x27;&#x27;);
+                        // we may need to add an &#x27;selected&#x27; class:
+                        if (selectedRange &amp;&amp;
+                            (j&gt;=selectedRange.x1) &amp;&amp;
+                            (j&lt;=selectedRange.x2) &amp;&amp;
+                            (i&gt;=selectedRange.y1) &amp;&amp;
+                            (i&lt;=selectedRange.y2) &amp;&amp;
+                            (!editableCols || editableColsArray.itsa_contains(j))) {
+                            classname += &#x27; selected-range&#x27;;
+                        }
+                        if (typeof value!==&#x27;object&#x27;) {
+                            value = String(value);
+                            (value.itsa_trim()===&#x27;&#x27;) &amp;&amp; (value=&#x27;&amp;nbsp;&#x27;);
+                            cellContent = value.itsa_replaceAll(&#x27;\n&#x27;, &#x27;&lt;br /&gt;&#x27;);
+                            cells.push((&lt;td className={classname} dangerouslySetInnerHTML={{__html: cellContent}} data-colid={colCount} key={key} /&gt;));
+                        }
+                        else {
+                            cells.push((&lt;td className={classname} data-colid={colCount} key={key}&gt;{value}&lt;/td&gt;));
+                        }
                     }
                 });
+            }
+            if (extendableY===&#x27;full&#x27;) {
+                cells.unshift((
+                    &lt;td className={CELL_CLASS+ROW_ADD_CLASS} key={ROW_ADD_CLASS}&gt;
+                        &lt;Button buttonText=&quot;+&quot; className=&quot;controll-btn&quot; disabled={disabled} onClick={instance.addRow.bind(instance, i)} /&gt;
+                    &lt;/td&gt;
+                ));
             }
             if (removeableY) {
                 cells.unshift((
                     &lt;td className={CELL_CLASS+ROW_REMOVE_CLASS} key={ROW_REMOVE_CLASS}&gt;
-                        &lt;Button buttonText=&quot;-&quot; className=&quot;remove-row controll-btn&quot; disabled={disabled} onClick={instance.deleteRow.bind(instance, i)} /&gt;
+                        &lt;Button buttonText=&quot;-&quot; className=&quot;controll-btn&quot; disabled={disabled} onClick={instance.deleteRow.bind(instance, i)} /&gt;
                     &lt;/td&gt;
                 ));
             }
-            return (&lt;tr className={ROW_CLASS} data-rowid={i} data-recordid={i} key={i}&gt;{cells}&lt;/tr&gt;);
+            rowclass = ROW_CLASS;
+            if (rowClassRenderer) {
+                extraClass = rowClassRenderer(i, rowdata);
+                extraClass &amp;&amp; (rowclass+=&#x27; &#x27;+extraClass);
+            }
+            return (&lt;tr className={rowclass} data-recordid={i} data-rowid={i} key={i}&gt;{cells}&lt;/tr&gt;);
         });
     }
 
     refocus(e) {
-        let focusRow, focusCol, match, maxRow, maxCol, firstItem, colChangedByRow;
+        let focusRow, focusCol, match, maxRow, maxCol, firstItem, item, editValue, colChangedByRow,
+            prevRowIndex, prevColIndex, field, editDirectionDown, arrowDown, arrowUp;
         const instance = this,
             props = instance.props,
             state = instance.state,
             keyCode = e.keyCode,
-            editDirectionDown = props.editDirectionDown,
             shiftKey = e.shiftKey,
+            ctrlKey = e.metaKey || e.ctrlKey,
             data = props.data,
+            loop = props.loop,
+            editableCols = props.editableCols,
+            cursorNav = props.cursorNav,
             lowestColIndex = props.rowHeader ? 1 : 0,
-            columns = props.columns;
+            highestColIndex = data.itsa_keys().length-(props.rowHeader ? 0 : 1),
+            columns = props.columns,
+            hasColumns = (columns &amp;&amp; (columns.length&gt;0));
 
+        const implementChanges = keepFocus =&gt; {
+            if ((props.editable===true) || (state.selectedRange)) { // NOT &#x27;full&#x27; for that would take care of itself
+                field = hasColumns ? columns[prevColIndex] : instance._columns[prevColIndex];
+                instance.implementCellChanges(prevRowIndex, field, true);
+                keepFocus &amp;&amp; (instance._editValueBeforeEdit=instance._editValueBeforeBlur);
+            }
+        };
+        editDirectionDown = ((keyCode===9) || (keyCode===37) || (keyCode===39)) ? false : props.editDirectionDown;
         if (keyCode===13) {
             if (shiftKey) {
                 return;
             }
         }
-        match = ((keyCode===9) || (keyCode===13));
+        match = (
+            (keyCode===9) ||
+            (keyCode===13) ||
+            (cursorNav &amp;&amp; ((keyCode===40) || (keyCode===38))) ||
+            (cursorNav &amp;&amp; ctrlKey &amp;&amp; ((keyCode===37) || (keyCode===39)))
+        ); // 40=arrowDown, 38=arrowUp
         if (match) {
             e.preventDefault();
+            arrowDown = (keyCode===40);
+            arrowUp = (keyCode===38);
             maxRow = data.length - 1;
             if (columns) {
                 maxCol = columns.length - 1;
@@ -391,81 +926,182 @@ class Table extends React.Component {
                 firstItem = data[0];
                 maxCol = firstItem ? firstItem.itsa_size()-1 : 0;
             }
-            focusRow = state.editableRow;
-            focusCol = state.editableCol;
-            if ((keyCode===9) &amp;&amp; shiftKey) {
+            focusRow = prevRowIndex = state.editableRow;
+            focusCol = prevColIndex = state.editableCol;
+
+            if (((keyCode===9) &amp;&amp; shiftKey) || ((keyCode===37) &amp;&amp; ctrlKey) || arrowUp) {
                 // backwards
-                if (editDirectionDown) {
+                if (editDirectionDown || arrowUp) {
                     focusRow--;
                 }
                 else {
-                    focusCol--;
+                    do {
+                        focusCol--;
+                        if (focusCol&lt;lowestColIndex) {
+                            break;
+                        }
+                    }
+                    while (!editableCols || !editableCols.itsa_contains(focusCol));
                 }
             }
             else {
                 // forewards
-                if (editDirectionDown) {
+                if (editDirectionDown || arrowDown) {
                     focusRow++;
                 }
                 else {
-                    focusCol++;
+                    do {
+                        focusCol++;
+                        if (focusCol&gt;highestColIndex) {
+                            break;
+                        }
+                    }
+                    while (!editableCols || !editableCols.itsa_contains(focusCol));
                 }
             }
             // now we might need to adjust the values when out of range
             if (focusRow&lt;0) {
+                if (!loop) {
+                    implementChanges(true);
+                    return;
+                }
                 focusRow = maxRow;
-                focusCol--;
+                do {
+                    focusCol--;
+                    if (focusCol&lt;lowestColIndex) {
+                        focusCol = highestColIndex;
+                    }
+                }
+                while (!editableCols || !editableCols.itsa_contains(focusCol));
                 colChangedByRow = true;
             }
             else if (focusRow&gt;maxRow) {
+                if (!loop) {
+                    implementChanges(true);
+                    return;
+                }
                 focusRow = 0;
-                focusCol++;
+                do {
+                    focusCol++;
+                    if (focusCol&gt;highestColIndex) {
+                        focusCol = lowestColIndex;
+                    }
+                }
+                while (!editableCols || !editableCols.itsa_contains(focusCol));
                 colChangedByRow = true;
             }
             if (focusCol&lt;lowestColIndex) {
+                if (!loop) {
+                    implementChanges(true);
+                    return;
+                }
                 colChangedByRow || focusRow--;
                 (focusRow&lt;0) &amp;&amp; (focusRow=maxRow);
                 focusCol = maxCol;
             }
             else if (focusCol&gt;maxCol) {
+                if (!loop) {
+                    implementChanges(true);
+                    return;
+                }
                 colChangedByRow || focusRow++;
                 focusCol = lowestColIndex;
                 (focusRow&gt;maxRow) &amp;&amp; (focusRow=0);
             }
+            item = props.data[focusRow];
+            editValue = hasColumns ? item[retrieveFieldName(columns[focusCol])] : item[retrieveFieldName(instance._columns[focusCol])];
             this.setState({
                 editableRow: focusRow,
-                editableCol: focusCol
+                editableCol: focusCol,
+                editValue,
+                selectedRangeStart: {
+                    x: focusCol,
+                    y: focusRow
+                },
+                selectedRange: null
             });
             instance._focusActiveCell();
+            implementChanges();
         }
     }
 
-    refocusByClick(e) {
+    handleClick(editable, e) {
+        const instance = this,
+            props = instance.props,
+            onClick = instance.props.onClick,
+            state = instance.state,
+            shiftClick = e.shiftKey;
         let node = e.target,
-            colId, rowId;
+            editableCols = props.editableCols,
+            colId, rowId, columns, hasColumns, item, editValue, newState, prevRowId, prevColId, selectedRangeStart;
         (node.tagName===&#x27;TD&#x27;) || (node=node.parentNode);
         colId = parseInt(node.getAttribute(&#x27;data-colid&#x27;), 10);
         node = node.parentNode;
         rowId = parseInt(node.getAttribute(&#x27;data-rowid&#x27;), 10);
-        this.setState({
-            editableRow: rowId,
-            editableCol: colId
-        });
-        this._focusActiveCell();
+        if (typeof editableCols===&#x27;number&#x27;) {
+            editableCols = [editableCols];
+        }
+        if (editable &amp;&amp; (!editableCols || editableCols.itsa_contains(colId))) {
+            columns = props.columns;
+            hasColumns = (columns &amp;&amp; (columns.length&gt;0));
+            item = props.data[rowId];
+            editValue = hasColumns ? item[retrieveFieldName(columns[colId])] : item[retrieveFieldName(instance._columns[colId])];
+            newState = {
+                editableRow: rowId,
+                editableCol: colId,
+                editValue
+            };
+            if (props.editable &amp;&amp; props.multiEdit) {
+                if (shiftClick) {
+                    selectedRangeStart = state.selectedRangeStart;
+                    if (selectedRangeStart) {
+                        prevRowId = selectedRangeStart.y;
+                        prevColId = selectedRangeStart.x;
+                        if ((typeof prevRowId===&#x27;number&#x27;) &amp;&amp; (typeof prevColId===&#x27;number&#x27;) &amp;&amp; ((prevColId!==colId) || (prevRowId!==rowId))) {
+                            newState.selectedRange = {
+                                x1: Math.min(prevColId, colId),
+                                y1: Math.min(prevRowId, rowId),
+                                x2: Math.max(prevColId, colId),
+                                y2: Math.max(prevRowId, rowId)
+                            };
+                        }
+                    }
+                    else {
+                        newState.selectedRange = null;
+                    }
+                }
+                else {
+                    newState.selectedRange = null;
+                    newState.selectedRangeStart = {
+                        x: colId,
+                        y: rowId
+                    };
+                }
+            }
+            instance.setState(newState);
+            instance._focusActiveCell();
+        }
+        onClick &amp;&amp; onClick(rowId, colId);
     }
 
-    addRow() {
-        let newData, len;
+    addRow(index) {
+        let newData, len, newRecord;
         const props = this.props,
             onChange = props.onChange;
         if (onChange) {
-            newData = props.data.itsa_deepClone();
+            newData = cloneData(props.data);
             len = newData.length;
             if (len==0) {
                 newData = [{&#x27;__row0&#x27;: null}];
             }
             else {
-                newData[len] = newData[0].itsa_map(() =&gt; null);
+                newRecord = newData[0].itsa_map(() =&gt; null);
+                if (typeof index===&#x27;number&#x27;) {
+                    newData.itsa_insertAt(newRecord, index);
+                }
+                else {
+                    newData[props.extendableY===&quot;begin&quot; ? &quot;unshift&quot; : &quot;push&quot;](newRecord);
+                }
             }
             onChange(newData);
         }
@@ -476,7 +1112,7 @@ class Table extends React.Component {
         const props = this.props,
             onChange = props.onChange;
         if (onChange) {
-            newData = props.data.itsa_deepClone();
+            newData = cloneData(props.data);
             len = newData.length;
             if (len==0) {
                 size = 0;
@@ -496,7 +1132,7 @@ class Table extends React.Component {
         const props = this.props,
             onChange = props.onChange;
         if (onChange) {
-            newData = props.data.itsa_deepClone();
+            newData = cloneData(props.data);
             newData.splice(index, 1);
             onChange(newData);
         }
@@ -511,30 +1147,56 @@ class Table extends React.Component {
      */
     render() {
         let classname = MAIN_CLASS,
-            refocusByClick, refocus, addRowBtn, addColBtn;
+            handleClick, refocus, addRowBtn, addColBtn, tableClassName, addRowClass;
         const instance = this,
             props = instance.props,
             editable = props.editable,
             disabled = props.disabled,
             propsClassName = props.className;
 
+        tableClassName = props.tableClass;
         propsClassName &amp;&amp; (classname+=&#x27; &#x27;+propsClassName);
         if (props.extendableY) {
-            addRowBtn = (&lt;Button buttonText=&quot;+&quot; className=&quot;add-row controll-btn&quot; disabled={disabled} onClick={instance.addRow} /&gt;);
+            addRowClass = &#x27;add-row controll-btn&#x27;;
+            if ((props.removeableY) &amp;&amp; (props.extendableY===&#x27;full&#x27;)) {
+                addRowClass += &#x27; add-row-indent&#x27;;
+            }
+            addRowBtn = (&lt;Button buttonText=&quot;+&quot; className={addRowClass} disabled={disabled} onClick={instance.addRow} /&gt;);
         }
         if (props.extendableX &amp;&amp; !props.columns) {
             addColBtn = (&lt;Button buttonText=&quot;+&quot; className=&quot;controll-btn&quot; disabled={disabled} onClick={instance.addCol} /&gt;);
         }
         if ((editable===true) || (editable===&#x27;full&#x27;)) {
-            refocusByClick = instance.refocusByClick;
+            handleClick = instance.handleClick.bind(instance, true);
             refocus = instance.refocus;
         }
+        else {
+            handleClick = instance.handleClick.bind(instance, false);
+        }
+        if (props.fixedHeaders) {
+            tableClassName += &#x27; fixed-headers&#x27;;
+            classname += &#x27; scrollable-y&#x27;;
+            // fixedHeadertable = (
+            //     &lt;table className={props.tableClass+&#x27; fixed-headers&#x27;}&gt;
+            //         {instance.generateHead()}
+            //         &lt;tbody&gt;
+            //             {instance.generateRows()}
+            //         &lt;/tbody&gt;
+            //     &lt;/table&gt;
+            // );
+        }
+        // classname+=&#x27;flex-container-vertical&#x27;;
         return (
-            &lt;div className={classname}&gt;
-                &lt;table className={props.tableClass}&gt;
+            &lt;div
+                className={classname}
+                onScroll={props.onScroll}
+                ref={node =&gt; instance._componentNode = node}&gt;
+                &lt;table
+                    className={tableClassName}
+                    ref={node =&gt; instance._tableNode=node}&gt;
                     {instance.generateHead()}
                     &lt;tbody
-                        onClick={refocusByClick}
+                        onClick={handleClick}
                         onKeyDown={refocus}&gt;
                         {instance.generateRows()}
                     &lt;/tbody&gt;
@@ -554,12 +1216,21 @@ class Table extends React.Component {
      * @since 0.0.1
      */
     _handleDocumentClick(e) {
+        let rowIndex, field, colIndex, columns, hasColumns;
         const instance = this,
             targetNode = e.target;
-        if ((instance.props.editable===true) &amp;&amp; (!instance._componentNode.contains(targetNode) || (targetNode.tagName!==&#x27;TEXTAREA&#x27;))) {
+        if ((instance.props.editable===true) &amp;&amp; (!instance._componentNode.contains(targetNode) || ((targetNode.tagName!==&#x27;TEXTAREA&#x27;) &amp;&amp; !instance._headNode.contains(targetNode)))) {
+            rowIndex = instance.state.editableRow;
+            colIndex = instance.state.editableCol;
+            columns = instance.props.columns;
+            hasColumns = (columns &amp;&amp; (columns.length&gt;0));
+            field = hasColumns ? columns[colIndex] : instance._columns[colIndex];
             instance.setState({
                 editableRow: null,
-                editableCol: null
+                editableCol: null,
+                editValue: &#x27;&#x27;
+            }, () =&gt; {
+                (typeof rowIndex===&#x27;number&#x27;) &amp;&amp; instance.implementCellChanges(rowIndex, field);
             });
         }
     }
@@ -576,25 +1247,40 @@ Table.propTypes = {
      * @type Object
      * @since 2.0.0
     */
+    cursorNav: PropTypes.bool,
     data: PropTypes.array,
     disabled: PropTypes.bool,
     editable: PropTypes.oneOfType([PropTypes.bool, PropTypes.string]),
+    editableCols: PropTypes.oneOfType([PropTypes.array, PropTypes.number]),
     editDirectionDown: PropTypes.bool,
-    removeableY: PropTypes.bool,
     extendableX: PropTypes.bool,
-    extendableY: PropTypes.bool,
+    extendableY: PropTypes.oneOfType([PropTypes.bool, PropTypes.string]), // true, &quot;begin&quot; or &quot;all&quot;
+    fixedHeaders: PropTypes.bool,
+    fullSelectOnEdit: PropTypes.bool,
+    loop: PropTypes.bool,
+    multiEdit: PropTypes.bool,
     onChange: PropTypes.func,
+    onChangeCell: PropTypes.func,
+    onClick: PropTypes.func,
+    onHeaderClick: PropTypes.func,
+    onScroll: PropTypes.func,
+    removeableY: PropTypes.bool,
+    rowClassRenderer: PropTypes.func,
     rowHeader: PropTypes.bool,
     tableClass: PropTypes.string
 };
 
 Table.defaultProps = {
     autoFocus: false,
+    cursorNav: false,
     data: [],
     editable: false,
     editDirectionDown: true,
     extendableX: false,
     extendableY: false,
+    fullSelectOnEdit: true,
+    loop: true,
+    multiEdit: false,
     removeableY: false,
     rowHeader: false
 };
