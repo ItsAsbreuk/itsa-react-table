@@ -534,7 +534,8 @@ class Table extends React.Component {
       columns = props.columns,
       fixedHeaders = props.fixedHeaders,
       rowHeader = props.rowHeader,
-      onHeaderClick = props.onHeaderClick;
+      onHeaderClick = props.onHeaderClick,
+      htmlHeaders = props.htmlHeaders;
 
     if (columns && columns.length > 0) {
       // first dedupe duplicated col-keys
@@ -600,28 +601,56 @@ class Table extends React.Component {
             classname += " itsa-table-header-rowheader";
             key = j--;
           }
-          if (fixedHeaders) {
-            colName || (colName = "&nbsp;");
-            cellContent = (
-              <div>
-                <div class="itsa-table-header-cont">
-                  <div class="itsa-table-header">{colName}</div>
+
+          if (htmlHeaders) {
+            if (fixedHeaders) {
+              colName || (colName = "&nbsp;");
+              cellContent = (
+                <div>
+                  <div class="itsa-table-header-cont">
+                    <div class="itsa-table-header">{colName}</div>
+                  </div>
+                  {colName}
                 </div>
-                {colName}
-              </div>
-            );
+              );
+              return (
+                <th className={classname} key={key} onClick={headerClick}>
+                  {cellContent}
+                </th>
+              );
+            }
+            cellContent = <div>{colName}</div>;
             return (
               <th className={classname} key={key} onClick={headerClick}>
-                {cellContent}
+                {colName}
               </th>
             );
+          } else {
+            if (fixedHeaders) {
+              colName || (colName = "&nbsp;");
+              cellContent =
+                '<div class="itsa-table-header-cont"><div class="itsa-table-header">' +
+                colName +
+                "</div></div>" +
+                colName;
+              return (
+                <th
+                  className={classname}
+                  dangerouslySetInnerHTML={{ __html: cellContent }}
+                  key={key}
+                  onClick={headerClick}
+                />
+              );
+            }
+            return (
+              <th
+                className={classname}
+                dangerouslySetInnerHTML={{ __html: colName }}
+                key={key}
+                onClick={headerClick}
+              />
+            );
           }
-          cellContent = <div>{colName}</div>;
-          return (
-            <th className={classname} key={key} onClick={headerClick}>
-              {colName}
-            </th>
-          );
         });
       if (extendableY === "full") {
         if (fixedHeaders) {
@@ -1455,6 +1484,7 @@ Table.propTypes = {
   extendableY: PropTypes.oneOfType([PropTypes.bool, PropTypes.string]), // true, "begin" or "all"
   fixedHeaders: PropTypes.bool,
   fullSelectOnEdit: PropTypes.bool,
+  htmlHeaders: PropTypes.bool,
   loop: PropTypes.bool,
   multiEdit: PropTypes.bool,
   onChange: PropTypes.func,
@@ -1477,6 +1507,7 @@ Table.defaultProps = {
   extendableX: false,
   extendableY: false,
   fullSelectOnEdit: true,
+  htmlHeaders: false,
   loop: true,
   multiEdit: false,
   removeableY: false,
