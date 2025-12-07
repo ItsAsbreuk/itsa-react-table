@@ -1034,7 +1034,10 @@ class Table extends React.Component {
       editableCols = props.editableCols,
       cursorNav = props.cursorNav,
       lowestColIndex = props.rowHeader ? 1 : 0,
-      highestColIndex = data.itsa_keys().length - (props.rowHeader ? 0 : 1),
+      highestColIndex =
+        data.length > 0
+          ? data[0].itsa_keys().length - (props.rowHeader ? 0 : 1)
+          : 0,
       columns = props.columns,
       hasColumns = columns && columns.length > 0;
 
