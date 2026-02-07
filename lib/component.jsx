@@ -339,7 +339,7 @@ class Table extends React.Component {
     }
 
     if (
-      (editValueBeforeEdit === editValueBeforeBlur && !selectedRange) ||
+      (editValueBeforeEdit === editValueBeforeBlur && !selectedRange && !force) ||
       editValueBeforeBlur === undefined
     ) {
       // nothing changed
@@ -419,12 +419,47 @@ class Table extends React.Component {
             }
           }
         }
-        changed && onChangeCell(cells, editValueBeforeBlur);
+        if (changed) {
+          onChangeCell(cells, editValueBeforeBlur);
+        }
       }
     }
     if (selectedRange) {
       instance.setState({ selectedRange: null });
     }
+  }
+
+  /**
+   * Returns the current selected range information
+   * @method getSelectedRange
+   * @return {Object|null} Range object with {x1, y1, x2, y2} or null if no range
+   * @since 2.0.0
+   */
+  getSelectedRange() {
+    return this.state.selectedRange;
+  }
+
+  /**
+   * Returns the current range start position
+   * @method getRangeStart
+   * @return {Object|null} Range start with {x, y} or null if no range start
+   * @since 2.0.0
+   */
+  getRangeStart() {
+    return this.state.selectedRangeStart;
+  }
+
+  /**
+   * Returns complete range information including start and selected range
+   * @method getRangeInfo
+   * @return {Object} Object with {rangeStart, selectedRange}
+   * @since 2.0.0
+   */
+  getRangeInfo() {
+    return {
+      rangeStart: this.state.selectedRangeStart,
+      selectedRange: this.state.selectedRange
+    };
   }
 
   focus() {
@@ -1261,10 +1296,14 @@ class Table extends React.Component {
       prevRowId,
       prevColId,
       selectedRangeStart;
-    node.tagName === "TD" || (node = node.parentNode);
+    while (node && node.tagName !== "TD") {
+      node = node.parentNode;
+    }
+    if (!node) {
+      return;
+    }
     colId = parseInt(node.getAttribute("data-colid"), 10);
-    node = node.parentNode;
-    rowId = parseInt(node.getAttribute("data-rowid"), 10);
+    rowId = parseInt(node.parentNode.getAttribute("data-rowid"), 10);
     if (typeof editableCols === "number") {
       editableCols = [editableCols];
     }
