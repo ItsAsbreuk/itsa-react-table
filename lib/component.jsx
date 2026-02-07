@@ -1026,6 +1026,7 @@ class Table extends React.Component {
     const instance = this,
       props = instance.props,
       state = instance.state,
+      editableBlurCols = props.editableBlurCols,
       keyCode = e.keyCode,
       shiftKey = e.shiftKey,
       ctrlKey = e.metaKey || e.ctrlKey,
@@ -1040,6 +1041,16 @@ class Table extends React.Component {
           : 0,
       columns = props.columns,
       hasColumns = columns && columns.length > 0;
+
+    let preventDomFocus = false;
+    if (typeof editableBlurCols !== "undefined") {
+      if (typeof editableBlurCols === "number") {
+        preventDomFocus = editableBlurCols === state.editableCol;
+      }
+      if (Array.isArray(editableBlurCols)) {
+        preventDomFocus = editableBlurCols.includes(state.editableCol);
+      }
+    }
 
     const implementChanges = (keepFocus) => {
       if (props.editable === true || state.selectedRange) {
@@ -1211,7 +1222,22 @@ class Table extends React.Component {
           },
           selectedRange: null,
         });
-        instance._focusActiveCell();
+        if (preventDomFocus) {
+          instance.setState(
+            (prevState) => {
+              return {
+                // editValue: instance._editValueBeforeEdit,
+                editableRow: null,
+                editableCol: null,
+              };
+            },
+            () => {
+              instance._blurActiveCell();
+            }
+          );
+        } else {
+          instance._focusActiveCell();
+        }
         implementChanges();
       }
     }
@@ -1481,6 +1507,7 @@ Table.propTypes = {
   data: PropTypes.array,
   disabled: PropTypes.bool,
   editable: PropTypes.oneOfType([PropTypes.bool, PropTypes.string]),
+  editableBlurCols: PropTypes.oneOfType([PropTypes.array, PropTypes.number]),
   editableCols: PropTypes.oneOfType([PropTypes.array, PropTypes.number]),
   editDirectionDown: PropTypes.bool,
   extendableX: PropTypes.bool,
